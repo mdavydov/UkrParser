@@ -1,4 +1,4 @@
-package com.langproc;
+п»їpackage com.langproc;
 
 import java.util.List;
 
@@ -54,9 +54,9 @@ class TaggedWord
 
 class TagRule
 {
-	// pattern of processed word (.*ого)
+	// pattern of processed word (.*РѕРіРѕ)
 	public java.util.regex.Pattern m_word_pattern;
-	// pattern of base word (.*ий)
+	// pattern of base word (.*РёР№)
 	public java.util.regex.Pattern m_base_pattern;
 	// tags required for the rule
 	public java.util.regex.Pattern m_dict_pattern;
@@ -153,106 +153,106 @@ public class LangProc
 	LangProc(OpenOfficeSpellDictionary dict)
 	{
 	  m_dict = dict;
-	  m_prepositions.add("перед");
-	  m_prepositions.add("як");
-	  m_prepositions.add("між");
-	  m_prepositions.add("за");
-	  m_prepositions.add("після");
-	  m_prepositions.add("над");
-	  m_prepositions.add("під");
-	  m_prepositions.add("через");
-	  m_prepositions.add("поза");
-	  m_prepositions.add("без");
-	  m_prepositions.add("в");
-	  m_prepositions.add("у");
-	  m_prepositions.add("від");
-	  m_prepositions.add("для");
-	  m_prepositions.add("по");
-	  m_prepositions.add("через");
-	  m_prepositions.add("при");
-	  m_prepositions.add("про");
-	  m_prepositions.add("над");
-	  m_prepositions.add("під");
-	  m_prepositions.add("до");
-	  m_prepositions.add("з");
-	  m_prepositions.add("ради");
-	  m_prepositions.add("задля");
-	  m_prepositions.add("поза");
-	  m_prepositions.add("щодо");
-	  m_prepositions.add("близько");
-	  m_prepositions.add("внаслідок");
-	  m_prepositions.add("після");
-	  m_prepositions.add("поруч");
-	  m_prepositions.add("перед");
-	  m_prepositions.add("протягом");
-	  m_prepositions.add("під час");
-	  m_prepositions.add("з допомогою");
-	  m_prepositions.add("у зв’язку");
-	  m_prepositions.add("завдяки");
-	  m_prepositions.add("незважаючи на");
-	  m_prepositions.add("з-за");
-	  m_prepositions.add("з-над");
-	  m_prepositions.add("з-поза");
-	  m_prepositions.add("з-під");
-	  m_prepositions.add("з-попід");
-	  m_prepositions.add("з-серед");
-	  m_prepositions.add("із-за");
-	  m_prepositions.add("в силу");
-	  m_prepositions.add("згідно з");
+	  m_prepositions.add("РїРµСЂРµРґ");
+	  m_prepositions.add("СЏРє");
+	  m_prepositions.add("РјС–Р¶");
+	  m_prepositions.add("Р·Р°");
+	  m_prepositions.add("РїС–СЃР»СЏ");
+	  m_prepositions.add("РЅР°Рґ");
+	  m_prepositions.add("РїС–Рґ");
+	  m_prepositions.add("С‡РµСЂРµР·");
+	  m_prepositions.add("РїРѕР·Р°");
+	  m_prepositions.add("Р±РµР·");
+	  m_prepositions.add("РІ");
+	  m_prepositions.add("Сѓ");
+	  m_prepositions.add("РІС–Рґ");
+	  m_prepositions.add("РґР»СЏ");
+	  m_prepositions.add("РїРѕ");
+	  m_prepositions.add("С‡РµСЂРµР·");
+	  m_prepositions.add("РїСЂРё");
+	  m_prepositions.add("РїСЂРѕ");
+	  m_prepositions.add("РЅР°Рґ");
+	  m_prepositions.add("РїС–Рґ");
+	  m_prepositions.add("РґРѕ");
+	  m_prepositions.add("Р·");
+	  m_prepositions.add("СЂР°РґРё");
+	  m_prepositions.add("Р·Р°РґР»СЏ");
+	  m_prepositions.add("РїРѕР·Р°");
+	  m_prepositions.add("С‰РѕРґРѕ");
+	  m_prepositions.add("Р±Р»РёР·СЊРєРѕ");
+	  m_prepositions.add("РІРЅР°СЃР»С–РґРѕРє");
+	  m_prepositions.add("РїС–СЃР»СЏ");
+	  m_prepositions.add("РїРѕСЂСѓС‡");
+	  m_prepositions.add("РїРµСЂРµРґ");
+	  m_prepositions.add("РїСЂРѕС‚СЏРіРѕРј");
+	  m_prepositions.add("РїС–Рґ С‡Р°СЃ");
+	  m_prepositions.add("Р· РґРѕРїРѕРјРѕРіРѕСЋ");
+	  m_prepositions.add("Сѓ Р·РІвЂ™СЏР·РєСѓ");
+	  m_prepositions.add("Р·Р°РІРґСЏРєРё");
+	  m_prepositions.add("РЅРµР·РІР°Р¶Р°СЋС‡Рё РЅР°");
+	  m_prepositions.add("Р·-Р·Р°");
+	  m_prepositions.add("Р·-РЅР°Рґ");
+	  m_prepositions.add("Р·-РїРѕР·Р°");
+	  m_prepositions.add("Р·-РїС–Рґ");
+	  m_prepositions.add("Р·-РїРѕРїС–Рґ");
+	  m_prepositions.add("Р·-СЃРµСЂРµРґ");
+	  m_prepositions.add("С–Р·-Р·Р°");
+	  m_prepositions.add("РІ СЃРёР»Сѓ");
+	  m_prepositions.add("Р·РіС–РґРЅРѕ Р·");
 	  
 	  
-	  m_parenthesis_words.add("напевно");
-	  m_parenthesis_words.add("безперечно");
-	  m_parenthesis_words.add("звичайно");
-	  m_parenthesis_words.add("може");
-	  m_parenthesis_words.add("мабуть");
-	  m_parenthesis_words.add("зрозуміло");
-	  m_parenthesis_words.add("дійсно");
-	  m_parenthesis_words.add("певне");
-	  m_parenthesis_words.add("певно");
-	  m_parenthesis_words.add("здається");
-	  m_parenthesis_words.add("боюся");
-	  m_parenthesis_words.add("сподіваюся");
-	  m_parenthesis_words.add("очевидно");
-	  m_parenthesis_words.add("по-перше");
-	  m_parenthesis_words.add("по-друге");
-	  m_parenthesis_words.add("далі");
-	  m_parenthesis_words.add("до речі");
-	  m_parenthesis_words.add("нарешті");
-	  m_parenthesis_words.add("на щастя");
-	  m_parenthesis_words.add("на жаль");
-	  m_parenthesis_words.add("на нещастя");
-	  m_parenthesis_words.add("дивна річ");
-	  m_parenthesis_words.add("взагалі");
-	  m_parenthesis_words.add("іншими словами");
-	  m_parenthesis_words.add("можна сказати");
-	  m_parenthesis_words.add("так би мовити");
-	  m_parenthesis_words.add("як кажуть");
+	  m_parenthesis_words.add("РЅР°РїРµРІРЅРѕ");
+	  m_parenthesis_words.add("Р±РµР·РїРµСЂРµС‡РЅРѕ");
+	  m_parenthesis_words.add("Р·РІРёС‡Р°Р№РЅРѕ");
+	  m_parenthesis_words.add("РјРѕР¶Рµ");
+	  m_parenthesis_words.add("РјР°Р±СѓС‚СЊ");
+	  m_parenthesis_words.add("Р·СЂРѕР·СѓРјС–Р»Рѕ");
+	  m_parenthesis_words.add("РґС–Р№СЃРЅРѕ");
+	  m_parenthesis_words.add("РїРµРІРЅРµ");
+	  m_parenthesis_words.add("РїРµРІРЅРѕ");
+	  m_parenthesis_words.add("Р·РґР°С”С‚СЊСЃСЏ");
+	  m_parenthesis_words.add("Р±РѕСЋСЃСЏ");
+	  m_parenthesis_words.add("СЃРїРѕРґС–РІР°СЋСЃСЏ");
+	  m_parenthesis_words.add("РѕС‡РµРІРёРґРЅРѕ");
+	  m_parenthesis_words.add("РїРѕ-РїРµСЂС€Рµ");
+	  m_parenthesis_words.add("РїРѕ-РґСЂСѓРіРµ");
+	  m_parenthesis_words.add("РґР°Р»С–");
+	  m_parenthesis_words.add("РґРѕ СЂРµС‡С–");
+	  m_parenthesis_words.add("РЅР°СЂРµС€С‚С–");
+	  m_parenthesis_words.add("РЅР° С‰Р°СЃС‚СЏ");
+	  m_parenthesis_words.add("РЅР° Р¶Р°Р»СЊ");
+	  m_parenthesis_words.add("РЅР° РЅРµС‰Р°СЃС‚СЏ");
+	  m_parenthesis_words.add("РґРёРІРЅР° СЂС–С‡");
+	  m_parenthesis_words.add("РІР·Р°РіР°Р»С–");
+	  m_parenthesis_words.add("С–РЅС€РёРјРё СЃР»РѕРІР°РјРё");
+	  m_parenthesis_words.add("РјРѕР¶РЅР° СЃРєР°Р·Р°С‚Рё");
+	  m_parenthesis_words.add("С‚Р°Рє Р±Рё РјРѕРІРёС‚Рё");
+	  m_parenthesis_words.add("СЏРє РєР°Р¶СѓС‚СЊ");
 	  
-	  fillSet(m_pronoun, "я ти він вона воно ми ви вони");
+	  fillSet(m_pronoun, "СЏ С‚Рё РІС–РЅ РІРѕРЅР° РІРѕРЅРѕ РјРё РІРё РІРѕРЅРё");
 	  
-	  fillSet(m_particles, "ось, осьде, он, от, ото, це, оце");
-	  fillSet(m_particles, "якраз, ледве, просто, прямо, власне, майже, саме");
-	  fillSet(m_particles, "не, ні, ані");
-	  fillSet(m_particles, "тільки, лише, хоч, хоч би, виключно");
-	  fillSet(m_particles, "і, й, та, таки, аж, навіть, вже, ж, же, бо");
-	  fillSet(m_particles, "хай, нехай, бодай, давай");
-	  fillSet(m_particles, "би, б, ну");
-	  fillSet(m_particles, "так, отак, еге, авжеж, отож, гаразд");
-	  fillSet(m_particles, "чи, невже, хіба, та ну, що за");
-	  fillSet(m_particles, "мов, мовби, немов, наче, неначе, начебто, ніби, нібито");
-	  fillSet(m_particles, "як, що за тому");
+	  fillSet(m_particles, "РѕСЃСЊ, РѕСЃСЊРґРµ, РѕРЅ, РѕС‚, РѕС‚Рѕ, С†Рµ, РѕС†Рµ");
+	  fillSet(m_particles, "СЏРєСЂР°Р·, Р»РµРґРІРµ, РїСЂРѕСЃС‚Рѕ, РїСЂСЏРјРѕ, РІР»Р°СЃРЅРµ, РјР°Р№Р¶Рµ, СЃР°РјРµ");
+	  fillSet(m_particles, "РЅРµ, РЅС–, Р°РЅС–");
+	  fillSet(m_particles, "С‚С–Р»СЊРєРё, Р»РёС€Рµ, С…РѕС‡, С…РѕС‡ Р±Рё, РІРёРєР»СЋС‡РЅРѕ");
+	  fillSet(m_particles, "С–, Р№, С‚Р°, С‚Р°РєРё, Р°Р¶, РЅР°РІС–С‚СЊ, РІР¶Рµ, Р¶, Р¶Рµ, Р±Рѕ");
+	  fillSet(m_particles, "С…Р°Р№, РЅРµС…Р°Р№, Р±РѕРґР°Р№, РґР°РІР°Р№");
+	  fillSet(m_particles, "Р±Рё, Р±, РЅСѓ");
+	  fillSet(m_particles, "С‚Р°Рє, РѕС‚Р°Рє, РµРіРµ, Р°РІР¶РµР¶, РѕС‚РѕР¶, РіР°СЂР°Р·Рґ");
+	  fillSet(m_particles, "С‡Рё, РЅРµРІР¶Рµ, С…С–Р±Р°, С‚Р° РЅСѓ, С‰Рѕ Р·Р°");
+	  fillSet(m_particles, "РјРѕРІ, РјРѕРІР±Рё, РЅРµРјРѕРІ, РЅР°С‡Рµ, РЅРµРЅР°С‡Рµ, РЅР°С‡РµР±С‚Рѕ, РЅС–Р±Рё, РЅС–Р±РёС‚Рѕ");
+	  fillSet(m_particles, "СЏРє, С‰Рѕ Р·Р° С‚РѕРјСѓ");
 	  
-	  fillSet(m_conjunction, "і, або, й, та" );
+	  fillSet(m_conjunction, "С–, Р°Р±Рѕ, Р№, С‚Р°" );
 	  
-	  m_tag_rules.add(new TagRule(".*ого", ".*ий", ".*", "Прикм", "Род, Одн"));
-	  m_tag_rules.add(new TagRule(".*их", ".*ий",  ".*", "Прикм", "Род, Мн"));
-	  m_tag_rules.add(new TagRule(".*", ".*",  ".*[aioe].*", "", "Імен"));
+	  m_tag_rules.add(new TagRule(".*РѕРіРѕ", ".*РёР№", ".*", "РџСЂРёРєРј", "Р РѕРґ, РћРґРЅ"));
+	  m_tag_rules.add(new TagRule(".*РёС…", ".*РёР№",  ".*", "РџСЂРёРєРј", "Р РѕРґ, РњРЅ"));
+	  m_tag_rules.add(new TagRule(".*", ".*",  ".*[aioe].*", "", "Р†РјРµРЅ"));
 	  
-	  m_tag_rules.add(new TagRule(".*", ".*ти",  ".*", "", "Дієсл"));
-	  m_tag_rules.add(new TagRule(".*", ".*ий",  ".*", "", "Прикм"));
-	  m_tag_rules.add(new TagRule(".*", ".*ко|.*но",  ".*", "", "Присл"));
-	  m_tag_rules.add(new TagRule(".*", ".*чи",  ".*", "", "Дієприсл"));
+	  m_tag_rules.add(new TagRule(".*", ".*С‚Рё",  ".*", "", "Р”С–С”СЃР»"));
+	  m_tag_rules.add(new TagRule(".*", ".*РёР№",  ".*", "", "РџСЂРёРєРј"));
+	  m_tag_rules.add(new TagRule(".*", ".*РєРѕ|.*РЅРѕ",  ".*", "", "РџСЂРёСЃР»"));
+	  m_tag_rules.add(new TagRule(".*", ".*С‡Рё",  ".*", "", "Р”С–С”РїСЂРёСЃР»"));
 	}
 		
 	
@@ -274,11 +274,11 @@ public class LangProc
 	    	  
 	    	  //System.out.print( "   " + s.word + " " + s.astr + " " );
 
-	    	  if (m_prepositions.contains(s.word)) w.addTag("Прийм");
-	    	  if (m_parenthesis_words.contains(s.word)) w.addTag("Встав");
-	    	  if (m_particles.contains(s.word)) w.addTag("Част");
-	    	  if (m_pronoun.contains(s.word)) w.addTag("Займ");
-	    	  if (m_conjunction.contains(s.word)) w.addTag("Спол");
+	    	  if (m_prepositions.contains(s.word)) w.addTag("РџСЂРёР№Рј");
+	    	  if (m_parenthesis_words.contains(s.word)) w.addTag("Р’СЃС‚Р°РІ");
+	    	  if (m_particles.contains(s.word)) w.addTag("Р§Р°СЃС‚");
+	    	  if (m_pronoun.contains(s.word)) w.addTag("Р—Р°Р№Рј");
+	    	  if (m_conjunction.contains(s.word)) w.addTag("РЎРїРѕР»");
 	    	  
 	    	  ApplyRules(w);
 	    	  
@@ -323,11 +323,11 @@ public class LangProc
 	try
 	{
 	  (new LangProc(new OpenOfficeSpellDictionary("uk_UA")))
-	  	.checkGrammar("Прийменники не мають самостійного лексичного значення, тому членами речення не виступають. Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення." + 
-"Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні. Приклади прийменників:");
+	  	.checkGrammar("РџСЂРёР№РјРµРЅРЅРёРєРё РЅРµ РјР°СЋС‚СЊ СЃР°РјРѕСЃС‚С–Р№РЅРѕРіРѕ Р»РµРєСЃРёС‡РЅРѕРіРѕ Р·РЅР°С‡РµРЅРЅСЏ, С‚РѕРјСѓ С‡Р»РµРЅР°РјРё СЂРµС‡РµРЅРЅСЏ РЅРµ РІРёСЃС‚СѓРїР°СЋС‚СЊ. РќР°Р»РµР¶Р°С‡Рё РґРѕ С–РјРµРЅРЅРёРєС–РІ, С‡РёСЃР»С–РІРЅРёРєС–РІ, Р·Р°Р№РјРµРЅРЅРёРєС–РІ, РІРѕРЅРё РІС…РѕРґСЏС‚СЊ РґРѕ СЃРєР»Р°РґСѓ РґСЂСѓРіРѕСЂСЏРґРЅРёС… С‡Р»РµРЅС–РІ СЂРµС‡РµРЅРЅСЏ." + 
+"РџСЂРёР№РјРµРЅРЅРёРєРѕРј РЅР°Р·РёРІР°С”С‚СЊСЃСЏ СЃР»СѓР¶Р±РѕРІР° С‡Р°СЃС‚РёРЅР° РјРѕРІРё, СЏРєР° СЂР°Р·РѕРј Р· РІС–РґРјС–РЅРєРѕРІРёРјРё Р·Р°РєС–РЅС‡РµРЅРЅСЏРјРё С–РјРµРЅРЅРёРєС–РІ (Р°Р±Рѕ Р·Р°Р№РјРµРЅРЅРёРєС–РІ) СЃР»СѓР¶РёС‚СЊ РґР»СЏ РІРёСЂР°Р¶РµРЅРЅСЏ РїС–РґСЂСЏРґРЅРёС… Р·РІвЂ™СЏР·РєС–РІ РјС–Р¶ СЃР»РѕРІР°РјРё РІ СЂРµС‡РµРЅРЅС–. РџСЂРёРєР»Р°РґРё РїСЂРёР№РјРµРЅРЅРёРєС–РІ:");
 	  
 //	  (new LangProc(new OpenOfficeSpellDictionary("uk_UA")))
-//	  	.checkGrammar("Сіл селами села Почесного Тінь кінь ніч грач");
+//	  	.checkGrammar("РЎС–Р» СЃРµР»Р°РјРё СЃРµР»Р° РџРѕС‡РµСЃРЅРѕРіРѕ РўС–РЅСЊ РєС–РЅСЊ РЅС–С‡ РіСЂР°С‡");
     }
     catch (Exception e)
     {
