@@ -123,6 +123,7 @@ public class LangProc
 	java.util.HashSet<String> m_prepositions = new java.util.HashSet<String>();
 	java.util.HashSet<String> m_parenthesis_words = new java.util.HashSet<String>();
 	java.util.HashSet<String> m_particles = new java.util.HashSet<String>();
+	java.util.HashSet<String> m_conjunction = new java.util.HashSet<String>();
 	
 	java.util.List<TagRule> m_tag_rules = new java.util.LinkedList();
 	
@@ -242,6 +243,8 @@ public class LangProc
 	  fillSet(m_particles, "мов, мовби, немов, наче, неначе, начебто, ніби, нібито");
 	  fillSet(m_particles, "як, що за тому");
 	  
+	  fillSet(m_conjunction, "і, або, й, та" );
+	  
 	  m_tag_rules.add(new TagRule(".*ого", ".*ий", ".*", "Прикм", "Род, Одн"));
 	  m_tag_rules.add(new TagRule(".*их", ".*ий",  ".*", "Прикм", "Род, Мн"));
 	  m_tag_rules.add(new TagRule(".*", ".*",  ".*[aioe].*", "", "Імен"));
@@ -275,6 +278,7 @@ public class LangProc
 	    	  if (m_parenthesis_words.contains(s.word)) w.addTag("Встав");
 	    	  if (m_particles.contains(s.word)) w.addTag("Част");
 	    	  if (m_pronoun.contains(s.word)) w.addTag("Займ");
+	    	  if (m_conjunction.contains(s.word)) w.addTag("Спол");
 	    	  
 	    	  ApplyRules(w);
 	    	  
