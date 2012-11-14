@@ -1,5 +1,6 @@
 package com.langproc;
 
+import java.util.Collection;
 import java.util.Vector; 
 import java.util.HashMap;
 
@@ -8,10 +9,10 @@ class Vertex
 {
 	public int m_choice_id;
 	public int m_vectex_id;
-	float m_weight;
+	double m_weight;
 	Object m_obj;
 	
-	Vertex(Object obj, int choice_id, int vectex_id, float weight)
+	Vertex(Object obj, int choice_id, int vectex_id, double weight)
 	{
 		m_obj = obj;
 		m_choice_id = choice_id;
@@ -26,9 +27,9 @@ class Vertex
 class DirectedEdge
 {
 	Object m_obj;
-	float m_weight;
+	double m_weight;
 	
-	DirectedEdge(Object obj, float weight)
+	DirectedEdge(Object obj, double weight)
 	{
 		m_obj = obj;
 		m_weight = weight;
@@ -43,16 +44,16 @@ class DirectedEdge
  *
  */
 
-class Subtree
+class Subtree implements java.lang.Comparable
 {
-	float m_total_weight;
+	double m_total_weight;
 	int m_num_vertexes;
 	int m_root_vectrex_id;
 	int m_root_choice_id;
 	boolean[] m_covered_choices;
-	Vector<Subtree> m_subtrees;
+	Vector<Subtree> m_subtrees = new Vector<Subtree>();
 	
-	public float getBalancedWeight() { return m_total_weight + m_num_vertexes * 10.0f; }
+	public double getBalancedWeight() { return m_total_weight + m_num_vertexes * 10.0f; }
 	
 	public Subtree(ChoiceGraph g, int vertex_id)
 	{
@@ -63,7 +64,7 @@ class Subtree
 		m_root_choice_id = v.m_choice_id;
 		m_covered_choices = new boolean[g.getNumChoices()];
 		m_covered_choices[v.m_choice_id] = true;
-		m_subtrees = null;
+		checkConsistency();
 	}
 	Subtree(Subtree s)
 	{
@@ -72,21 +73,56 @@ class Subtree
 		m_root_vectrex_id = s.m_root_vectrex_id;
 		m_root_choice_id = s.m_root_choice_id;
 		m_covered_choices = s.m_covered_choices.clone();
-		if (s.m_subtrees!=null)
+		for(Subtree s1 : s.m_subtrees)
 		{
-			m_subtrees = new Vector<Subtree>( s.m_subtrees );
+			m_subtrees.addElement(new Subtree(s1));
 		}
-		else
+		checkConsistency();
+	}
+	
+	public int compareTo(Object o)
+	{
+		Subtree other = (Subtree)o;
+		if (m_total_weight == other.m_total_weight) return 0;
+		return m_total_weight < other.m_total_weight ? -1 : +1;
+	}
+	
+	void checkConsistency()
+	{
+		for(int i=0;i<m_covered_choices.length;++i)
 		{
-			m_subtrees = null;
+			if (m_covered_choices[i])
+			{
+				Subtree s = findSubtreeByChoiceId(i);
+				if (s==null) throw new java.lang.IndexOutOfBoundsException("no subtree with covered choice");
+				if (numVertexesWithChoice(i)!=1)
+				{
+					throw new java.lang.IndexOutOfBoundsException("num choices != 1"); 
+				}
+			}
+			else
+			{
+				Subtree s = findSubtreeByChoiceId(i);
+				if (s!=null) throw new java.lang.IndexOutOfBoundsException("has Subtree with uncovered choice");
+				if (numVertexesWithChoice(i)!=0) throw new java.lang.IndexOutOfBoundsException("num choices != 0"); 
+			}		
 		}
+	}
+	
+	int numVertexesWithChoice(int choice_id)
+	{
+		int n = m_root_choice_id==choice_id ? 1 : 0;
+		for(Subtree s : m_subtrees)
+		{
+			n+=s.numVertexesWithChoice(choice_id);
+		}
+		return n;
 	}
 	
 	Subtree findSubtreeByChoiceId(int choice_id)
 	{
+		if (!m_covered_choices[choice_id]) return null;
 		if (m_root_choice_id==choice_id) return this;
-		
-		if (m_subtrees==null) return null;
 		for(Subtree s : m_subtrees)
 		{
 			Subtree r = s.findSubtreeByChoiceId(choice_id);
@@ -98,7 +134,6 @@ class Subtree
 	boolean removeSubtree(Subtree s)
 	{
 		if (s==this) return true;
-		if (m_subtrees==null) return false;
 		for(Subtree sub:m_subtrees)
 		{
 			if (sub.removeSubtree(s))
@@ -120,23 +155,60 @@ class Subtree
 		return false;
 	}
 	
+	double getRemovalWeightDirect(Subtree other)
+	{
+		if (other.m_covered_choices[m_root_choice_id])
+		{
+			return m_total_weight;
+		}
+		
+		double total = 0;
+		
+		for(Subtree s : m_subtrees)
+		{
+			total+=s.getRemovalWeight(other);
+		}
+		return total;
+	}
+	
+	double getRemovalWeight(Subtree other)
+	{
+		if (other.m_covered_choices[m_root_choice_id])
+		{
+			return Math.min(m_total_weight, other.getRemovalWeightDirect(this));
+		}
+		
+		double total = 0;
+		
+		for(Subtree s : m_subtrees)
+		{
+			total+=s.getRemovalWeight(other);
+		}
+		return total;
+	}
+	
 	// also verify if we gain by adding other to some subnode???
 	boolean canAttachDirectSubtree(ChoiceGraph g, Subtree other)
 	{
 		DirectedEdge de = g.getEdge(m_root_vectrex_id, other.m_root_vectrex_id );
 		if (de == null) return false;
-		
-		// some additional check here ...
-		int nc = m_covered_choices.length;
-		boolean is_subcase=true;
-		for(int i=0;i<nc;++i)
-		{
-			if (!m_covered_choices[i] && other.m_covered_choices[i]) is_subcase = false;
-		}
-		
-		if (is_subcase) return false;
-		
 		return true;
+		
+//		double remove_w = getRemovalWeight(other);
+//		
+//		if (remove_w < other.m_total_weight + de.m_weight) return true;
+//		
+//		// some additional check here ...
+//		int nc = m_covered_choices.length;
+//		boolean is_subcase=true;
+//		for(int i=0;i<nc;++i)
+//		{
+//			if (!m_covered_choices[i] && other.m_covered_choices[i]) is_subcase = false;
+//		}
+//		
+//		if (is_subcase) return false;
+//		
+//		return true;
 	}
 	public boolean isBetterThan(Subtree other)
 	{
@@ -149,39 +221,140 @@ class Subtree
 		}
 		return true;
 	}
+	
+	void fillSubtrees(Vector<Subtree> v)
+	{
+		v.addElement(this);
+		for(Subtree s : m_subtrees)
+		{
+			s.fillSubtrees(v);
+		}
+
+	}
+	
+	Vector<Subtree> getAllSubtreesSorted()
+	{
+		Vector<Subtree> my = new Vector<Subtree>(m_num_vertexes);
+		fillSubtrees(my);
+		java.util.Collections.sort(my);
+		return my;
+	}
+	
 	// add subtree connected to the top vertex
 	boolean addSubtree(ChoiceGraph g, Subtree other)
-	{
+	{	
+		checkConsistency();
+		other.checkConsistency();
 		DirectedEdge de = g.getEdge(m_root_vectrex_id, other.m_root_vectrex_id );
 		if (de == null) return false;
 		
-		int nc = m_covered_choices.length;
-		for(int i=0;i<nc;++i)
+		//System.out.println("Adding subtree 1");
+		//print(g);
+		//System.out.println("Adding subtree 2");
+		//other.print(g);
+		
+		other.m_total_weight += de.m_weight;
+		
+		Vector<Subtree> all_my = getAllSubtreesSorted();
+		Vector<Subtree> all_other = other.getAllSubtreesSorted();
+
+		// remove overlapping choices starting from low-weight subtrees
+		int my_remove = 0;
+		int other_remove = 0;
+		
+		for(;;)
 		{
-			if (m_covered_choices[i] && other.m_covered_choices[i])
+			Subtree my_s = all_my.get(my_remove);
+			Subtree other_s = all_other.get(other_remove);
+			if (my_s.m_total_weight <= other_s.m_total_weight)
 			{
-				Subtree s1 = findSubtreeByChoiceId(i);
-				Subtree s2 = other.findSubtreeByChoiceId(i);
-				// TODO: sort by subtree weight and remove from the biggest difference first???
-				if (s1.m_total_weight < s2.m_total_weight)
+				if (other.m_covered_choices[my_s.m_root_choice_id])
 				{
-					removeSubtree(s1);
+					//print(g);
+					//System.out.println("Remove my subtree");
+					if (my_s==this) return false;
+					//my_s.print(g);
+					removeSubtree(my_s);
+					//print(g);
+					//System.out.println("---------------");
+					
+					//all_my = getAllSubtreesSorted();
+					//all_other = other.getAllSubtreesSorted();
+					//my_remove = 0;
+					//other_remove = 0;
 				}
-				else
+				//else
+				//{
+					if (++my_remove >= all_my.size()) break;
+				//}
+			}
+			else
+			{
+				if (m_covered_choices[other_s.m_root_choice_id])
 				{
-					other.removeSubtree(s2);
+					//other.print(g);
+					//System.out.println("Remove other subtree");
+					//other_s.print(g);
+					if (other_s==other) return false;
+					other.removeSubtree(other_s);
+					//other.print(g);
+					//System.out.println("---------------");
+					
+					//all_my = getAllSubtreesSorted();
+					//all_other = other.getAllSubtreesSorted();
+					//my_remove = 0;
+					//other_remove = 0;
 				}
+				//else
+				//{
+					if (++other_remove >= all_other.size()) break;
+				//}
 			}
 		}
-		if (m_subtrees==null) m_subtrees = new Vector<Subtree>();
+		
+		//System.out.println("Cutted this");
+		//print(g);
+		//System.out.println("Cutted other");
+		//other.print(g);
+		
+//		int nc = m_covered_choices.length;
+//		for(int i=0;i<nc;++i)
+//		{
+//			if (m_covered_choices[i] && other.m_covered_choices[i])
+//			{
+//				Subtree s1 = findSubtreeByChoiceId(i);
+//				Subtree s2 = other.findSubtreeByChoiceId(i);
+//				// TODO: sort by subtree weight and remove from the biggest difference first???
+//				if (s1==null || s2==null)
+//				{
+//					int k=0;
+//					++k;
+//				}
+//				if (s1.m_total_weight < s2.m_total_weight)
+//				{
+		// bad!!!
+//					if (removeSubtree(s1)) return false;
+//					//print(g);
+//					checkConsistency();
+//				}
+//				else
+//				{
+		// bad!!!
+//					if (other.removeSubtree(s2)) return false;
+//					//other.print(g);
+//					other.checkConsistency();
+//				}
+//			}
+//		}
 		m_subtrees.addElement(other);
-		other.m_total_weight += de.m_weight;
 		m_total_weight += other.m_total_weight;
 		m_num_vertexes += other.m_num_vertexes;
+		int nc = m_covered_choices.length;
 		for(int i=0;i<nc;++i)
 		{
 			if (other.m_covered_choices[i]) m_covered_choices[i] = true;
 		}
+		checkConsistency();
 
 		return true;
 	}
@@ -197,7 +370,6 @@ class Subtree
 		}
 		Vertex v = g.vertexById(m_root_vectrex_id);
 		System.out.println("" + v + " (" + m_num_vertexes + "," +  m_total_weight + ")");
-		if (m_subtrees==null) return;
 		for(Subtree s : m_subtrees)
 		{
 			s.print(g, shift+1, m_root_vectrex_id);
@@ -258,7 +430,7 @@ public class ChoiceGraph
 	public int getNumChoices() { return m_used_choices; }
 	public DirectedEdge getEdge(int v1, int v2) { return m_edges.get(v1).get(v2);}
 	
-	public void addVertex(Object vert_o, float weight, boolean new_choice)
+	public void addVertex(Object vert_o, double weight, boolean new_choice)
 	{
 		if (new_choice && m_used_choices >= m_max_choices) throw new java.lang.IndexOutOfBoundsException("No more choices");
 		if (m_used_vertexes >= m_max_vertexes) throw new java.lang.IndexOutOfBoundsException("No more vertexes");
@@ -275,11 +447,14 @@ public class ChoiceGraph
 		m_object2vertex_map.put(vert_o, v);
 	}
 	
-	public void addEdge(Object edge_o, float weight, Object vert_o1, Object vert_o2)
+	public void addEdge(Object edge_o, double weight, Object vert_o1, Object vert_o2)
 	{
-		System.out.println("Add edge " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
+		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
 		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
 		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
+		
+		DirectedEdge edge_old = m_edges.get(v_id1).get(v_id2);
+		if (edge_old!=null && edge_old.m_weight >= weight) return;
 		
 		DirectedEdge e = new DirectedEdge(edge_o, weight);
 		m_edges.get(v_id1).set(v_id2, e);
@@ -287,9 +462,9 @@ public class ChoiceGraph
 	
 	public boolean addToVectorIfGood(Vector<Subtree> v, Subtree s)
 	{
-		final int hypo_limit = 10;
+		final int hypo_limit = 5;
 		
-		float min_weight = Float.MAX_VALUE;
+		double min_weight = Double.MAX_VALUE;
 		int min_index = 0;
 
 		for(int i=0; i<v.size();++i)
@@ -322,6 +497,16 @@ public class ChoiceGraph
 			return true;
 		}
 		return false;
+	}
+	
+	void dumpBiggest(Vector< Vector<Subtree> > trees)
+	{
+		for(Vector<Subtree> vt : trees)
+		{
+			java.util.Collections.sort(vt);
+			vt.get(vt.size()-1).print(this);
+			System.out.println("------------------");
+		}
 	}
 	
 	public Subtree growingTreesSearch()
@@ -363,15 +548,20 @@ public class ChoiceGraph
 							++total_tests;
 							if (sc.canAttachDirectSubtree(this, sj))
 							{
+								sc.checkConsistency();
+								sj.checkConsistency();
 								Subtree sc_copy = new Subtree(sc);
 								Subtree sj_copy = new Subtree(sj);
-								sc_copy.addSubtree(this, sj_copy);
-								if (sc_copy.getBalancedWeight() > max_weighted_tree.getBalancedWeight())
+								if (sc_copy.addSubtree(this, sj_copy))
 								{
-									max_weighted_tree = sc_copy;
+									sc_copy.checkConsistency();
+									if (sc_copy.getBalancedWeight() > max_weighted_tree.getBalancedWeight())
+									{
+										max_weighted_tree = sc_copy;
+									}
+									++subtree_aditions;
+									if ( addToVectorIfGood(trees.get(c), sc_copy) ) ++num_changes;
 								}
-								++subtree_aditions;
-								if ( addToVectorIfGood(trees.get(c), sc_copy) ) ++num_changes;
 							}
 						}
 					}
@@ -381,6 +571,19 @@ public class ChoiceGraph
 					", total_tests = " + total_tests + ", subtree_aditions = " + subtree_aditions);
 
 		} while (num_changes>0);
+		
+		
+		dumpBiggest(trees);
+		
+		//System.out.println("0 to 9 ---------------------");
+		
+		//Subtree sc_copy1 = new Subtree(trees.get(9).get(0));
+		//Subtree sj_copy1 = new Subtree(trees.get(0).get(0));
+		//if (sc_copy1.addSubtree(this, sj_copy1))
+		//{
+		//	sc_copy1.print(this);
+		//}
+
 		
 		return max_weighted_tree;
 	}
