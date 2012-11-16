@@ -182,17 +182,18 @@ class TaggedWord
 	
 	public String toString()
 	{
-		StringBuffer b = new StringBuffer(200);
-		b.append(m_sentence_pos);
-		b.append(" ");
-		b.append(m_word);
-		b.append(" (");
-		b.append(m_base_word);
-		b.append(") ");
-		b.append(m_dict_tags);
-		b.append(" ");	
-		b.append(m_tags);
-		return b.toString();
+		return m_word;
+//		StringBuffer b = new StringBuffer(200);
+//		b.append(m_sentence_pos);
+//		b.append(" ");
+//		b.append(m_word);
+//		b.append(" (");
+//		b.append(m_base_word);
+//		b.append(") ");
+//		b.append(m_dict_tags);
+//		b.append(" ");	
+//		b.append(m_tags);
+//		return b.toString();
 	}
 	public int hashCode() { return toString().hashCode();}
 	public boolean equals(TaggedWord w) { return toString().equals(w.toString());}
@@ -330,7 +331,7 @@ class SentenceWord
 				System.out.print(" || ");
 			}
 //		}
-	}
+	}	
 }
 
 class Sentence
@@ -559,6 +560,7 @@ class Sentence
 		
 		Vector<TaggedWord> all_words = new Vector<TaggedWord>();
 		
+		
 		for(SentenceWord sw : m_words)
 		{
 			int n = sw.numHypotheses();
@@ -568,18 +570,27 @@ class Sentence
 				TaggedWord tw = sw.getHypothesis(i);
 				cg.addVertex(tw, 1.0f, i==0);
 				all_words.addElement(tw);
+				
 			}
 		}
+		
+		for(int i=0;i<all_words.size();++i)
+		{
+			TaggedWord tw = all_words.get(i);
+			System.out.println("\\node[main node] ("+ i +") at ("+ (135-i*305/all_words.size())+":7cm) {" + tw.m_word + "};");
+		}
+
+		System.out.println("\\path[every node/.style={font=\\sffamily\\small}]");
 
 		for(TaggedWord w1 : all_words) for(TaggedWord w2 : all_words)
 		{
 			addPossibleRelation(cg, w1, w2);
 		}
-		
+		System.out.println(";");
 		//cg.print();
 		
 		Subtree st = cg.growingTreesSearch();
-		if (st!=null) st.print(cg);
+		if (st!=null) st.print_qtree(cg);
 	}
 
 	

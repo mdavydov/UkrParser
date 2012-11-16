@@ -377,6 +377,38 @@ class Subtree implements java.lang.Comparable
 	}
 	
 	public void print(ChoiceGraph g) { print(g,0, -1); }
+	
+	public void print_qtree(ChoiceGraph g, int prev_root)
+	{	
+		Vertex v = g.vertexById(m_root_vectrex_id);
+		boolean close2 = false;
+
+		if (prev_root != -1)
+		{
+			DirectedEdge de = g.getEdge(prev_root, m_root_vectrex_id);
+			java.text.DecimalFormat df = new java.text.DecimalFormat("#.###");			
+			System.out.print( "[." + de.m_obj + " \\edge node[auto=left]{" + df.format(de.m_weight) + " }; ");
+			if (m_subtrees.size()==0)
+			{
+				System.out.print(v.m_obj);
+			}
+			else
+			{
+				System.out.print("[." + v.m_obj + " ");
+				close2 = true;
+			}
+		}
+		else
+		{
+			System.out.print("[." + v.m_obj + " ");
+		}
+		for(Subtree s : m_subtrees)
+		{
+			s.print_qtree(g, m_root_vectrex_id);
+		}
+		System.out.print(close2?" ] ]":" ]");
+	}
+	public void print_qtree(ChoiceGraph g) { print_qtree(g, -1); }
 }
 
 /*************************************************************************************
@@ -446,12 +478,32 @@ public class ChoiceGraph
 		m_vertex2choice.set(vert_id, choice_id );
 		m_object2vertex_map.put(vert_o, v);
 	}
+//	public void addVertex(Object vert_o, double weight, boolean new_choice)
+//	{
+//		if (new_choice && m_used_choices >= m_max_choices) throw new java.lang.IndexOutOfBoundsException("No more choices");
+//		if (m_used_vertexes >= m_max_vertexes) throw new java.lang.IndexOutOfBoundsException("No more vertexes");
+//		if (!new_choice && m_used_choices==0) throw new java.lang.IndexOutOfBoundsException("No choice is allocated yet. Use new_choice = true!!!");
+//		
+//		int choice_id = new_choice? m_used_choices++ : m_used_choices-1;
+//		int vert_id = m_used_vertexes++;
+//		
+//		Vertex v = new Vertex(vert_o, choice_id, vert_id, weight);
+//		m_vertexes.addElement(v);
+//		
+//		m_choice_vertices.get(choice_id).addElement(vert_id);		
+//		m_vertex2choice.set(vert_id, choice_id );
+//		m_object2vertex_map.put(vert_o, v);
+//	}
 	
 	public void addEdge(Object edge_o, double weight, Object vert_o1, Object vert_o2)
 	{
-		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
+		//System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
 		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
 		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
+		
+		java.text.DecimalFormatSymbols dfs = new java.text.DecimalFormatSymbols(new java.util.Locale("en"));
+		java.text.DecimalFormat df = new java.text.DecimalFormat("#.###", dfs);
+		System.out.println("(" + v_id1 + ") edge node [right] {" + df.format(weight) + "} ("+ v_id2 +")");
 		
 		DirectedEdge edge_old = m_edges.get(v_id1).get(v_id2);
 		if (edge_old!=null && edge_old.m_weight >= weight) return;
@@ -573,7 +625,7 @@ public class ChoiceGraph
 		} while (num_changes>0);
 		
 		
-		dumpBiggest(trees);
+		//dumpBiggest(trees);
 		
 		//System.out.println("0 to 9 ---------------------");
 		
