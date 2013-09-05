@@ -4,6 +4,11 @@ import java.util.Collection;
 import java.util.Vector; 
 import java.util.HashMap;
 
+import com.altmann.AdjacencyList;
+import com.altmann.Edmonds;
+import com.altmann.Edmonds_Andre;
+import com.altmann.Node;
+
 
 class Vertex
 {
@@ -44,7 +49,7 @@ class DirectedEdge
  *
  */
 
-class Subtree implements java.lang.Comparable
+class Subtree implements java.lang.Comparable<Subtree>
 {
 	double m_total_weight;
 	int m_num_vertexes;
@@ -80,7 +85,7 @@ class Subtree implements java.lang.Comparable
 		checkConsistency();
 	}
 	
-	public int compareTo(Object o)
+	public int compareTo(Subtree o)
 	{
 		Subtree other = (Subtree)o;
 		if (m_total_weight == other.m_total_weight) return 0;
@@ -478,32 +483,16 @@ public class ChoiceGraph
 		m_vertex2choice.set(vert_id, choice_id );
 		m_object2vertex_map.put(vert_o, v);
 	}
-//	public void addVertex(Object vert_o, double weight, boolean new_choice)
-//	{
-//		if (new_choice && m_used_choices >= m_max_choices) throw new java.lang.IndexOutOfBoundsException("No more choices");
-//		if (m_used_vertexes >= m_max_vertexes) throw new java.lang.IndexOutOfBoundsException("No more vertexes");
-//		if (!new_choice && m_used_choices==0) throw new java.lang.IndexOutOfBoundsException("No choice is allocated yet. Use new_choice = true!!!");
-//		
-//		int choice_id = new_choice? m_used_choices++ : m_used_choices-1;
-//		int vert_id = m_used_vertexes++;
-//		
-//		Vertex v = new Vertex(vert_o, choice_id, vert_id, weight);
-//		m_vertexes.addElement(v);
-//		
-//		m_choice_vertices.get(choice_id).addElement(vert_id);		
-//		m_vertex2choice.set(vert_id, choice_id );
-//		m_object2vertex_map.put(vert_o, v);
-//	}
 	
 	public void addEdge(Object edge_o, double weight, Object vert_o1, Object vert_o2)
 	{
-		//System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
+		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
 		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
 		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
 		
 		java.text.DecimalFormatSymbols dfs = new java.text.DecimalFormatSymbols(new java.util.Locale("en"));
 		java.text.DecimalFormat df = new java.text.DecimalFormat("#.###", dfs);
-		System.out.println("(" + v_id1 + ") edge node [right] {" + df.format(weight) + "} ("+ v_id2 +")");
+		//System.out.println("(" + v_id1 + ") edge node [right] {" + df.format(weight) + "} ("+ v_id2 +")");
 		
 		DirectedEdge edge_old = m_edges.get(v_id1).get(v_id2);
 		if (edge_old!=null && edge_old.m_weight >= weight) return;
@@ -559,6 +548,115 @@ public class ChoiceGraph
 			vt.get(vt.size()-1).print(this);
 			System.out.println("------------------");
 		}
+	}
+	
+	public Subtree ExhaustiveEdmondSearch()
+	{
+		int indexes[] = new int[m_used_choices];
+		for(int i=0;i<indexes.length;++i) indexes[i] = 0;
+			
+		// next choice
+		boolean finished = false;
+		
+		double max_total = 0;
+		AdjacencyList maxBranch=null;
+		int max_indexes[] = new int[m_used_choices];
+		
+		for(;;)
+		{
+			// set up edmond graph
+			Node root = new Node(-1);
+			Node[] nodes = new Node[m_used_choices];
+		
+			AdjacencyList myEdges = new AdjacencyList();
+			
+			for(int i=0;i<indexes.length;++i)
+			{
+				nodes[i] = new Node(i);
+				myEdges.addEdge(root, nodes[i], m_vertexes.get(indexes[i]).m_weight);
+			}
+			
+			for(int i=0;i<m_used_choices;++i) for(int j=0;j<m_used_choices;++j)
+			{
+				int v_i = m_choice_vertices.get(i).get(indexes[i]).intValue();
+				int v_j = m_choice_vertices.get(j).get(indexes[j]).intValue();
+				
+				DirectedEdge e = m_edges.get(v_i).get(v_j);
+				if (e!=null)
+				{
+					//System.out.println("" + v_i + "->" + v_j + " w=" + e.m_weight);
+					myEdges.addEdge(nodes[i], nodes[j], 1000 + e.m_weight + m_vertexes.get(indexes[j]).m_weight);
+				}
+			}
+			
+			Edmonds myed = new Edmonds_Andre();	
+			AdjacencyList rBranch;
+		    rBranch = myed.getMaxBranching(root, myEdges);
+		    
+		    double total = 0;
+		    for( com.altmann.Edge e : rBranch.getAllEdges())
+		    {
+		    	//System.out.println(e);
+		    	total += e.getWeight();
+		    }
+		    //System.out.println("Total = " + total);
+		    
+		    if (total > max_total)
+		    {
+		    	max_total = total;
+		    	maxBranch = rBranch;
+		    	for(int i=0;i<indexes.length;++i) max_indexes[i] = indexes[i];
+		    }
+
+					
+			for(int i=0;i<indexes.length;++i)
+			{
+				if ( indexes[i]+1 == m_choice_vertices.get(i).size() )
+				{
+					indexes[i] = 0;
+					if (i==indexes.length-1)
+					{
+						finished = true;
+					}
+				}
+				else
+				{
+					indexes[i]+=1;
+					break;
+				}
+			}
+			
+			for(int i=0;i<indexes.length;++i) System.out.print(" " + indexes[i]);
+			System.out.println();
+			
+			if (finished) break;
+		}
+		
+
+	    Subtree tree_root = null;
+	    Subtree tree_nodes[] = new Subtree[m_used_choices];
+	    
+	    for(int i=0;i<m_used_choices;++i)
+	    {
+	    	tree_nodes[i] = new Subtree(this, m_choice_vertices.get(i).get(indexes[i]).intValue());
+	    }
+	    
+	    for( com.altmann.Edge e : maxBranch.getAllEdges())
+	    {
+	    	System.out.println(e);
+	    	if (e.getSource().name==-1)
+	    	{
+	    		tree_root = tree_nodes[e.getDest().name];
+	    	}
+	    	else
+	    	{
+	    		tree_nodes[e.getSource().name].addSubtree(this, tree_nodes[e.getDest().name]);
+	    	}
+	    }
+	    System.out.println("Total = " + max_total);
+	    tree_root.print(this);
+	    System.out.println("Total weight = " + tree_root.m_total_weight );
+		return tree_root;
 	}
 	
 	public Subtree growingTreesSearch()
@@ -619,8 +717,8 @@ public class ChoiceGraph
 					}
 				}
 			}
-			System.out.println("num_changes = " + num_changes +
-					", total_tests = " + total_tests + ", subtree_aditions = " + subtree_aditions);
+			//System.out.println("num_changes = " + num_changes +
+					//", total_tests = " + total_tests + ", subtree_aditions = " + subtree_aditions);
 
 		} while (num_changes>0);
 		
@@ -684,6 +782,8 @@ public class ChoiceGraph
 			
 			Subtree st = cg.growingTreesSearch();
 			st.print(cg);
+			Subtree st2 = cg.ExhaustiveEdmondSearch();
+			st2.print(cg);
 		}
 		catch(java.lang.Exception e)
 		{
