@@ -1,10 +1,12 @@
 package com.langproc;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.Vector; 
 import java.util.HashMap;
+
 
 import com.altmann.AdjacencyList;
 import com.altmann.Edmonds;
@@ -54,8 +56,49 @@ public class WeightedDirectedSparseGraph
 	{
 		m_edges.addEdge( m_nodes.get(v1), m_nodes.get(v2), weight );
 	}
+	
+	public void calcMaxChainDFS(Node node, int num_in_br, double total_weight, double[] result, double threshold, boolean passed_nodes[] )
+	{
+		if (num_in_br==m_num_vertices)
+		{
+			if (result[0] < total_weight) result[0] = total_weight;
+			return;
+		}
+		
+		int vi = node.name == -1 ? m_num_vertices : node.name;
+		passed_nodes[vi] = true;
+		ArrayList<com.altmann.Edge> edge_list = m_edges.getAdjacent(node);
+		for( com.altmann.Edge e: edge_list )
+		{
+			if ( !passed_nodes[e.getDest().name] )
+			{
+				calcMaxChainDFS(e.getDest(), num_in_br + 1, total_weight + e.getWeight(), result, threshold, passed_nodes);
+			}
+			//System.out.println(e);
+		}
+		passed_nodes[vi] = false;
+	}
+	
+	public double calcMaxChainDFS()
+	{
+		ArrayList<com.altmann.Edge> edge_list = m_edges.getAdjacent(m_root);
+		boolean passed_nodes[] = new boolean[m_num_vertices+1];
+		double[] result = {0.0};
+		calcMaxChainDFS(m_root, 0, 0.0, result, 0.0, passed_nodes );
+		
+		return result[0];
+		
+		//System.out.println("Max Branching Weight = " + result[0]);
+	}
+	
 	public void calcMaxBranching()
 	{
+		long t0 = System.nanoTime();
+		
+		double res1 = calcMaxChainDFS();
+			
+		long t1 = System.nanoTime();
+		 
 		Edmonds myed = new Edmonds_Andre();	
 		AdjacencyList rBranch;
 	    rBranch = myed.getMaxBranching(m_root, m_edges);
@@ -67,7 +110,13 @@ public class WeightedDirectedSparseGraph
 	    	total += e.getWeight();
 	    }
 	    
-	    System.out.println("Total = " + total);
+	    long t2 = System.nanoTime();
+	    
+	    System.out.println( "Time1 = " + (t1-t0)/1000 + " mikro-sec" );
+	    System.out.println( "Time2 = " + (t2-t1)/1000 + " mikro-sec" );
+	    
+	    System.out.println("Total1 = " + res1);
+	    System.out.println("Total2 = " + total);
 	}
 	
 	static public void test()
@@ -76,8 +125,7 @@ public class WeightedDirectedSparseGraph
 		
 		for(int i=0;i<100;++i) g.addEdge(i%10, i/10, (float)Math.random() );
 		
-		g.calcMaxBranching();
 		
-
+		g.calcMaxBranching();
 	}
 }

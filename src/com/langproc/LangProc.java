@@ -1090,6 +1090,14 @@ public class LangProc
 		
 	      List<HEntry> list = m_dict.checkList(word.toLowerCase());
 	      
+	      System.out.println("");
+	      List su_list = m_dict.getSuggestions(word);
+	      for(Object o:su_list)
+	      {
+	    	  System.out.print(o.toString() + " ");
+	      }
+	      System.out.println("");
+
 	      if (list.size()==0)
 	      {
 	    	  TaggedWord w = new TaggedWord(index, word, word, "");
@@ -1225,19 +1233,19 @@ public class LangProc
 	    }
 		
   }
- public static void main3(String[] args)
+ public static void main2(String[] args)
  {
 	 WeightedDirectedSparseGraph.test();
  }
  
- public static void main2(String[] args)
+ public static void main(String[] args)
  {
 	 ChoiceGraph.test();
  }
 
 
 
-  public static void main(String[] args)
+  public static void main4(String[] args)
   {
 	  //ChoiceGraph.test(); 
 	  
@@ -1248,7 +1256,7 @@ public class LangProc
 	  	.checkGrammar(
 //"Який, котрий, котрого, якого, які, якому." +
 //"Я подивилася цікавий фільм." +
-"Я люблю український борщ." +
+//"Я люблю український борщ." +
 //"Я маю коричневого собаку." +
 //"Маленька дівчинка годує жовтих курчат." +
 //"Я знаю українську мову добре." +
@@ -1257,15 +1265,16 @@ public class LangProc
 //"Я ніколи не читав цей текст!" +
 //"Я дивлюсь цікавий фільм." + 
 //"Я дивитимусь цікавий фільм." +
-"Я не читав цей текст." +
+//"Я не читав цей текст." +
+//"Я хочу мати ровер."+
 //"Моя бабуся має зелене пальто." +
-"" +
-""
+//"" +
 //"Прийменники не мають самостійного лексичного значення, тому членами речення не виступають."
 //+
-//"Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення." + 
+"Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення." + 
 //"Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні. Приклади прийменників:"
-);
+""
+	  	);
 	  
 //	  (new LangProc(new OpenOfficeSpellDictionary("uk_UA")))
 //	  	.checkGrammar("Сіл селами села Почесного Тінь кінь ніч грач");

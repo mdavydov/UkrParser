@@ -625,9 +625,10 @@ public class ChoiceGraph
 					break;
 				}
 			}
-			
-			for(int i=0;i<indexes.length;++i) System.out.print(" " + indexes[i]);
-			System.out.println();
+
+			// check indexes
+			//for(int i=0;i<indexes.length;++i) System.out.print(" " + indexes[i]);
+			//System.out.println();
 			
 			if (finished) break;
 		}
@@ -653,6 +654,9 @@ public class ChoiceGraph
 	    		tree_nodes[e.getSource().name].addSubtree(this, tree_nodes[e.getDest().name]);
 	    	}
 	    }
+	    
+	    tree_root.updateWeight();
+	    
 	    System.out.println("Total = " + max_total);
 	    tree_root.print(this);
 	    System.out.println("Total weight = " + tree_root.m_total_weight );
@@ -778,11 +782,24 @@ public class ChoiceGraph
 			cg.addEdge("e_3_4_2", 1.0f, "v3_1", "v4_2");
 			cg.addEdge("e_3_5_2", 0.7f, "v3_2", "v5_1");
 			
-			cg.print();
-			
+			//cg.print();
+
+			long t0 = System.nanoTime();
 			Subtree st = cg.growingTreesSearch();
-			st.print(cg);
+			long t1 = System.nanoTime();
+			
+			
+			
+			long t2 = System.nanoTime();
 			Subtree st2 = cg.ExhaustiveEdmondSearch();
+			long t3 = System.nanoTime();
+			
+			System.out.println( "Time1 = " + (t1-t0)/1000 + " mikro-sec" );
+			System.out.println( "Time2 = " + (t3-t2)/1000 + " mikro-sec" );
+
+			System.out.println("Growing result:");
+			st.print(cg);
+			System.out.println("Edmond Exhaustive result:");
 			st2.print(cg);
 		}
 		catch(java.lang.Exception e)
