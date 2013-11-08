@@ -12,20 +12,20 @@ import com.altmann.Node;
 
 class Vertex
 {
-	public int m_choice_id;
+	public int m_group_id;
 	public int m_vectex_id;
 	double m_weight;
 	Object m_obj;
 	
-	Vertex(Object obj, int choice_id, int vectex_id, double weight)
+	Vertex(Object obj, int group_id, int vectex_id, double weight)
 	{
 		m_obj = obj;
-		m_choice_id = choice_id;
+		m_group_id = group_id;
 		m_vectex_id = vectex_id;
 		m_weight = weight;
 	}
 	
-	public String toString() { return "" + m_vectex_id + " [" + m_choice_id + "] " + m_weight + " " + m_obj; }
+	public String toString() { return "" + m_vectex_id + " [" + m_group_id + "] " + m_weight + " " + m_obj; }
 	
 }
 
@@ -54,8 +54,8 @@ class Subtree implements java.lang.Comparable<Subtree>
 	double m_total_weight; // weight of the subtree including weight of vertexes, directed edges and incoming edge
 	int m_num_vertexes;
 	int m_root_vectrex_id;
-	int m_root_choice_id;
-	boolean[] m_covered_choices;
+	int m_root_group_id;
+	boolean[] m_covered_groups;
 	Vector<Subtree> m_subtrees = new Vector<Subtree>();
 	
 	public double getBalancedWeight() { return m_total_weight + m_num_vertexes * 10.0f; }
@@ -66,9 +66,9 @@ class Subtree implements java.lang.Comparable<Subtree>
 		m_total_weight = v.m_weight;
 		m_num_vertexes = 1;
 		m_root_vectrex_id = vertex_id;
-		m_root_choice_id = v.m_choice_id;
-		m_covered_choices = new boolean[g.getNumChoices()];
-		m_covered_choices[v.m_choice_id] = true;
+		m_root_group_id = v.m_group_id;
+		m_covered_groups = new boolean[g.getNumGroups()];
+		m_covered_groups[v.m_group_id] = true;
 		checkConsistency();
 	}
 	Subtree(Subtree s)
@@ -76,8 +76,8 @@ class Subtree implements java.lang.Comparable<Subtree>
 		m_total_weight = s.m_total_weight;
 		m_num_vertexes = s.m_num_vertexes;
 		m_root_vectrex_id = s.m_root_vectrex_id;
-		m_root_choice_id = s.m_root_choice_id;
-		m_covered_choices = s.m_covered_choices.clone();
+		m_root_group_id = s.m_root_group_id;
+		m_covered_groups = s.m_covered_groups.clone();
 		for(Subtree s1 : s.m_subtrees)
 		{
 			m_subtrees.addElement(new Subtree(s1));
@@ -102,6 +102,38 @@ class Subtree implements java.lang.Comparable<Subtree>
 		m_num_vertexes = num_vertexes;
 		return m_total_weight;
 	}
+	void updateCoveredGroups(boolean covered_parent[])
+	{
+		for(Subtree s : m_subtrees)
+		{
+			s.updateCoveredGroups(m_covered_groups);
+		}
+		if (covered_parent!=null)
+		{
+			for(int i=0;i<m_covered_groups.length;++i)
+			{
+				if (m_covered_groups[i]) covered_parent[i]=true;
+			}
+		}
+	}
+	
+	void fillVertexChoices(ChoiceGraph cg, int vertex_choices[])
+	{
+		for(Subtree s : m_subtrees)
+		{
+			s.fillVertexChoices(cg, vertex_choices);
+		}
+		vertex_choices[m_root_group_id] = cg.getVertexChoiceIndexInGroup(m_root_vectrex_id);
+	}
+	
+	int[] getVertexChoices(ChoiceGraph cg)
+	{
+		int choices[] = new int[cg.getNumGroups()];
+		fillVertexChoices(cg, choices);
+		return choices;
+	}
+	
+	void updateCoveredGroups() { updateCoveredGroups(null); }
 	
 	public int compareTo(Subtree o)
 	{
@@ -112,43 +144,43 @@ class Subtree implements java.lang.Comparable<Subtree>
 	
 	void checkConsistency()
 	{
-		for(int i=0;i<m_covered_choices.length;++i)
+		for(int i=0;i<m_covered_groups.length;++i)
 		{
-			if (m_covered_choices[i])
+			if (m_covered_groups[i])
 			{
-				Subtree s = findSubtreeByChoiceId(i);
-				if (s==null) throw new java.lang.IndexOutOfBoundsException("no subtree with covered choice");
-				if (numVertexesWithChoice(i)!=1)
+				Subtree s = findSubtreeByGroupId(i);
+				if (s==null) throw new java.lang.IndexOutOfBoundsException("no subtree with covered group");
+				if (numVertexesWithGroup(i)!=1)
 				{
-					throw new java.lang.IndexOutOfBoundsException("num choices != 1"); 
+					throw new java.lang.IndexOutOfBoundsException("num groups != 1"); 
 				}
 			}
 			else
 			{
-				Subtree s = findSubtreeByChoiceId(i);
-				if (s!=null) throw new java.lang.IndexOutOfBoundsException("has Subtree with uncovered choice");
-				if (numVertexesWithChoice(i)!=0) throw new java.lang.IndexOutOfBoundsException("num choices != 0"); 
+				Subtree s = findSubtreeByGroupId(i);
+				if (s!=null) throw new java.lang.IndexOutOfBoundsException("has Subtree with uncovered group");
+				if (numVertexesWithGroup(i)!=0) throw new java.lang.IndexOutOfBoundsException("num groups != 0"); 
 			}		
 		}
 	}
 	
-	int numVertexesWithChoice(int choice_id)
+	int numVertexesWithGroup(int group_id)
 	{
-		int n = m_root_choice_id==choice_id ? 1 : 0;
+		int n = m_root_group_id==group_id ? 1 : 0;
 		for(Subtree s : m_subtrees)
 		{
-			n+=s.numVertexesWithChoice(choice_id);
+			n+=s.numVertexesWithGroup(group_id);
 		}
 		return n;
 	}
 	
-	Subtree findSubtreeByChoiceId(int choice_id)
+	Subtree findSubtreeByGroupId(int group_id)
 	{
-		if (!m_covered_choices[choice_id]) return null;
-		if (m_root_choice_id==choice_id) return this;
+		if (!m_covered_groups[group_id]) return null;
+		if (m_root_group_id==group_id) return this;
 		for(Subtree s : m_subtrees)
 		{
-			Subtree r = s.findSubtreeByChoiceId(choice_id);
+			Subtree r = s.findSubtreeByGroupId(group_id);
 			if (r!=null) return r;
 		}
 		return null;
@@ -163,10 +195,10 @@ class Subtree implements java.lang.Comparable<Subtree>
 			{
 				m_total_weight -= s.m_total_weight;
 				m_num_vertexes -= s.m_num_vertexes;
-				int nc = m_covered_choices.length;
+				int nc = m_covered_groups.length;
 				for(int i=0;i<nc;++i)
 				{
-					if (s.m_covered_choices[i]) m_covered_choices[i]=false;
+					if (s.m_covered_groups[i]) m_covered_groups[i]=false;
 				}
 				if (sub==s)
 				{
@@ -180,7 +212,7 @@ class Subtree implements java.lang.Comparable<Subtree>
 	
 	double getRemovalWeightDirect(Subtree other)
 	{
-		if (other.m_covered_choices[m_root_choice_id])
+		if (other.m_covered_groups[m_root_group_id])
 		{
 			return m_total_weight;
 		}
@@ -196,7 +228,7 @@ class Subtree implements java.lang.Comparable<Subtree>
 	
 	double getRemovalWeight(Subtree other)
 	{
-		if (other.m_covered_choices[m_root_choice_id])
+		if (other.m_covered_groups[m_root_group_id])
 		{
 			return Math.min(m_total_weight, other.getRemovalWeightDirect(this));
 		}
@@ -216,31 +248,15 @@ class Subtree implements java.lang.Comparable<Subtree>
 		DirectedEdge de = g.getEdge(m_root_vectrex_id, other.m_root_vectrex_id );
 		if (de == null) return false;
 		return true;
-		
-//		double remove_w = getRemovalWeight(other);
-//		
-//		if (remove_w < other.m_total_weight + de.m_weight) return true;
-//		
-//		// some additional check here ...
-//		int nc = m_covered_choices.length;
-//		boolean is_subcase=true;
-//		for(int i=0;i<nc;++i)
-//		{
-//			if (!m_covered_choices[i] && other.m_covered_choices[i]) is_subcase = false;
-//		}
-//		
-//		if (is_subcase) return false;
-//		
-//		return true;
 	}
 	public boolean isBetterThan(Subtree other)
 	{
-		int nc = m_covered_choices.length;
+		int nc = m_covered_groups.length;
 		if (m_total_weight <= other.m_total_weight) return false;
 		if (m_num_vertexes < other.m_num_vertexes) return false;
 		for(int i=0;i<nc;++i)
 		{
-			if (!m_covered_choices[i] && other.m_covered_choices[i]) return false;
+			if (!m_covered_groups[i] && other.m_covered_groups[i]) return false;
 		}
 		return true;
 	}
@@ -281,7 +297,7 @@ class Subtree implements java.lang.Comparable<Subtree>
 		Vector<Subtree> all_my = getAllSubtreesSorted();
 		Vector<Subtree> all_other = other.getAllSubtreesSorted();
 
-		// remove overlapping choices starting from low-weight subtrees
+		// remove overlapping groups starting from low-weight subtrees
 		int my_remove = 0;
 		int other_remove = 0;
 		
@@ -291,7 +307,7 @@ class Subtree implements java.lang.Comparable<Subtree>
 			Subtree other_s = all_other.get(other_remove);
 			if (my_s.m_total_weight <= other_s.m_total_weight)
 			{
-				if (other.m_covered_choices[my_s.m_root_choice_id])
+				if (other.m_covered_groups[my_s.m_root_group_id])
 				{
 					if (my_s==this) return false;
 					removeSubtree(my_s);
@@ -301,7 +317,7 @@ class Subtree implements java.lang.Comparable<Subtree>
 			}
 			else
 			{
-				if (m_covered_choices[other_s.m_root_choice_id])
+				if (m_covered_groups[other_s.m_root_group_id])
 				{
 					if (other_s==other) return false;
 					other.removeSubtree(other_s);
@@ -313,10 +329,10 @@ class Subtree implements java.lang.Comparable<Subtree>
 		m_subtrees.addElement(other);
 		m_total_weight += other.m_total_weight;
 		m_num_vertexes += other.m_num_vertexes;
-		int nc = m_covered_choices.length;
+		int nc = m_covered_groups.length;
 		for(int i=0;i<nc;++i)
 		{
-			if (other.m_covered_choices[i]) m_covered_choices[i] = true;
+			if (other.m_covered_groups[i]) m_covered_groups[i] = true;
 		}
 		checkConsistency();
 
@@ -384,20 +400,20 @@ class Subtree implements java.lang.Comparable<Subtree>
 public class ChoiceGraph
 {
 	private int m_max_vertexes;
-	private int m_max_choices;
+	private int m_max_groups;
 	
-	private int m_used_choices;
-	private int m_used_vertexes;
+	private int m_num_groups;
+	private int m_num_vertexes;
 	
 	private Vector<Vector<DirectedEdge>> m_edges;
-	private Vector<Vector<Integer>> m_choice_vertices;
+	private Vector<Vector<Integer>> m_group_vertices;
 	private Vector<Vertex> m_vertexes;
-	private int[] m_vertex2choice;
+	private int[] m_vertex2group;
 	private HashMap<Object, Vertex> m_object2vertex_map = new HashMap<Object, Vertex>();
 	
-	public ChoiceGraph(int max_choices, int max_vertexes)
+	public ChoiceGraph(int max_groups, int max_vertexes)
 	{
-		m_max_choices = max_choices;
+		m_max_groups = max_groups;
 		m_max_vertexes = max_vertexes;
 		m_edges = new Vector<Vector<DirectedEdge>>(max_vertexes);
 		m_edges.setSize(max_vertexes);
@@ -406,63 +422,83 @@ public class ChoiceGraph
 		{
 			Vector<DirectedEdge> vve = new Vector<DirectedEdge>(max_vertexes);
 			vve.setSize(max_vertexes);
-			m_edges.set(i,  vve );	
+			m_edges.set(i,  vve );
 		}
-		m_choice_vertices = new Vector<Vector<Integer>>(m_max_choices);
-		m_choice_vertices.setSize(m_max_choices);
-		for( int i=0;i<m_choice_vertices.size(); ++i)
+		m_group_vertices = new Vector<Vector<Integer>>(m_max_groups);
+		m_group_vertices.setSize(m_max_groups);
+		for( int i=0;i<m_group_vertices.size(); ++i)
 		{
-			m_choice_vertices.set(i,  new Vector<Integer>() );	
+			m_group_vertices.set(i,  new Vector<Integer>() );	
 		}
 		
 		m_vertexes = new Vector<Vertex>(m_max_vertexes);
-		m_vertex2choice = new int[m_max_vertexes];
-		m_used_choices = 0;
-		m_used_vertexes = 0;
+		m_vertex2group = new int[m_max_vertexes];
+		m_num_groups = 0;
+		m_num_vertexes = 0;
 	}
 	public Vertex vertexById(int vert_id) { return m_vertexes.get(vert_id); }
 	public double getVertexWeight(int vert_id) { return m_vertexes.get(vert_id).m_weight; }
-	public int getChoiceByVertex(int vert_id) { return m_vertex2choice[vert_id]; }
-	public int getVertexIndexInChoice(int vert_id)
+	public int getVertexGroup(int vert_id) { return m_vertex2group[vert_id]; }
+	public int getVertexChoiceIndexInGroup(int vert_id)
 	{
-		int ci = getChoiceByVertex(vert_id);
-		Vector<Integer> choice_verts = m_choice_vertices.get(ci);
-		for(int i=0; i<choice_verts.size(); ++i )
-		{
-			if (vert_id == choice_verts.get(i)) return i;
-		}
-		return -1;
+		// search when we know that these vertexes go sequentially
+		return vert_id - getVertexIdByGroupAndChoice( getVertexGroup(vert_id), 0);
+//		int ci = getVertexGroup(vert_id);
+//		Vector<Integer> group_verts = m_group_vertices.get(ci);
+//		for(int i=0; i<group_verts.size(); ++i )
+//		{
+//			if (vert_id == group_verts.get(i)) return i;
+//		}
+//		return -1;
 	}
-	public int getNumVertexes() { return m_used_vertexes; }
-	public int getNumChoices() { return m_used_choices; }
-	public DirectedEdge getEdge(int v1, int v2) { return m_edges.get(v1).get(v2);}
-	
-	public void addVertex(Object vert_o, double weight, boolean new_choice)
+	public int getVertexIdByGroupAndChoice(int group_id, int choice_id)
 	{
-		if (new_choice && m_used_choices >= m_max_choices) throw new java.lang.IndexOutOfBoundsException("No more choices");
-		if (m_used_vertexes >= m_max_vertexes) throw new java.lang.IndexOutOfBoundsException("No more vertexes");
-		if (!new_choice && m_used_choices==0) throw new java.lang.IndexOutOfBoundsException("No choice is allocated yet. Use new_choice = true!!!");
+		return m_group_vertices.get(group_id).get(choice_id);
+	}
+	public int getNumVerticesInGroup(int group_id)
+	{
+		return m_group_vertices.get(group_id).size();
+	}
+	private Vector<Integer> getGroupVertexes(int group_id)
+	{
+		return m_group_vertices.get(group_id);
+	}
+	
+	public int getNumVertexes() { return m_num_vertexes; }
+	public int getNumGroups() { return m_num_groups; }
+
+	public DirectedEdge getEdge(int v1, int v2) { return m_edges.get(v1).get(v2);}
+	public double getEdgeWeight(int v1, int v2)
+	{
+		DirectedEdge e = getEdge(v1,v2);
+		return e==null ? 0.0 : e.m_weight;
+	}
+	
+	public void addVertex(Object vert_o, double weight, boolean new_group)
+	{
+		if (new_group && m_num_groups >= m_max_groups) throw new java.lang.IndexOutOfBoundsException("No more groups");
+		if (m_num_vertexes >= m_max_vertexes) throw new java.lang.IndexOutOfBoundsException("No more vertexes");
+		if (!new_group && m_num_groups==0) throw new java.lang.IndexOutOfBoundsException("No group is allocated yet. Use new_group = true!!!");
 		
-		int choice_id = new_choice? m_used_choices++ : m_used_choices-1;
-		int vert_id = m_used_vertexes++;
+		int group_id = new_group? m_num_groups++ : m_num_groups-1;
+		int vert_id = m_num_vertexes++;
 		
-		Vertex v = new Vertex(vert_o, choice_id, vert_id, weight);
+		Vertex v = new Vertex(vert_o, group_id, vert_id, weight);
 		m_vertexes.addElement(v);
 		
-		m_choice_vertices.get(choice_id).addElement(vert_id);		
-		m_vertex2choice[vert_id] = choice_id;
+		m_group_vertices.get(group_id).addElement(vert_id);		
+		m_vertex2group[vert_id] = group_id;
 		m_object2vertex_map.put(vert_o, v);
 	}
 	
-	public void addEdge(Object edge_o, double weight, Object vert_o1, Object vert_o2)
+	public void addEdge(Object edge_o, double weight, int v_id1, int v_id2)
 	{
-		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
-		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
-		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
-		
-		java.text.DecimalFormatSymbols dfs = new java.text.DecimalFormatSymbols(new java.util.Locale("en"));
-		java.text.DecimalFormat df = new java.text.DecimalFormat("#.###", dfs);
+		//java.text.DecimalFormatSymbols dfs = new java.text.DecimalFormatSymbols(new java.util.Locale("en"));
+		//java.text.DecimalFormat df = new java.text.DecimalFormat("#.###", dfs);
 		//System.out.println("(" + v_id1 + ") edge node [right] {" + df.format(weight) + "} ("+ v_id2 +")");
+		assert(v_id1!=v_id2);
+		
+		assert( getVertexGroup(v_id1)!=getVertexGroup(v_id2) );
 		
 		DirectedEdge edge_old = m_edges.get(v_id1).get(v_id2);
 		if (edge_old!=null && edge_old.m_weight >= weight) return;
@@ -471,9 +507,23 @@ public class ChoiceGraph
 		m_edges.get(v_id1).set(v_id2, e);
 	}
 	
+	public void addEdge(Object edge_o, double weight, Object vert_o1, Object vert_o2)
+	{
+		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
+		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
+		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
+		
+		addEdge(edge_o, weight, v_id1, v_id2);
+	}
+	
+	public boolean hasEdge(int v_id1, int v_id2)
+	{
+		return m_edges.get(v_id1).get(v_id2)!=null;
+	}
+	
 	public boolean addToVectorIfGood(Vector<Subtree> v, Subtree s)
 	{
-		final int hypo_limit = 5;
+		final int hypo_limit = 3;
 		
 		double min_weight = Double.MAX_VALUE;
 		int min_index = 0;
@@ -523,24 +573,24 @@ public class ChoiceGraph
 	AdjacencyList getMaxBranchingByChoices(int choice_indexes[])
 	{
 		Node root = new Node(-1);
-		Node[] nodes = new Node[m_used_choices];
+		Node[] nodes = new Node[m_num_groups];
 	
 		AdjacencyList myEdges = new AdjacencyList();
 		
 		for(int i=0;i<choice_indexes.length;++i)
 		{
-			int v_i = m_choice_vertices.get(i).get(choice_indexes[i]);
+			int v_i = getVertexIdByGroupAndChoice(i,choice_indexes[i]);
 			nodes[i] = new Node(v_i);
 			myEdges.addEdge(root, nodes[i], getVertexWeight(v_i) );
 		}
 		
-		for(int i=0;i<m_used_choices;++i) for(int j=0;j<m_used_choices;++j)
+		for(int i=0;i<m_num_groups;++i) for(int j=0;j<m_num_groups;++j)
 		{
-			int v_i = m_choice_vertices.get(i).get(choice_indexes[i]);
-			int v_j = m_choice_vertices.get(j).get(choice_indexes[j]);
+			int v_i = getVertexIdByGroupAndChoice(i, choice_indexes[i]);
+			int v_j = getVertexIdByGroupAndChoice(j, choice_indexes[j]);
 			
 			DirectedEdge e = m_edges.get(v_i).get(v_j);
-			if (e!=null)
+			if ( e!=null)
 			{
 				//System.out.println("" + v_i + "->" + v_j + " w=" + e.m_weight + " vw=" + getVertexWeight(v_j));
 				myEdges.addEdge(nodes[i], nodes[j], 1000 + e.m_weight + getVertexWeight(v_j) );
@@ -550,91 +600,115 @@ public class ChoiceGraph
 		Edmonds myed = new Edmonds_Andre();	
 		AdjacencyList rBranch;
 	    rBranch = myed.getMaxBranching(root, myEdges);
+	    //dumpBranching(rBranch);
 	    return rBranch;
+	}
+	
+	void dumpBranching(AdjacencyList branching)
+	{
+		System.out.println("dumpBranching");
+	    for( com.altmann.Edge e : branching.getAllEdges())
+	    {
+	    	System.out.println(e);
+	    }
+	}
+	
+	boolean isAcceptable(AdjacencyList branching)
+	{
+		int num_roots = 0;
+	    for( com.altmann.Edge e : branching.getAllEdges())
+	    {
+	    	if (e.getSource().name==-1) ++num_roots;
+	    }
+	    return num_roots==1;
 	}
 	
 	Subtree createSubTreeFromBranching(AdjacencyList branching)
 	{
 		Subtree tree_root = null;
-	    Subtree tree_nodes[] = new Subtree[m_used_choices];
+	    Subtree tree_nodes[] = new Subtree[m_num_groups];
 
 		
 	    for( com.altmann.Edge e : branching.getAllEdges())
 	    {
 	    	int vi = e.getDest().name;
-	    	tree_nodes[m_vertex2choice[vi]] = new Subtree(this, vi);
+	    	tree_nodes[m_vertex2group[vi]] = new Subtree(this, vi);
 	    }
 	    
 	    for( com.altmann.Edge e : branching.getAllEdges())
 	    {
-	    	System.out.println(e);
+	    	//System.out.println(e);
 	    	if (e.getSource().name==-1)
 	    	{
-	    		tree_root = tree_nodes[e.getDest().name];
+	    		tree_root = tree_nodes[m_vertex2group[e.getDest().name]];
 	    	}
 	    	else
 	    	{
 	    		int v1 = e.getSource().name;
 	    		int v2 = e.getDest().name;
-	    		tree_nodes[m_vertex2choice[v1]].addSubtree(this, tree_nodes[m_vertex2choice[v2]]);
+	    		tree_nodes[m_vertex2group[v1]].updateCoveredGroups();
+	    		tree_nodes[m_vertex2group[v2]].updateCoveredGroups();
+	    		tree_nodes[m_vertex2group[v1]].addSubtree(this, tree_nodes[m_vertex2group[v2]]);
 	    	}
 	    }
 	    
 	    tree_root.updateWeight(this, 0.0);
 	    
 	    //System.out.println("Total = " + max_total);
-	    tree_root.print(this);
-	    System.out.println("Total weight = " + tree_root.m_total_weight );
+	    //tree_root.print(this);
+	    //System.out.println("Total weight = " + tree_root.m_total_weight );
 		return tree_root;
 	}
 	
-	int[] calculateChoiceParentsFromAdjacencyList(AdjacencyList branching)
+	int[] calculateGroupParentsFromAdjacencyList(AdjacencyList branching)
 	{
-		int choice_parents[] = new int[m_used_choices];
+		int group_parents[] = new int[m_num_groups];
 		
 	    for( com.altmann.Edge e : branching.getAllEdges())
 	    {
 	    	int v1 = e.getSource().name;
 	    	int v2 = e.getDest().name;
 	    	
-	    	int c1 = v1==-1?-1:m_vertex2choice[v1];
-	    	int c2 = m_vertex2choice[v2];
+	    	//System.out.println("" + v1 + "->" + v2);
 	    	
-	    	choice_parents[c2] = c1;
+	    	int c1 = v1==-1?-1:m_vertex2group[v1];
+	    	int c2 = m_vertex2group[v2];
+	    	
+	    	group_parents[c2] = c1;
 	    }
-	    return choice_parents;
+	    return group_parents;
 	}
-	int getRootChoiceFromParents(int[] choice_parents)
+	int getRootGroupFromParents(int[] group_parents)
 	{
-		for(int i=0;i<choice_parents.length;++i)
+		for(int i=0;i<group_parents.length;++i)
 		{
-			if (choice_parents[i]==-1) return i;
+			if (group_parents[i]==-1) return i;
 		}
 		return -1;
 	}
-	int[] calculateChoiceRanks(int choice_parents[])
+	int[] calculateGroupRanks(int group_parents[])
 	{
-		int choice_rank[] = new int[m_used_choices];
-		for(int i=0;i<m_used_choices;++i)
+		int group_rank[] = new int[m_num_groups];
+		for(int i=0;i<m_num_groups;++i)
 		{
-			for(int j=0;j<m_used_choices;++j)
+			for(int j=0;j<m_num_groups;++j)
 			{
-				if (choice_parents[j]!=-1)
+				if (group_parents[j]!=-1)
 				{
-					if (choice_rank[choice_parents[j]] < choice_rank[j]+1)
-						choice_rank[choice_parents[j]]=choice_rank[j]+1;
+					if (group_rank[group_parents[j]] < group_rank[j]+1)
+						group_rank[group_parents[j]]=group_rank[j]+1;
 				}
 			}		
 		}
-		return choice_rank;
+		return group_rank;
 	}
 	public void printSubtreeFromRootVertex(int root_vi, int best_connection[][], double subtree_weight[])
 	{
-		// best_connection[vertex_id][child_choice] -> (child_vertex || -1)
+		// best_connection[vertex_id][child_group] -> (child_vertex || -1)
 		// subtree_weight[vertex_id]->weight
 		
 		System.out.println( "Subtree (" + root_vi +  ") w = " + subtree_weight[root_vi] );
-		for(int i=0;i<m_used_choices;++i)
+		for(int i=0;i<m_num_groups;++i)
 		{
 			if (best_connection[root_vi][i]!=-1)
 			{
@@ -644,61 +718,85 @@ public class ChoiceGraph
 		}
 	}
 	
-	public void OptimizeChoiceSelection(AdjacencyList branching)
+	public void fillVertexChoice(int root_vi, int best_connection[][], int vertex_choice[])
+	{
+		int gr = getVertexGroup(root_vi);
+		vertex_choice[ gr ] = getVertexChoiceIndexInGroup( root_vi );
+		for(int i=0;i<m_num_groups;++i)
+		{
+			if (best_connection[root_vi][i]!=-1)
+			{
+				fillVertexChoice(best_connection[root_vi][i], best_connection, vertex_choice );
+			}
+		}
+	}
+	
+	public double getBranchingWeight(AdjacencyList branching)
+	{
+		double total = 0;
+	    for( com.altmann.Edge e : branching.getAllEdges())
+	    {
+	    	//System.out.println(e);
+	    	total += e.getWeight();
+	    }
+	    return total;
+	}
+	
+	public int[] optimizeVertexSelection(AdjacencyList branching)
 	{
 		// dynamic programming
-		// create max_weight for each choice assignment
-		double subtree_weight[] = new double[m_used_vertexes];
+		// alloc max_weight for each possible subtree root
+		double subtree_weight[] = new double[m_num_vertexes];
 
-		// connection from a vertex to the best subtree (given by child vertex index by choice)
-		int best_connection[][] = new int[m_used_vertexes][m_used_choices];
+		// connection from a vertex to the best subtree (subtree group_id->connected vertex_id)
+		int best_connection[][] = new int[m_num_vertexes][m_num_groups];
 		
-		int choice_parents[] = calculateChoiceParentsFromAdjacencyList(branching);
-		int choice_rank[] = calculateChoiceRanks(choice_parents);
-		int root_choice = getRootChoiceFromParents(choice_parents);
-		System.out.print("Root = " + root_choice);
-		for(int i=0;i<m_used_choices;++i) System.out.print(" " + choice_parents[i]);
-		System.out.println();
-		for(int i=0;i<m_used_choices;++i) System.out.print(" " + choice_rank[i]);
-		System.out.println();
+		int group_parents[] = calculateGroupParentsFromAdjacencyList(branching);
+		int group_rank[] = calculateGroupRanks(group_parents);
+		int root_group = getRootGroupFromParents(group_parents);
+//		System.out.println("Root = " + root_group);
+//		for(int i=0;i<m_num_groups;++i) System.out.print(" " + group_parents[i]);
+//		System.out.println();
+//		for(int i=0;i<m_num_groups;++i) System.out.print(" " + group_rank[i]);
+//		System.out.println();
 		
-		for(int rank=0; rank<m_used_choices; ++rank)
+		for(int rank=0; rank<m_num_groups; ++rank)
 		{
-			for(int choice=0;choice<m_used_choices;++choice)
+			for(int group=0;group<m_num_groups;++group)
 			{
-				if (choice_rank[choice]==rank)
+				if (group_rank[group]==rank)
 				{
-					// for all choices from the lowest rank to highest recalculate possible outcome
-					// recalculate choice selection based on weights
-					Vector<Integer> choice_verts = m_choice_vertices.get(choice);
-					int num_ci = choice_verts.size();
+					// for all groups from the lowest rank to highest recalculate possible outcome
+					// recalculate group selection based on weights
+					Vector<Integer> group_verts = getGroupVertexes(group);
+					int num_ci = group_verts.size();
 					for(int ci=0; ci < num_ci; ++ci) // for all choice vertexes
 					{
-						int vi = choice_verts.get(ci);
+						int vi = group_verts.get(ci);
 						// set initial weight to vertex weight only
 						subtree_weight[vi] = getVertexWeight(vi);
 						
-						// go through all choice children and add best subtrees to the weight 
-						for(int child_choice=0; child_choice<m_used_choices; ++child_choice)
+						// go through all possible children groups and add best subtrees to the weight 
+						for(int child_group=0; child_group<m_num_groups; ++child_group)
 						{
 							// clean connection array
-							best_connection[vi][child_choice] = -1;
+							best_connection[vi][child_group] = -1;
 							// if not connected in the given tree continue
-							if (choice_parents[child_choice]!=choice) continue;
+							if (group_parents[child_group]!=group) continue;
 							
 							double max_child_weight = 0;
 								
-							System.out.println("Optimize " + vi + "(" + choice + ")" + " -> " + child_choice);
-							int num_cci = m_choice_vertices.get(child_choice).size();
+							//System.out.println("Optimize " + vi + "(" + group + ")" + " -> " + child_group);
+							int num_cci = getNumVerticesInGroup(child_group);
 							for(int cci=0; cci < num_cci; ++cci)
 							{
-								// get possible child choice vertex 
-								int cvi = m_choice_vertices.get(child_choice).get(cci);
+								// get possible child vertex 
+								int cvi = getVertexIdByGroupAndChoice(child_group, cci);
 								
 								DirectedEdge e = m_edges.get(vi).get(cvi);
 								if (e==null)
 								{
-									System.out.println("Vertex " + vi + " and " + cvi + " are not connected");
+									//System.out.println("Vertex " + vi + " and " + cvi + " are not connected");
 									continue;
 								}
 								
@@ -707,7 +805,7 @@ public class ChoiceGraph
 								if (weight > max_child_weight)
 								{
 									max_child_weight = weight;
-									best_connection[vi][child_choice] = cvi;
+									best_connection[vi][child_group] = cvi;
 								}
 							}
 							
@@ -716,81 +814,82 @@ public class ChoiceGraph
 						}
 					}
 					
-					if (choice == root_choice)
+					if (group == root_group)
 					{
 						int best_ci = 0;
-						double best_weight = subtree_weight[choice_verts.get(0)];
+						double best_weight = subtree_weight[group_verts.get(0)];
 						
-						System.out.println("best_weight = " + best_weight);
+//						System.out.println("best_weight = " + best_weight);
+//						
+//						for(int vi = 0; vi<m_num_vertexes; ++vi)
+//						{
+//							System.out.print(subtree_weight[vi] + " ");
+//						}
+//						System.out.println();
+//						System.out.println("Possible connection matrix:");
+//						
+//						for(int vi = 0; vi<m_num_vertexes; ++vi)
+//						{
+//							for(int chi = 0; chi<m_num_groups; ++chi)
+//							{
+//								System.out.print(best_connection[vi][chi] + " ");
+//							}
+//							System.out.println();
+//						}
 						
-						for(int vi = 0; vi<m_used_vertexes; ++vi)
+						for(int ci=1; ci < num_ci; ++ci) // for all other vertexes in the group
 						{
-							System.out.print(subtree_weight[vi] + " ");
-						}
-						System.out.println();
-						System.out.println("Choice matrix:");
-						
-						for(int vi = 0; vi<m_used_vertexes; ++vi)
-						{
-							for(int chi = 0; chi<m_used_choices; ++chi)
+							if (subtree_weight[group_verts.get(ci)] > best_weight)
 							{
-								System.out.print(best_connection[vi][chi] + " ");
-							}
-							System.out.println();
-						}
-						
-						for(int ci=1; ci < num_ci; ++ci) // for all other choice vertexes
-						{
-							if (subtree_weight[choice_verts.get(ci)] > best_weight)
-							{
-								best_weight = subtree_weight[choice_verts.get(ci)];
+								best_weight = subtree_weight[group_verts.get(ci)];
 								best_ci = ci;
 							}
 						}
 						
-						int best_vi = m_choice_vertices.get(choice).get(best_ci);
-						printSubtreeFromRootVertex(best_vi, best_connection, subtree_weight);
+						int best_vi = getVertexIdByGroupAndChoice(group, best_ci);
+						//printSubtreeFromRootVertex(best_vi, best_connection, subtree_weight);
+						int vertex_choice[] = new int[m_num_groups];
+						fillVertexChoice(best_vi, best_connection, vertex_choice);
+						return vertex_choice;
 					}
 				}
 			}
 		}
+		return null;
 	}
 	
 	public Subtree ExhaustiveEdmondSearch()
 	{
-		int choice_indexes[] = new int[m_used_choices];
+		int choice_indexes[] = new int[m_num_groups];
 		for(int i=0;i<choice_indexes.length;++i) choice_indexes[i] = 0;
 			
-		// next choice
 		boolean finished = false;
 		
 		double max_total = 0;
 		AdjacencyList maxBranch=null;
-		int max_indexes[] = new int[m_used_choices];
+		int max_indexes[] = new int[m_num_groups];
 		
 		for(;;)
 		{
 			AdjacencyList rBranch = getMaxBranchingByChoices(choice_indexes);
-		    
-		    double total = 0;
-		    for( com.altmann.Edge e : rBranch.getAllEdges())
-		    {
-		    	//System.out.println(e);
-		    	total += e.getWeight();
-		    }
-		    //System.out.println("Total = " + total);
-		    
-		    if (total > max_total)
-		    {
-		    	max_total = total;
-		    	maxBranch = rBranch;
-		    	System.arraycopy( choice_indexes, 0, max_indexes, 0, choice_indexes.length );
-		    }
+			
+			if (isAcceptable(rBranch))
+			{
+			    double total = getBranchingWeight(rBranch);
+			    //System.out.println("Total = " + total);
+			    
+			    if (total > max_total)
+			    {
+			    	max_total = total;
+			    	maxBranch = rBranch;
+			    	System.arraycopy( choice_indexes, 0, max_indexes, 0, choice_indexes.length );
+			    }
+			}
 
 		    // update choices to check the next case
 			for(int i=0;i<choice_indexes.length;++i)
 			{
-				if ( choice_indexes[i]+1 == m_choice_vertices.get(i).size() )
+				if ( choice_indexes[i]+1 == getNumVerticesInGroup(i) )
 				{
 					choice_indexes[i] = 0;
 					if (i==choice_indexes.length-1)
@@ -814,24 +913,81 @@ public class ChoiceGraph
 
 		// calculate maximum tree from obtained maximum branching
 	    
-	    System.out.println("-------------- not need just test ");
-	    OptimizeChoiceSelection(maxBranch);
-	    
-
+		if (maxBranch==null) return null;
+		
 	    return createSubTreeFromBranching(maxBranch);
 	}
 	
+	public Subtree randomizedEdmondSearch(int num_iter, boolean use_optimize)
+	{
+		int choice_indexes[] = new int[m_num_groups];
+		java.util.Random random = new java.util.Random();
+					
+		double max_total = 0;
+		AdjacencyList maxBranch=null;
+		int max_indexes[] = new int[m_num_groups];
+		
+		for(int num=0;num<num_iter;++num)
+		{
+			for(int i=0;i<m_num_groups;++i)
+			{
+				choice_indexes[i] = random.nextInt(getNumVerticesInGroup(i));
+			}
+			
+			AdjacencyList rBranch = getMaxBranchingByChoices(choice_indexes);
+			
+			if (isAcceptable(rBranch))
+			{
+			    double total = getBranchingWeight(rBranch);
+			    //System.out.println("Accepted total = " + total);
+
+			    if (use_optimize)
+			    {
+				    int new_choices[] = optimizeVertexSelection(rBranch);
+				    AdjacencyList rBranch1 = getMaxBranchingByChoices(new_choices);
+				    if (isAcceptable(rBranch1))
+				    {
+				    	double new_weight = getBranchingWeight(rBranch1);
+				    	if (new_weight>total)
+				    	{
+				    		//System.out.println("Improve " + total + "->" + new_weight);
+				    		rBranch = rBranch1;
+				    		total = new_weight;
+				    	}
+				    }
+			    }
+			    
+			    if (total > max_total)
+			    {
+			    	max_total = total;
+			    	maxBranch = rBranch;
+			    	System.arraycopy( choice_indexes, 0, max_indexes, 0, choice_indexes.length );
+			    }
+			}
+		}
+	    
+		if (maxBranch==null)
+		{
+			System.out.println("----------- branching was not found ");
+			return null;
+		}
+	    //System.out.println("-------------- not need just test ");
+	    
+	    return createSubTreeFromBranching(maxBranch);
+	}
+
+	
 	public Subtree growingTreesSearch()
 	{
-		if (m_used_vertexes==0) return null;
+		if (m_num_vertexes==0) return null;
 		// create trees starting from each vertex
-		Vector< Vector<Subtree> > trees = new Vector< Vector<Subtree> >(m_used_vertexes);	
-		for(int i=0;i<m_used_vertexes;++i) trees.addElement( new Vector<Subtree>() );
+		Vector< Vector<Subtree> > trees = new Vector< Vector<Subtree> >(m_num_vertexes);	
+		for(int i=0;i<m_num_vertexes;++i) trees.addElement( new Vector<Subtree>() );
 
 		Subtree max_weighted_tree = new Subtree(this, 0);
 		
 		// fill single-vertex subtrees
-		for(int i=0;i<m_used_vertexes;++i)
+		for(int i=0;i<m_num_vertexes;++i)
 		{
 			Subtree ns = new Subtree(this, i);
 			trees.get(i).addElement(ns);
@@ -846,13 +1002,13 @@ public class ChoiceGraph
 		do
 		{
 			num_changes = 0;
-			for(int c=0;c<m_used_vertexes;++c)
+			for(int c=0;c<m_num_vertexes;++c)
 			{
-				// process hypotheses. Note, than trees.get(c) can be extended with new hypotheses dinamically
+				// process hypotheses. Note, than trees.get(c) can be extended with new hypotheses dynamically
 				for(int i = 0; i < trees.get(c).size(); ++i)
 				{
 					Subtree sc = trees.get(c).get(i);
-					for(int j=0;j<m_used_vertexes;++j)
+					for(int j=0;j<m_num_vertexes;++j)
 					{
 						if (j==c) continue;
 						for( Subtree sj : trees.get(j) )
@@ -900,13 +1056,50 @@ public class ChoiceGraph
 		return max_weighted_tree;
 	}
 	
+	public void printComplexity()
+	{
+		System.out.println("Num groups = " + m_num_groups);
+		System.out.print("Complexity ");
+		double compl = 1;
+		for(int gi=0;gi<m_num_groups;++gi)
+		{
+			System.out.print( (gi>0?"*":"") + getNumVerticesInGroup(gi) );
+			compl *= getNumVerticesInGroup(gi);
+		}
+		System.out.println(" = " + compl);
+	}
 	public void print()
 	{
-		System.out.println(m_vertexes);
-		System.out.println(m_choice_vertices);
-		System.out.println(m_edges);
+		//System.out.println(m_vertexes);
+		System.out.println(m_group_vertices);
+		//System.out.println(m_edges);
 		System.out.println(m_object2vertex_map);
-		System.out.println(m_vertex2choice);
+		System.out.println(m_vertex2group);
+		
+		for(int i=0;i<m_num_vertexes;++i)
+		{
+			for(int j=0;j<m_num_vertexes;++j)
+			{
+				char c='?';
+				if (getVertexGroup(i)==getVertexGroup(j)) c='*';
+				else if ( !hasEdge(i,j) ) c='.';
+				else if (getEdgeWeight(i,j)>0.9) c='9';
+				else if (getEdgeWeight(i,j)>0.8) c='8';
+				else if (getEdgeWeight(i,j)>0.7) c='7';
+				else if (getEdgeWeight(i,j)>0.6) c='6';
+				else if (getEdgeWeight(i,j)>0.5) c='5';
+				else if (getEdgeWeight(i,j)>0.4) c='4';
+				else if (getEdgeWeight(i,j)>0.3) c='3';
+				else if (getEdgeWeight(i,j)>0.2) c='2';
+				else if (getEdgeWeight(i,j)>0.1) c='1';
+				else if (getEdgeWeight(i,j)>=0.0) c='0';
+				
+				System.out.print(c);
+				System.out.print(' ');
+			}
+			System.out.println();
+		}
+		printComplexity();
 	}
 	
 	
@@ -914,49 +1107,106 @@ public class ChoiceGraph
 	{
 		try
 		{
-			ChoiceGraph cg = new ChoiceGraph(8, 20);
-			cg.addVertex("v1_1", 1.0f, true);
-			cg.addVertex("v1_2", 0.8f, false);
-			cg.addVertex("v2_1", 0.6f, true);
-			cg.addVertex("v2_2", 0.9f, false);
-			cg.addVertex("v3_1", 1.0f, true);
-			cg.addVertex("v3_2", 0.5f, false);
-			cg.addVertex("v4_1", 0.2f, true);
-			cg.addVertex("v4_2", 0.3f, false);
-			cg.addVertex("v5_1", 0.6f, true);
-			cg.addVertex("v5_2", 0.9f, false);
+			final int num_verts = 30;
+			final int num_edges = num_verts * num_verts / 2; // edge coverage
+			final int avg_grouping = 3;	// average 3 vertex in group
+			final int max_grouping = 5;
+			ChoiceGraph cg = new ChoiceGraph(num_verts, num_verts);
 			
-			cg.addEdge("e_1_2_1", 1.0f, "v1_1", "v2_1");
-			cg.addEdge("e_1_3_1", 0.4f, "v1_1", "v3_1");
-			cg.addEdge("e_3_4_1", 1.0f, "v3_1", "v4_1");
-			cg.addEdge("e_3_5_1", 0.7f, "v3_1", "v5_1");
-			cg.addEdge("e_1_2_2", 1.0f, "v1_2", "v2_2");
-			cg.addEdge("e_1_3_2", 0.4f, "v1_2", "v3_2");
-			cg.addEdge("e_3_4_2", 1.0f, "v3_2", "v4_2");
-			cg.addEdge("e_3_5_2", 0.7f, "v3_2", "v5_2");
+			int group_id = -1;
+			int num_in_group = 0;
+			java.util.Random random = new java.util.Random();
 			
-			cg.addEdge("e_1_2_2", 1.0f, "v1_1", "v2_2");
-			cg.addEdge("e_1_3_2", 0.4f, "v1_2", "v3_1");
-			cg.addEdge("e_3_4_2", 1.0f, "v3_1", "v4_2");
-			cg.addEdge("e_3_5_2", 0.7f, "v3_2", "v5_1");
+			for(int i = 0; i<num_verts; ++i)
+			{
+				boolean new_group = num_in_group >= max_grouping-1 ? true : random.nextInt(avg_grouping)==0;
+				if (new_group || i==0)
+				{
+					++group_id;
+					num_in_group = 0;
+				}
+				else
+				{
+					++num_in_group;
+				}
+				cg.addVertex("v" + i + "(" + group_id + ")",
+						random.nextDouble(),
+						new_group || i==0);
+			}
 			
-			//cg.print();
-
-			long t0 = System.nanoTime();
-			Subtree st = cg.growingTreesSearch();
-			long t1 = System.nanoTime();
+			for(int j = 0; j<num_edges; ++j)
+			{
+				int v1 = random.nextInt(num_verts);
+				int v2 = random.nextInt(num_verts);
+				
+				while (cg.getVertexGroup(v1)==cg.getVertexGroup(v2) ||
+						cg.hasEdge(v1,v2) )
+				{
+					v1 = random.nextInt(num_verts);
+					v2 = random.nextInt(num_verts);
+				}
+				
+				cg.addEdge("e"+v1+"_"+v2+"", random.nextDouble(), v1,v2);
+			}
 			
-			long t2 = System.nanoTime();
-			Subtree st2 = cg.ExhaustiveEdmondSearch();
-			long t3 = System.nanoTime();
+//			cg.addVertex("v1_1", 1.0f, true);
+//			cg.addVertex("v1_2", 0.8f, false);
+//			cg.addVertex("v2_1", 0.6f, true);
+//			cg.addVertex("v2_2", 0.9f, false);
+//			cg.addVertex("v3_1", 1.0f, true);
+//			cg.addVertex("v3_2", 0.5f, false);
+//			cg.addVertex("v4_1", 0.2f, true);
+//			cg.addVertex("v4_2", 0.3f, false);
+//			cg.addVertex("v5_1", 0.6f, true);
+//			cg.addVertex("v5_2", 0.9f, false);
+//			
+//			cg.addEdge("e_1_2_1", 1.0f, "v1_1", "v2_1");
+//			cg.addEdge("e_1_3_1", 0.4f, "v1_1", "v3_1");
+//			cg.addEdge("e_3_4_1", 1.0f, "v3_1", "v4_1");
+//			cg.addEdge("e_3_5_1", 0.7f, "v3_1", "v5_1");
+//			cg.addEdge("e_1_2_2", 1.0f, "v1_2", "v2_2");
+//			cg.addEdge("e_1_3_2", 0.4f, "v1_2", "v3_2");
+//			cg.addEdge("e_3_4_2", 1.0f, "v3_2", "v4_2");
+//			cg.addEdge("e_3_5_2", 0.7f, "v3_2", "v5_2");
+//			
+//			cg.addEdge("e_1_2_2", 1.0f, "v1_1", "v2_2");
+//			cg.addEdge("e_1_3_2", 0.4f, "v1_2", "v3_1");
+//			cg.addEdge("e_3_4_2", 1.0f, "v3_1", "v4_2");
+//			cg.addEdge("e_3_5_2", 0.7f, "v3_2", "v5_1");
 			
-			System.out.println( "Time1 = " + (t1-t0)/1000 + " mikro-sec" );
-			System.out.println( "Time2 = " + (t3-t2)/1000 + " mikro-sec" );
-
-			System.out.println("Growing result:");
-			st.print(cg);
-			System.out.println("Edmond Exhaustive result:");
-			st2.print(cg);
+			cg.printComplexity();
+			
+			System.out.println("\nExhaustive Edmond Search");
+			long t3_0 = System.nanoTime();
+			Subtree st3 = cg.ExhaustiveEdmondSearch();
+			long t3_1 = System.nanoTime();
+			System.out.println( "Time3 = " + (t3_1-t3_0)/1000 + " mikro-sec" );
+			System.out.println("w3 = " + st3.m_total_weight);
+			
+			double optimal = st3.m_total_weight;
+			long opt_time = t3_1-t3_0;
+			
+			System.out.println("\nRandomized Edmond search SIMPLE");
+			long t1_0 = System.nanoTime();
+			Subtree st1 = cg.randomizedEdmondSearch(100, false);
+			long t1_1 = System.nanoTime();
+			System.out.println( "Time% = " + (float)(100.0)*(t1_1-t1_0)/opt_time + "%" );
+			System.out.println("w% = " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
+			
+			System.out.println("\nRandomized Edmond search OPTIMIZE");
+			long t1o_0 = System.nanoTime();
+			Subtree st1o = cg.randomizedEdmondSearch(100, true);
+			long t1o_1 = System.nanoTime();
+			System.out.println( "Time% = " + (float)(100.0)*(t1o_1-t1o_0)/opt_time + "%" );
+			System.out.println("w% = " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
+			
+			System.out.println("\nGrowing trees search");
+			
+			long t2_0 = System.nanoTime();
+			Subtree st2 = cg.growingTreesSearch();
+			long t2_1 = System.nanoTime();
+			System.out.println( "Time% = " + (float)(100.0)*(t2_1-t2_0)/opt_time + "%" );
+			System.out.println("w% = " + (float)( 100.0 * (1.0 - st2.m_total_weight/optimal)));
 		}
 		catch(java.lang.Exception e)
 		{
