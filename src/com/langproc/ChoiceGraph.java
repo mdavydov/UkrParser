@@ -392,7 +392,7 @@ public class ChoiceGraph
 	private Vector<Vector<DirectedEdge>> m_edges;
 	private Vector<Vector<Integer>> m_choice_vertices;
 	private Vector<Vertex> m_vertexes;
-	private Vector<Integer> m_vertex2choice;
+	private int[] m_vertex2choice;
 	private HashMap<Object, Vertex> m_object2vertex_map = new HashMap<Object, Vertex>();
 	
 	public ChoiceGraph(int max_choices, int max_vertexes)
@@ -416,13 +416,23 @@ public class ChoiceGraph
 		}
 		
 		m_vertexes = new Vector<Vertex>(m_max_vertexes);
-		m_vertex2choice = new Vector<Integer>(m_max_vertexes);
-		m_vertex2choice.setSize(m_max_vertexes);
+		m_vertex2choice = new int[m_max_vertexes];
 		m_used_choices = 0;
 		m_used_vertexes = 0;
 	}
 	public Vertex vertexById(int vert_id) { return m_vertexes.get(vert_id); }
 	public double getVertexWeight(int vert_id) { return m_vertexes.get(vert_id).m_weight; }
+	public int getChoiceByVertex(int vert_id) { return m_vertex2choice[vert_id]; }
+	public int getVertexIndexInChoice(int vert_id)
+	{
+		int ci = getChoiceByVertex(vert_id);
+		Vector<Integer> choice_verts = m_choice_vertices.get(ci);
+		for(int i=0; i<choice_verts.size(); ++i )
+		{
+			if (vert_id == choice_verts.get(i)) return i;
+		}
+		return -1;
+	}
 	public int getNumVertexes() { return m_used_vertexes; }
 	public int getNumChoices() { return m_used_choices; }
 	public DirectedEdge getEdge(int v1, int v2) { return m_edges.get(v1).get(v2);}
@@ -440,7 +450,7 @@ public class ChoiceGraph
 		m_vertexes.addElement(v);
 		
 		m_choice_vertices.get(choice_id).addElement(vert_id);		
-		m_vertex2choice.set(vert_id, choice_id );
+		m_vertex2choice[vert_id] = choice_id;
 		m_object2vertex_map.put(vert_o, v);
 	}
 	
@@ -510,10 +520,246 @@ public class ChoiceGraph
 		}
 	}
 	
+	AdjacencyList getMaxBranchingByChoices(int choice_indexes[])
+	{
+		Node root = new Node(-1);
+		Node[] nodes = new Node[m_used_choices];
+	
+		AdjacencyList myEdges = new AdjacencyList();
+		
+		for(int i=0;i<choice_indexes.length;++i)
+		{
+			int v_i = m_choice_vertices.get(i).get(choice_indexes[i]);
+			nodes[i] = new Node(v_i);
+			myEdges.addEdge(root, nodes[i], getVertexWeight(v_i) );
+		}
+		
+		for(int i=0;i<m_used_choices;++i) for(int j=0;j<m_used_choices;++j)
+		{
+			int v_i = m_choice_vertices.get(i).get(choice_indexes[i]);
+			int v_j = m_choice_vertices.get(j).get(choice_indexes[j]);
+			
+			DirectedEdge e = m_edges.get(v_i).get(v_j);
+			if (e!=null)
+			{
+				//System.out.println("" + v_i + "->" + v_j + " w=" + e.m_weight + " vw=" + getVertexWeight(v_j));
+				myEdges.addEdge(nodes[i], nodes[j], 1000 + e.m_weight + getVertexWeight(v_j) );
+			}
+		}
+		
+		Edmonds myed = new Edmonds_Andre();	
+		AdjacencyList rBranch;
+	    rBranch = myed.getMaxBranching(root, myEdges);
+	    return rBranch;
+	}
+	
+	Subtree createSubTreeFromBranching(AdjacencyList branching)
+	{
+		Subtree tree_root = null;
+	    Subtree tree_nodes[] = new Subtree[m_used_choices];
+
+		
+	    for( com.altmann.Edge e : branching.getAllEdges())
+	    {
+	    	int vi = e.getDest().name;
+	    	tree_nodes[m_vertex2choice[vi]] = new Subtree(this, vi);
+	    }
+	    
+	    for( com.altmann.Edge e : branching.getAllEdges())
+	    {
+	    	System.out.println(e);
+	    	if (e.getSource().name==-1)
+	    	{
+	    		tree_root = tree_nodes[e.getDest().name];
+	    	}
+	    	else
+	    	{
+	    		int v1 = e.getSource().name;
+	    		int v2 = e.getDest().name;
+	    		tree_nodes[m_vertex2choice[v1]].addSubtree(this, tree_nodes[m_vertex2choice[v2]]);
+	    	}
+	    }
+	    
+	    tree_root.updateWeight(this, 0.0);
+	    
+	    //System.out.println("Total = " + max_total);
+	    tree_root.print(this);
+	    System.out.println("Total weight = " + tree_root.m_total_weight );
+		return tree_root;
+	}
+	
+	int[] calculateChoiceParentsFromAdjacencyList(AdjacencyList branching)
+	{
+		int choice_parents[] = new int[m_used_choices];
+		
+	    for( com.altmann.Edge e : branching.getAllEdges())
+	    {
+	    	int v1 = e.getSource().name;
+	    	int v2 = e.getDest().name;
+	    	
+	    	int c1 = v1==-1?-1:m_vertex2choice[v1];
+	    	int c2 = m_vertex2choice[v2];
+	    	
+	    	choice_parents[c2] = c1;
+	    }
+	    return choice_parents;
+	}
+	int getRootChoiceFromParents(int[] choice_parents)
+	{
+		for(int i=0;i<choice_parents.length;++i)
+		{
+			if (choice_parents[i]==-1) return i;
+		}
+		return -1;
+	}
+	int[] calculateChoiceRanks(int choice_parents[])
+	{
+		int choice_rank[] = new int[m_used_choices];
+		for(int i=0;i<m_used_choices;++i)
+		{
+			for(int j=0;j<m_used_choices;++j)
+			{
+				if (choice_parents[j]!=-1)
+				{
+					if (choice_rank[choice_parents[j]] < choice_rank[j]+1)
+						choice_rank[choice_parents[j]]=choice_rank[j]+1;
+				}
+			}		
+		}
+		return choice_rank;
+	}
+	public void printSubtreeFromRootVertex(int root_vi, int best_connection[][], double subtree_weight[])
+	{
+		// best_connection[vertex_id][child_choice] -> (child_vertex || -1)
+		// subtree_weight[vertex_id]->weight
+		
+		System.out.println( "Subtree (" + root_vi +  ") w = " + subtree_weight[root_vi] );
+		for(int i=0;i<m_used_choices;++i)
+		{
+			if (best_connection[root_vi][i]!=-1)
+			{
+				System.out.print("Connect " + root_vi +" -> ");
+				printSubtreeFromRootVertex(best_connection[root_vi][i], best_connection, subtree_weight );
+			}
+		}
+	}
+	
+	public void OptimizeChoiceSelection(AdjacencyList branching)
+	{
+		// dynamic programming
+		// create max_weight for each choice assignment
+		double subtree_weight[] = new double[m_used_vertexes];
+
+		// connection from a vertex to the best subtree (given by child vertex index by choice)
+		int best_connection[][] = new int[m_used_vertexes][m_used_choices];
+		
+		int choice_parents[] = calculateChoiceParentsFromAdjacencyList(branching);
+		int choice_rank[] = calculateChoiceRanks(choice_parents);
+		int root_choice = getRootChoiceFromParents(choice_parents);
+		System.out.print("Root = " + root_choice);
+		for(int i=0;i<m_used_choices;++i) System.out.print(" " + choice_parents[i]);
+		System.out.println();
+		for(int i=0;i<m_used_choices;++i) System.out.print(" " + choice_rank[i]);
+		System.out.println();
+		
+		for(int rank=0; rank<m_used_choices; ++rank)
+		{
+			for(int choice=0;choice<m_used_choices;++choice)
+			{
+				if (choice_rank[choice]==rank)
+				{
+					// for all choices from the lowest rank to highest recalculate possible outcome
+					// recalculate choice selection based on weights
+					Vector<Integer> choice_verts = m_choice_vertices.get(choice);
+					int num_ci = choice_verts.size();
+					for(int ci=0; ci < num_ci; ++ci) // for all choice vertexes
+					{
+						int vi = choice_verts.get(ci);
+						// set initial weight to vertex weight only
+						subtree_weight[vi] = getVertexWeight(vi);
+						
+						// go through all choice children and add best subtrees to the weight 
+						for(int child_choice=0; child_choice<m_used_choices; ++child_choice)
+						{
+							// clean connection array
+							best_connection[vi][child_choice] = -1;
+							// if not connected in the given tree continue
+							if (choice_parents[child_choice]!=choice) continue;
+							
+							double max_child_weight = 0;
+								
+							System.out.println("Optimize " + vi + "(" + choice + ")" + " -> " + child_choice);
+							int num_cci = m_choice_vertices.get(child_choice).size();
+							for(int cci=0; cci < num_cci; ++cci)
+							{
+								// get possible child choice vertex 
+								int cvi = m_choice_vertices.get(child_choice).get(cci);
+								
+								DirectedEdge e = m_edges.get(vi).get(cvi);
+								if (e==null)
+								{
+									System.out.println("Vertex " + vi + " and " + cvi + " are not connected");
+									continue;
+								}
+								
+								double weight = e.m_weight + subtree_weight[cvi];
+								
+								if (weight > max_child_weight)
+								{
+									max_child_weight = weight;
+									best_connection[vi][child_choice] = cvi;
+								}
+							}
+							
+							// what to do if we can't connect at all???
+							subtree_weight[vi] += max_child_weight;
+						}
+					}
+					
+					if (choice == root_choice)
+					{
+						int best_ci = 0;
+						double best_weight = subtree_weight[choice_verts.get(0)];
+						
+						System.out.println("best_weight = " + best_weight);
+						
+						for(int vi = 0; vi<m_used_vertexes; ++vi)
+						{
+							System.out.print(subtree_weight[vi] + " ");
+						}
+						System.out.println();
+						System.out.println("Choice matrix:");
+						
+						for(int vi = 0; vi<m_used_vertexes; ++vi)
+						{
+							for(int chi = 0; chi<m_used_choices; ++chi)
+							{
+								System.out.print(best_connection[vi][chi] + " ");
+							}
+							System.out.println();
+						}
+						
+						for(int ci=1; ci < num_ci; ++ci) // for all other choice vertexes
+						{
+							if (subtree_weight[choice_verts.get(ci)] > best_weight)
+							{
+								best_weight = subtree_weight[choice_verts.get(ci)];
+								best_ci = ci;
+							}
+						}
+						
+						int best_vi = m_choice_vertices.get(choice).get(best_ci);
+						printSubtreeFromRootVertex(best_vi, best_connection, subtree_weight);
+					}
+				}
+			}
+		}
+	}
+	
 	public Subtree ExhaustiveEdmondSearch()
 	{
-		int indexes[] = new int[m_used_choices];
-		for(int i=0;i<indexes.length;++i) indexes[i] = 0;
+		int choice_indexes[] = new int[m_used_choices];
+		for(int i=0;i<choice_indexes.length;++i) choice_indexes[i] = 0;
 			
 		// next choice
 		boolean finished = false;
@@ -524,35 +770,7 @@ public class ChoiceGraph
 		
 		for(;;)
 		{
-			// set up edmond graph
-			Node root = new Node(-1);
-			Node[] nodes = new Node[m_used_choices];
-		
-			AdjacencyList myEdges = new AdjacencyList();
-			
-			for(int i=0;i<indexes.length;++i)
-			{
-				nodes[i] = new Node(i);
-				int v_i = m_choice_vertices.get(i).get(indexes[i]);
-				myEdges.addEdge(root, nodes[i], getVertexWeight(v_i) );
-			}
-			
-			for(int i=0;i<m_used_choices;++i) for(int j=0;j<m_used_choices;++j)
-			{
-				int v_i = m_choice_vertices.get(i).get(indexes[i]).intValue();
-				int v_j = m_choice_vertices.get(j).get(indexes[j]).intValue();
-				
-				DirectedEdge e = m_edges.get(v_i).get(v_j);
-				if (e!=null)
-				{
-					System.out.println("" + v_i + "->" + v_j + " w=" + e.m_weight + " vw=" + getVertexWeight(v_j));
-					myEdges.addEdge(nodes[i], nodes[j], 1000 + e.m_weight + getVertexWeight(v_j) );
-				}
-			}
-			
-			Edmonds myed = new Edmonds_Andre();	
-			AdjacencyList rBranch;
-		    rBranch = myed.getMaxBranching(root, myEdges);
+			AdjacencyList rBranch = getMaxBranchingByChoices(choice_indexes);
 		    
 		    double total = 0;
 		    for( com.altmann.Edge e : rBranch.getAllEdges())
@@ -566,28 +784,27 @@ public class ChoiceGraph
 		    {
 		    	max_total = total;
 		    	maxBranch = rBranch;
-		    	System.arraycopy( indexes, 0, max_indexes, 0, indexes.length );
+		    	System.arraycopy( choice_indexes, 0, max_indexes, 0, choice_indexes.length );
 		    }
 
-					
-			for(int i=0;i<indexes.length;++i)
+		    // update choices to check the next case
+			for(int i=0;i<choice_indexes.length;++i)
 			{
-				if ( indexes[i]+1 == m_choice_vertices.get(i).size() )
+				if ( choice_indexes[i]+1 == m_choice_vertices.get(i).size() )
 				{
-					indexes[i] = 0;
-					if (i==indexes.length-1)
+					choice_indexes[i] = 0;
+					if (i==choice_indexes.length-1)
 					{
 						finished = true;
 					}
 				}
 				else
 				{
-					indexes[i]+=1;
+					choice_indexes[i]+=1;
 					break;
 				}
 			}
 
-			// check indexes
 			//for(int i=0;i<indexes.length;++i) System.out.print(" " + indexes[i]);
 			//System.out.println();
 			
@@ -596,33 +813,12 @@ public class ChoiceGraph
 		
 
 		// calculate maximum tree from obtained maximum branching
-		Subtree tree_root = null;
-	    Subtree tree_nodes[] = new Subtree[m_used_choices];
 	    
-	    for(int i=0;i<m_used_choices;++i)
-	    {
-	    	tree_nodes[i] = new Subtree(this, m_choice_vertices.get(i).get(max_indexes[i]).intValue());
-	    }
+	    System.out.println("-------------- not need just test ");
+	    OptimizeChoiceSelection(maxBranch);
 	    
-	    for( com.altmann.Edge e : maxBranch.getAllEdges())
-	    {
-	    	System.out.println(e);
-	    	if (e.getSource().name==-1)
-	    	{
-	    		tree_root = tree_nodes[e.getDest().name];
-	    	}
-	    	else
-	    	{
-	    		tree_nodes[e.getSource().name].addSubtree(this, tree_nodes[e.getDest().name]);
-	    	}
-	    }
-	    
-	    tree_root.updateWeight(this, 0.0);
-	    
-	    System.out.println("Total = " + max_total);
-	    tree_root.print(this);
-	    System.out.println("Total weight = " + tree_root.m_total_weight );
-		return tree_root;
+
+	    return createSubTreeFromBranching(maxBranch);
 	}
 	
 	public Subtree growingTreesSearch()
