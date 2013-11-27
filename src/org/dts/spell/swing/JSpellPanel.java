@@ -44,6 +44,7 @@ import javax.swing.text.JTextComponent;
 import org.dts.spell.SpellChecker;
 import org.dts.spell.dictionary.SpellDictionary;
 import org.dts.spell.dictionary.SpellDictionaryException;
+import org.dts.spell.finder.Word;
 import org.dts.spell.finder.WordFinder;
 import org.dts.spell.swing.utils.ErrorMarker;
 //import org.dts.spell.swing.utils.SeparatorLineBorder;
@@ -279,7 +280,7 @@ public class JSpellPanel extends JPanel
 	  checkText.setText(txt) ;
 	  wrongWord = txt ;
 	  
-	  setSuggestionWords(getDictionary().getSuggestions(wrongWord)) ;
+	  setSuggestionWords(getDictionary().getSuggestions( new Word(wrongWord,0,false) )) ;
 	  initFocus() ;
 	}
 	

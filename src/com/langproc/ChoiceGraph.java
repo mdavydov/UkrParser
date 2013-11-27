@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * UkrParser
+ * Copyright (c) 2013
+ * Maksym Davydov
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl-3.0.txt
+ ******************************************************************************/
+
 package com.langproc;
 
 import java.util.Collection;
@@ -447,10 +458,36 @@ public class ChoiceGraph
 //		Vector<Integer> group_verts = m_group_vertices.get(ci);
 //		for(int i=0; i<group_verts.size(); ++i )
 //		{
-//			if (vert_id == group_verts.get(i)) return i;
+ //			if (vert_id == group_verts.get(i)) return i;
 //		}
 //		return -1;
 	}
+	double getMaxVertexWeightInGroup(int group_id)
+	{
+		int n = getNumVerticesInGroup(group_id);
+		double max = getVertexIdByGroupAndChoice(group_id, 0);
+		for(int i=1; i<n;++i)
+		{
+			double w = getVertexWeight(getVertexIdByGroupAndChoice(group_id, i));
+			if (w>max) max = w;
+		}
+		return max;
+	}
+	
+	double getMaxEdgeWeightBetweenGroups(int group_id1, int group_id2)
+	{
+		int n1 = getNumVerticesInGroup(group_id1);
+		int n2 = getNumVerticesInGroup(group_id2);
+		double max = 0.0;
+		for(int i=0; i<n1;++i) 	for(int j=0; j<n2;++j)
+		{
+			double w = getEdgeWeight(getVertexIdByGroupAndChoice(group_id1, i),
+									 getVertexIdByGroupAndChoice(group_id2, j)  );
+			if (w>max) max = w;
+		}
+		return max;
+	}
+	
 	public int getVertexIdByGroupAndChoice(int group_id, int choice_id)
 	{
 		return m_group_vertices.get(group_id).get(choice_id);
@@ -509,6 +546,8 @@ public class ChoiceGraph
 	
 	public void addEdge(Object edge_o, double weight, Object vert_o1, Object vert_o2)
 	{
+		if (weight==0.0) return;
+		
 		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
 		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
 		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
@@ -594,6 +633,36 @@ public class ChoiceGraph
 			{
 				//System.out.println("" + v_i + "->" + v_j + " w=" + e.m_weight + " vw=" + getVertexWeight(v_j));
 				myEdges.addEdge(nodes[i], nodes[j], 1000 + e.m_weight + getVertexWeight(v_j) );
+			}
+		}
+		
+		Edmonds myed = new Edmonds_Andre();	
+		AdjacencyList rBranch;
+	    rBranch = myed.getMaxBranching(root, myEdges);
+	    //dumpBranching(rBranch);
+	    return rBranch;
+	}
+	
+	// max branching when we take maximum by every hipothesis edge
+	AdjacencyList getMaxBranchingByMerge()
+	{
+		Node root = new Node(-1);
+		Node[] nodes = new Node[m_num_groups];
+	
+		AdjacencyList myEdges = new AdjacencyList();
+		
+		for(int i=0;i<m_num_groups;++i)
+		{
+			nodes[i] = new Node(m_num_groups);
+			myEdges.addEdge(root, nodes[i], getMaxVertexWeightInGroup(i) );
+		}
+		
+		for(int i=0;i<m_num_groups;++i) for(int j=0;j<m_num_groups;++j)
+		{
+			double edge_w = getMaxEdgeWeightBetweenGroups(i,j);
+			if (edge_w>0.0)
+			{
+				myEdges.addEdge(nodes[i], nodes[j], 1000 + edge_w + getMaxVertexWeightInGroup(j) );
 			}
 		}
 		
@@ -869,6 +938,16 @@ public class ChoiceGraph
 		AdjacencyList maxBranch=null;
 		int max_indexes[] = new int[m_num_groups];
 		
+		// estimate maximum :-)
+//		AdjacencyList rBranch1 = getMaxBranchingByMerge();
+//		double total_est = 0.0;
+//		for( com.altmann.Edge e : rBranch1.getAllEdges() )
+//		{
+//			total_est += e.getWeight();
+//		}
+//		System.out.println("Estimated max weight = " + total_est);
+		
+		
 		for(;;)
 		{
 			AdjacencyList rBranch = getMaxBranchingByChoices(choice_indexes);
@@ -915,10 +994,12 @@ public class ChoiceGraph
 	    
 		if (maxBranch==null) return null;
 		
-	    return createSubTreeFromBranching(maxBranch);
+	    Subtree st = createSubTreeFromBranching(maxBranch);
+//	    System.out.println("Total weight = " + st.m_total_weight);
+	    return st;
 	}
 	
-	public Subtree randomizedEdmondSearch(int num_iter, boolean use_optimize)
+	public Subtree randomizedEdmondSearch(int num_iter, boolean use_optimize, boolean use_bayesian_stochastic)
 	{
 		int choice_indexes[] = new int[m_num_groups];
 		java.util.Random random = new java.util.Random();
@@ -927,11 +1008,42 @@ public class ChoiceGraph
 		AdjacencyList maxBranch=null;
 		int max_indexes[] = new int[m_num_groups];
 		
+		float total_max_decisions[] = new float[getNumVertexes()];
+		float total_vertex_weight_histogr[] = new float[getNumVertexes()];
+		
+		for(int j=0;j<getNumVertexes();++j)
+		{
+			total_max_decisions[j]=1.0f;
+		}
+		
+		
 		for(int num=0;num<num_iter;++num)
 		{
 			for(int i=0;i<m_num_groups;++i)
 			{
-				choice_indexes[i] = random.nextInt(getNumVerticesInGroup(i));
+				if (use_bayesian_stochastic)
+				{
+					int n_vert_in_gr = getNumVerticesInGroup(i);
+					float total_v_weight = 0;
+					for(int j=0; j<n_vert_in_gr;++j)
+					{
+						float vw = 1.0f + total_max_decisions[ getVertexIdByGroupAndChoice(i, j) ];
+						total_v_weight += vw;
+						total_vertex_weight_histogr[j] = total_v_weight;
+					}
+					float rand = (float)(random.nextDouble() * total_v_weight);
+					
+					int choice = 0;
+					for(choice=0; choice<n_vert_in_gr;++choice)
+					{
+						if (total_vertex_weight_histogr[choice] >= rand ) break;
+					}
+					choice_indexes[i] = choice;
+				}
+				else
+				{
+					choice_indexes[i] = random.nextInt(getNumVerticesInGroup(i));
+				}
 			}
 			
 			AdjacencyList rBranch = getMaxBranchingByChoices(choice_indexes);
@@ -941,7 +1053,8 @@ public class ChoiceGraph
 			    double total = getBranchingWeight(rBranch);
 			    //System.out.println("Accepted total = " + total);
 
-			    if (use_optimize)
+			    // optimise until we stuck in local optimum
+			    while (use_optimize)
 			    {
 				    int new_choices[] = optimizeVertexSelection(rBranch);
 				    AdjacencyList rBranch1 = getMaxBranchingByChoices(new_choices);
@@ -954,6 +1067,14 @@ public class ChoiceGraph
 				    		rBranch = rBranch1;
 				    		total = new_weight;
 				    	}
+				    	else
+				    	{
+				    		break;
+				    	}
+				    }
+				    else
+				    {
+				    	break;
 				    }
 			    }
 			    
@@ -962,13 +1083,38 @@ public class ChoiceGraph
 			    	max_total = total;
 			    	maxBranch = rBranch;
 			    	System.arraycopy( choice_indexes, 0, max_indexes, 0, choice_indexes.length );
+			    	
+					if (use_bayesian_stochastic)
+					{
+//						int nv = getNumVertexes();
+//						for(int j=0;j<nv;++j)
+//						{
+//							total_max_decisions[j]*=0.9f;
+//						}
+
+						
+						for(int i=0;i<m_num_groups;++i)
+						{
+							total_max_decisions[ getVertexIdByGroupAndChoice(i, choice_indexes[i]) ]+=1.0f;
+						}
+					}
+			    }
+			    else
+			    {
+					if (use_bayesian_stochastic)
+					{
+						for(int i=0;i<m_num_groups;++i)
+						{
+							total_max_decisions[ getVertexIdByGroupAndChoice(i, choice_indexes[i]) ]*=0.9f;
+						}
+					}
 			    }
 			}
 		}
 	    
 		if (maxBranch==null)
 		{
-			System.out.println("----------- branching was not found ");
+			//System.out.println("----------- branching was not found ");
 			return null;
 		}
 	    //System.out.println("-------------- not need just test ");
@@ -1068,6 +1214,20 @@ public class ChoiceGraph
 		}
 		System.out.println(" = " + compl);
 	}
+	
+	public void printComplexityShort()
+	{
+		//System.out.println("Num groups = " + m_num_groups);
+		//System.out.print("Complexity ");
+		double compl = 1;
+		for(int gi=0;gi<m_num_groups;++gi)
+		{
+			//System.out.print( (gi>0?"*":"") + getNumVerticesInGroup(gi) );
+			compl *= getNumVerticesInGroup(gi);
+		}
+		System.out.print("" + compl);
+	}
+	
 	public void print()
 	{
 		//System.out.println(m_vertexes);
@@ -1103,7 +1263,7 @@ public class ChoiceGraph
 	}
 	
 	
-	static public void test()
+	static public void testOnce()
 	{
 		try
 		{
@@ -1188,14 +1348,14 @@ public class ChoiceGraph
 			
 			System.out.println("\nRandomized Edmond search SIMPLE");
 			long t1_0 = System.nanoTime();
-			Subtree st1 = cg.randomizedEdmondSearch(100, false);
+			Subtree st1 = cg.randomizedEdmondSearch(1000, false, false);
 			long t1_1 = System.nanoTime();
 			System.out.println( "Time% = " + (float)(100.0)*(t1_1-t1_0)/opt_time + "%" );
 			System.out.println("w% = " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
 			
 			System.out.println("\nRandomized Edmond search OPTIMIZE");
 			long t1o_0 = System.nanoTime();
-			Subtree st1o = cg.randomizedEdmondSearch(100, true);
+			Subtree st1o = cg.randomizedEdmondSearch(1000, true, false);
 			long t1o_1 = System.nanoTime();
 			System.out.println( "Time% = " + (float)(100.0)*(t1o_1-t1o_0)/opt_time + "%" );
 			System.out.println("w% = " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
@@ -1212,6 +1372,449 @@ public class ChoiceGraph
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	static public void testTable(double arc_coverage, double pow)
+	{
+		try
+		{
+			final int num_verts = 35;
+			final int num_arcs = (int)(arc_coverage * num_verts * num_verts); // arc coverage
+			//final int avg_grouping = 3;	// average 3 vertex in group
+			final int max_grouping = 4; 
+			ChoiceGraph cg = new ChoiceGraph(num_verts, num_verts);
+			
+			int group_id = -1;
+			int num_in_group = 0;
+			java.util.Random random = new java.util.Random();
+			
+			for(int i = 0; i<num_verts; ++i)
+			{
+				// now groupping is fixed to perform strict time computations
+				boolean new_group = num_in_group >= max_grouping-1 ? true : false/*random.nextInt(avg_grouping)==0*/;
+				if (new_group || i==0)
+				{
+					++group_id;
+					num_in_group = 0;
+				}
+				else
+				{
+					++num_in_group;
+				}
+				double rand = random.nextDouble();
+				while(rand==0.0 || rand==1.0) rand = random.nextDouble();
+				
+				if (pow!=0.0)
+				{
+					rand = java.lang.Math.pow( -java.lang.Math.log(rand), pow ); 
+				}
+				
+				cg.addVertex("v" + i + "(" + group_id + ")", rand, new_group || i==0);
+			}
+			
+			for(int j = 0; j<num_arcs; ++j)
+			{
+				int v1 = random.nextInt(num_verts);
+				int v2 = random.nextInt(num_verts);
+				
+				while (cg.getVertexGroup(v1)==cg.getVertexGroup(v2) ||
+						cg.hasEdge(v1,v2) )
+				{
+					v1 = random.nextInt(num_verts);
+					v2 = random.nextInt(num_verts);
+				}
+				
+				double rand = random.nextDouble();
+				while(rand==0.0 || rand==1.0) rand = random.nextDouble();
+				
+				if (pow!=0.0)
+				{
+					rand = java.lang.Math.pow( -java.lang.Math.log(rand), pow ); 
+				}
+				cg.addEdge("e"+v1+"_"+v2+"", rand, v1,v2);
+			}
+					
+			cg.printComplexityShort();
+			
+			//System.out.println("\nExhaustive Edmond Search");
+			long t3_0 = System.nanoTime();
+			Subtree st3 = cg.ExhaustiveEdmondSearch();
+			long t3_1 = System.nanoTime();
+			System.out.print(" " + (t3_1-t3_0)/1000 );
+			double optimal = 1.0;
+			if (st3==null)
+			{
+				System.out.print(" 0.0");
+			}
+			else
+			{
+				System.out.print(" " + st3.m_total_weight);
+				optimal = st3.m_total_weight;
+			}
+			
+			long opt_time = t3_1-t3_0;
+			
+			//System.out.println("\nRandomized Edmond search SIMPLE");
+			long t1_0 = System.nanoTime();
+			Subtree st1 = cg.randomizedEdmondSearch(400, false, false);
+			long t1_1 = System.nanoTime();
+			System.out.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
+			if (st1==null)
+			{
+				System.out.print(st3==null?" 0.0":" 100.0");
+			}
+			else
+			{
+				System.out.print(" " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
+			}
+			
+			//System.out.println("\nRandomized Edmond search OPTIMIZE");
+			long t1o_0 = System.nanoTime();
+			Subtree st1o = cg.randomizedEdmondSearch(100, true, false);
+			long t1o_1 = System.nanoTime();
+			System.out.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
+			if (st1o==null)
+			{
+				System.out.print(st3==null?" 0.0":" 100.0");
+			}
+			else
+			{
+				System.out.print(" " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
+			}
+			
+			//System.out.println("\nGrowing trees search");
+			
+//			long t2_0 = System.nanoTime();
+//			Subtree st2 = cg.growingTreesSearch();
+//			long t2_1 = System.nanoTime();
+//			
+//			System.out.print( " " + (float)(100.0)*(t2_1-t2_0)/opt_time );
+//
+//			if (st2==null)
+//			{
+//				System.out.print(st3==null?" 0.0":" 100.0");
+//			}
+//			else
+//			{
+//				System.out.print(" " + (float)( 100.0 * (1.0 - st2.m_total_weight/optimal)));
+//			}
+			System.out.println();
+		}
+		catch(java.lang.Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	
+	static public void testMeanPerformance(int num_verts, int max_grouping, double arc_coverage, double pow)
+	{
+		long sum_time = 0;
+		long sum_time_alg[] = {0,0,0,0};
+		float sum_sqr_dev_alg[] = {0,0,0,0};
+		float num_optimal[] = {0,0,0,0};
+		
+		final int num_random_searches = num_verts * num_verts;
+		
+		final int num_trials = 100;
+		for(int n = 0; n<num_trials; ++n)
+		{
+			try
+			{
+				//final int num_verts = 35;
+				final int num_arcs = (int)(arc_coverage * num_verts * num_verts); // arc coverage
+				//final int avg_grouping = 3;	// average 3 vertex in group
+				//final int max_grouping = 4; 
+				ChoiceGraph cg = new ChoiceGraph(num_verts, num_verts);
+				
+				int group_id = -1;
+				int num_in_group = 0;
+				java.util.Random random = new java.util.Random();
+				
+				for(int i = 0; i<num_verts; ++i)
+				{
+					// now groupping is fixed to perform strict time computations
+					boolean new_group = num_in_group >= max_grouping-1 ? true : false/*random.nextInt(avg_grouping)==0*/;
+					if (new_group || i==0)
+					{
+						++group_id;
+						num_in_group = 0;
+					}
+					else
+					{
+						++num_in_group;
+					}
+					double rand = random.nextDouble();
+					while(rand==0.0 || rand==1.0) rand = random.nextDouble();
+					
+					if (pow!=0.0)
+					{
+						rand = java.lang.Math.pow( -java.lang.Math.log(rand), pow ); 
+					}
+					
+					cg.addVertex("v" + i + "(" + group_id + ")", rand, new_group || i==0);
+				}
+				
+				for(int j = 0; j<num_arcs; ++j)
+				{
+					int v1 = random.nextInt(num_verts);
+					int v2 = random.nextInt(num_verts);
+					
+					while (cg.getVertexGroup(v1)==cg.getVertexGroup(v2) ||
+							cg.hasEdge(v1,v2) )
+					{
+						v1 = random.nextInt(num_verts);
+						v2 = random.nextInt(num_verts);
+					}
+					
+					double rand = random.nextDouble();
+					while(rand==0.0 || rand==1.0) rand = random.nextDouble();
+					
+					if (pow!=0.0)
+					{
+						rand = java.lang.Math.pow( -java.lang.Math.log(rand), pow ); 
+					}
+					cg.addEdge("e"+v1+"_"+v2+"", rand, v1,v2);
+				}
+						
+				//cg.printComplexityShort();
+				
+				//System.out.println("\nExhaustive Edmond Search");
+				long t1 = System.nanoTime();
+				Subtree st = cg.ExhaustiveEdmondSearch();
+				long t2 = System.nanoTime();
+				//System.out.print(" " + (t3_1-t3_0)/1000 );
+				float optimal = 1.0f;
+				if (st==null)
+				{
+					--n;
+					continue;
+					//System.out.print(" 0.0");
+				}
+				else
+				{
+					//System.out.print(" " + st3.m_total_weight);
+					optimal = (float)st.m_total_weight;
+				}
+				
+				long opt_time = t2-t1;
+				
+				sum_time += opt_time;
+				
+				//System.out.println("\nRandomized Edmond search SIMPLE");
+				t1 = System.nanoTime();
+				st = cg.randomizedEdmondSearch(num_random_searches*4, false, false);
+				t2 = System.nanoTime();
+				//System.out.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
+				
+				sum_time_alg[0] += (t2 - t1);
+				
+				float dev = (float)(st==null ? 1.0 : (optimal-st.m_total_weight)/optimal);
+				sum_sqr_dev_alg[0] += dev * dev;
+				if (dev < 1E-6) num_optimal[0] +=1.0f;
+
+				//System.out.println("\nRandomized Edmond search Bayesian");
+				t1 = System.nanoTime();
+				st = cg.randomizedEdmondSearch(num_random_searches*4, false, true);
+				t2 = System.nanoTime();
+				//System.out.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
+				
+				sum_time_alg[1] += (t2 - t1);
+				
+				dev = (float)(st==null ? 1.0 : (optimal-st.m_total_weight)/optimal);
+				sum_sqr_dev_alg[1] += dev * dev;
+				if (dev < 1E-6) num_optimal[1] += 1.0f;
+
+					
+				//System.out.println("\nRandomized Edmond search OPTIMIZE");
+				t1 = System.nanoTime();
+				st = cg.randomizedEdmondSearch(num_random_searches, true, false);
+				t2 = System.nanoTime();
+				
+				//System.out.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
+				sum_time_alg[2] += (t2 - t1);
+				
+				dev = (float)(st==null ? 1.0 : (optimal - st.m_total_weight)/optimal);
+				sum_sqr_dev_alg[2] += dev * dev;
+				if (dev < 1E-6) num_optimal[2] += 1.0f;
+				
+				
+				//System.out.println("\nRandomized Edmond search OPTIMIZE");
+				t1 = System.nanoTime();
+				st = cg.randomizedEdmondSearch(num_random_searches, true, true);
+				t2 = System.nanoTime();
+				
+				//System.out.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
+				sum_time_alg[3] += (t2 - t1);
+				
+				dev = (float)(st==null ? 1.0 : (optimal - st.m_total_weight)/optimal);
+				sum_sqr_dev_alg[3] += dev * dev;
+				if (dev < 1E-6) num_optimal[3] += 1.0f;
+				
+				//System.out.println();
+			}
+			catch(java.lang.Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.print("" + num_verts + " " + (float)sum_time / 1.0e9 );
+		
+		for(int i=0;i<4;++i)
+		{
+			System.out.print(
+					" " + (float)((float)sum_time_alg[i]/sum_time) +
+					" " + (float)java.lang.Math.sqrt(sum_sqr_dev_alg[i]/num_trials) +
+					" " + (float)java.lang.Math.sqrt(num_optimal[i]/num_trials ) );
+		}
+		
+		System.out.println();
+		
+	}
+	
+	static public void selectTheBest(int num_verts, int max_grouping, double arc_coverage, double pow)
+	{
+		float sum_sqr_dev_alg1 = 0;
+		float sum_sqr_dev_alg2 = 0;
+		
+		final int num_random_searches = num_verts * num_verts;
+		
+		final int num_trials = 100;
+		for(int n = 0; n<num_trials; ++n)
+		{
+			try
+			{
+				//final int num_verts = 35;
+				final int num_arcs = (int)(arc_coverage * num_verts * num_verts); // arc coverage
+				//final int avg_grouping = 3;	// average 3 vertex in group
+				//final int max_grouping = 4; 
+				ChoiceGraph cg = new ChoiceGraph(num_verts, num_verts);
+				
+				int group_id = -1;
+				int num_in_group = 0;
+				java.util.Random random = new java.util.Random();
+				
+				for(int i = 0; i<num_verts; ++i)
+				{
+					// now groupping is fixed to perform strict time computations
+					boolean new_group = num_in_group >= max_grouping-1 ? true : false/*random.nextInt(avg_grouping)==0*/;
+					if (new_group || i==0)
+					{
+						++group_id;
+						num_in_group = 0;
+					}
+					else
+					{
+						++num_in_group;
+					}
+					double rand = random.nextDouble();
+					while(rand==0.0 || rand==1.0) rand = random.nextDouble();
+					
+					if (pow!=0.0)
+					{
+						rand = java.lang.Math.pow( -java.lang.Math.log(rand), pow ); 
+					}
+					
+					cg.addVertex("v" + i + "(" + group_id + ")", rand, new_group || i==0);
+				}
+				
+				for(int j = 0; j<num_arcs; ++j)
+				{
+					int v1 = random.nextInt(num_verts);
+					int v2 = random.nextInt(num_verts);
+					
+					while (cg.getVertexGroup(v1)==cg.getVertexGroup(v2) ||
+							cg.hasEdge(v1,v2) )
+					{
+						v1 = random.nextInt(num_verts);
+						v2 = random.nextInt(num_verts);
+					}
+					
+					double rand = random.nextDouble();
+					while(rand==0.0 || rand==1.0) rand = random.nextDouble();
+					
+					if (pow!=0.0)
+					{
+						rand = java.lang.Math.pow( -java.lang.Math.log(rand), pow ); 
+					}
+					cg.addEdge("e"+v1+"_"+v2+"", rand, v1,v2);
+				}
+						
+
+				//Subtree st1 = cg.randomizedEdmondSearch(num_random_searches*4, false, false);
+				Subtree st1 = cg.randomizedEdmondSearch(num_random_searches, true, false);
+				Subtree st1o = cg.randomizedEdmondSearch(num_random_searches, true, true);
+				
+				if (st1==null || st1o==null)
+				{
+					--n; continue;
+				}
+				
+				float diff = (float)(st1.m_total_weight - st1o.m_total_weight);
+				//System.out.println("" + st1.m_total_weight + " - " + st1o.m_total_weight + "\t\t" + diff);
+
+				sum_sqr_dev_alg1 += diff<-1e-6? diff*diff : 0.0;
+				sum_sqr_dev_alg2 += diff>+1e-6? diff*diff : 0.0;
+				
+//				sum_sqr_dev_alg1 += diff<=-1e-6? 1.0f : 1.0f;
+//				sum_sqr_dev_alg2 += diff>=1e-6? 0.0f : 1.0f;
+				
+			}
+			catch(java.lang.Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println("" + num_verts + 
+				" " + (float)java.lang.Math.sqrt(sum_sqr_dev_alg1/num_trials) +
+				" " + (float)java.lang.Math.sqrt(sum_sqr_dev_alg2/num_trials)
+				);
+		
+	}
+
+	
+	static public void test()
+	{
+		System.out.println("#Verts Base_time(sec) time1_frac time2_frac SQV1 SQV2");
+
+		double arc_coverage = 0.4;  double pow = 1.0;
+		//double arc_coverage = 0.4;  double pow = 0.0;
+		//double arc_coverage = 0.4;  double pow = 0.0;
+		
+		System.out.println("Testing for " + arc_coverage + ";pow=" + pow);
+		
+		testMeanPerformance( 8, 4, arc_coverage, pow);
+		testMeanPerformance(12, 4, arc_coverage, pow);
+		testMeanPerformance(16, 4, arc_coverage, pow);
+		testMeanPerformance(20, 4, arc_coverage, pow);
+		testMeanPerformance(24, 4, arc_coverage, pow);
+		testMeanPerformance(28, 4, arc_coverage, pow);
+		testMeanPerformance(32, 4, arc_coverage, pow);
+		testMeanPerformance(36, 4, arc_coverage, pow);
+		
+//		selectTheBest( 8, 4, arc_coverage, pow);
+//		selectTheBest(12, 4, arc_coverage, pow);
+//		selectTheBest(16, 4, arc_coverage, pow);
+//		selectTheBest(20, 4, arc_coverage, pow);
+//		selectTheBest(24, 4, arc_coverage, pow);
+//		selectTheBest(28, 4, arc_coverage, pow);
+//		System.out.flush();
+//		selectTheBest(36, 4, arc_coverage, pow);
+//		System.out.flush();
+//		selectTheBest(40, 4, arc_coverage, pow);
+//		System.out.flush();
+//		testMeanPerformance(36, 4, arc_coverage, pow);
+		
+//		System.out.println("# Complexity Base_time(msk) Maximal_weight Alg1_time(%) Alg1_dev(%) Alg2_time(%) Alg2_dev(%) Alg3_time(%) Alg3_dev(%");
+//		double arc_coverage = 0.4;
+//		double pow = 1.0;
+//		//System.out.println("Arc coverage=;" + arc_coverage + ";distribition=;" + pow);
+//		for(int i=0;i<200;++i)
+//		{
+//			testTable(arc_coverage, pow);
+//		}
 	}
 }
 
