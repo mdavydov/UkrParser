@@ -247,97 +247,96 @@ public class SPREAD {
 	return (result);
     }
 
-    public static void parseParams(String args[]){
-	int nparm=args.length;
-	int cparm=1;
-	
-	while (cparm < nparm){
-	    String flag = new String(args[cparm++]);
-	    switch(flag){
-	    case "-min":
-		doMax=false;
-		break;
-	    case "-bsup":
-		bootSupp = true;
-		break;
-	    case "-i":
-		matfname = new String(args[cparm++]);
-		break;
-	    case "-o":
-		opref = new String(args[cparm++]);
-		break;
-	    case "-n":
-		String tmp = new String(args[cparm++]);
-		nboot = Integer.parseInt(tmp);
-		break;
-	    case "-t":
-		treef = new String(args[cparm++]);
-		break;
-	    case "-a":
-		adjf = new String(args[cparm++]);
-		break;
-	    case "-b":
-		bootf = new String(args[cparm++]);
-		break;
-	    case "-c":
-		cmapf = new String(args[cparm++]);
-		break;
-	    case "-l":
-		labmapf = new String(args[cparm++]);
-		break;
-	    default:
-		System.err.println("Unknown option: '" + flag + "'!");
-		help("SPREAD");
-		System.exit(0);
-		break;
-	    }
-	}
-	
-    }
+//    public static void parseParams(String args[]){
+//	int nparm=args.length;
+//	int cparm=1;
+//	
+//	while (cparm < nparm){
+//	    String flag = new String(args[cparm++]);
+//	    switch(flag){
+//	    case "-min":
+//		doMax=false;
+//		break;
+//	    case "-bsup":
+//		bootSupp = true;
+//		break;
+//	    case "-i":
+//		matfname = new String(args[cparm++]);
+//		break;
+//	    case "-o":
+//		opref = new String(args[cparm++]);
+//		break;
+//	    case "-n":
+//		String tmp = new String(args[cparm++]);
+//		nboot = Integer.parseInt(tmp);
+//		break;
+//	    case "-t":
+//		treef = new String(args[cparm++]);
+//		break;
+//	    case "-a":
+//		adjf = new String(args[cparm++]);
+//		break;
+//	    case "-b":
+//		bootf = new String(args[cparm++]);
+//		break;
+//	    case "-c":
+//		cmapf = new String(args[cparm++]);
+//		break;
+//	    case "-l":
+//		labmapf = new String(args[cparm++]);
+//		break;
+//	    default:
+//		System.err.println("Unknown option: '" + flag + "'!");
+//		help("SPREAD");
+//		System.exit(0);
+//		break;
+//	    }
+//	}
+//    }
 
-	public static void main(String argv[]){
-		
-	    if (argv.length == 0){
-		help("SPREAD");
-		System.exit(0);
-	    }
-		String cmd = new String(argv[0]);
-		parseParams(argv);
-		Eventmatrix myevent = new Eventmatrix();
-		Dummy myInput;
-		MatrixIO mio = new MatrixIO();
-		AdjacencyList mybranch;
+//	public static void main(String argv[]){
+//		
+//	    if (argv.length == 0){
+//		help("SPREAD");
+//		System.exit(0);
+//	    }
+//		String cmd = new String(argv[0]);
+//		parseParams(argv);
+//		Eventmatrix myevent = new Eventmatrix();
+//		Dummy myInput;
+//		MatrixIO mio = new MatrixIO();
+//		AdjacencyList mybranch;
 
-		switch(cmd){
-		case "single":
-		    myevent.readMatrix(matfname);
-		    //double[][] probmat = myevent.computeProb(true);
-		    //myInput = myevent.probToGraph(probmat);
-		    //mio.print2DArray(probmat, opref + ".prob");
-		    double[][] probmat = myevent.computeTrueCondProb(true);
-		    mio.print2DArray(probmat, opref + ".prob");
-		    myInput = myevent.probToGraph();
-		    mybranch = singleRun(myInput);
-		    mio.printGraphMatrix(mybranch, opref + ".spantree");
-		    break;
-		case "bootstrap":
-		    myevent.readMatrix(matfname);
-		    myInput = prepareBootstrapRun(myevent);
-		    mybranch = singleRun(myInput);
-		    mio.printGraphMatrix(mybranch, opref + ".bs_spantree");
-		    if (bootSupp)
-			mio.print2DArray(bootSupport, opref + ".bs_support");
-		    break;
-		case "plot":
-		    plot();
-		    break;
-		default:
-		    System.err.println("Unknown command: '" + cmd + "'!");
-		    help("SPREAD");
-		    System.exit(0);
-		    break;
-		}
-	}
+//		if (cmd){
+//		case "single":
+//		    myevent.readMatrix(matfname);
+//		    //double[][] probmat = myevent.computeProb(true);
+//		    //myInput = myevent.probToGraph(probmat);
+//		    //mio.print2DArray(probmat, opref + ".prob");
+//		    double[][] probmat = myevent.computeTrueCondProb(true);
+//		    mio.print2DArray(probmat, opref + ".prob");
+//		    myInput = myevent.probToGraph();
+//		    mybranch = singleRun(myInput);
+//		    mio.printGraphMatrix(mybranch, opref + ".spantree");
+//		    break;
+//		case "bootstrap":
+//		    myevent.readMatrix(matfname);
+//		    myInput = prepareBootstrapRun(myevent);
+//		    mybranch = singleRun(myInput);
+//		    mio.printGraphMatrix(mybranch, opref + ".bs_spantree");
+//		    if (bootSupp)
+//			mio.print2DArray(bootSupport, opref + ".bs_support");
+//		    break;
+//		case "plot":
+//		    plot();
+//		    break;
+//		default:
+//		    System.err.println("Unknown command: '" + cmd + "'!");
+//		    help("SPREAD");
+//		    System.exit(0);
+//		    break;
+//		}
+//	}
 
 }
 

@@ -51,7 +51,13 @@ class DirectedEdge
 		m_weight = weight;
 	}
 	
-	public String toString() { return "" + m_weight + " " + m_obj; }
+	public String toString()
+	{
+		java.text.DecimalFormatSymbols dfs = new java.text.DecimalFormatSymbols(new java.util.Locale("en"));
+		java.text.DecimalFormat df = new java.text.DecimalFormat("#.###", dfs);
+
+		return "" + df.format(m_weight) + " " + m_obj;
+	}
 }
 
 /*************************************************************************************
@@ -279,7 +285,6 @@ class Subtree implements java.lang.Comparable<Subtree>
 		{
 			s.fillSubtrees(v);
 		}
-
 	}
 	
 	Vector<Subtree> getAllSubtreesSorted()
@@ -298,9 +303,9 @@ class Subtree implements java.lang.Comparable<Subtree>
 		DirectedEdge de = g.getEdge(m_root_vectrex_id, other.m_root_vectrex_id );
 		if (de == null) return false;
 		
-		//System.out.println("Adding subtree 1");
+		//LangProcOutput.println("Adding subtree 1");
 		//print(g);
-		//System.out.println("Adding subtree 2");
+		//LangProcOutput.println("Adding subtree 2");
 		//other.print(g);
 		
 		other.m_total_weight += de.m_weight;
@@ -352,15 +357,15 @@ class Subtree implements java.lang.Comparable<Subtree>
 	
 	void print(ChoiceGraph g, int shift, int prev_root)
 	{
-		for(int i=0;i<shift;++i) System.out.print("  ");
+		for(int i=0;i<shift;++i) LangProcOutput.print("  ");
 		
 		if (prev_root != -1)
 		{
 			DirectedEdge de = g.getEdge(prev_root, m_root_vectrex_id);
-			System.out.print( "(->" + de + "->) ");
+			LangProcOutput.print( "(->" + de + "->) ");
 		}
 		Vertex v = g.vertexById(m_root_vectrex_id);
-		System.out.println("" + v + " (" + m_num_vertexes + "," +  m_total_weight + ")");
+		LangProcOutput.println("" + v + " (" + m_num_vertexes + "," +  m_total_weight + ")");
 		for(Subtree s : m_subtrees)
 		{
 			s.print(g, shift+1, m_root_vectrex_id);
@@ -377,27 +382,28 @@ class Subtree implements java.lang.Comparable<Subtree>
 		if (prev_root != -1)
 		{
 			DirectedEdge de = g.getEdge(prev_root, m_root_vectrex_id);
+			if (de.m_weight <= LangProcSettings.OPTIONAL_WEIGHT) return;
 			java.text.DecimalFormat df = new java.text.DecimalFormat("#.###");			
-			System.out.print( "[." + de.m_obj + " \\edge node[auto=left]{" + df.format(de.m_weight) + " }; ");
+			LangProcOutput.print( "[." + de.m_obj + " \\edge node[auto=left]{" + df.format(de.m_weight) + " }; ");
 			if (m_subtrees.size()==0)
 			{
-				System.out.print(v.m_obj);
+				LangProcOutput.print(v.m_obj +  "-" + (float)v.m_weight );
 			}
 			else
 			{
-				System.out.print("[." + v.m_obj + " ");
+				LangProcOutput.print("[." + v.m_obj +  "-" + (float)v.m_weight + " ");
 				close2 = true;
 			}
 		}
 		else
 		{
-			System.out.print("[." + v.m_obj + " ");
+			LangProcOutput.print("[." + v.m_obj + "-" + (float)v.m_weight + " ");
 		}
 		for(Subtree s : m_subtrees)
 		{
 			s.print_qtree(g, m_root_vectrex_id);
 		}
-		System.out.print(close2?" ] ]":" ]");
+		LangProcOutput.print(close2?" ] ]":" ]");
 	}
 	public void print_qtree(ChoiceGraph g) { print_qtree(g, -1); }
 }
@@ -513,6 +519,11 @@ public class ChoiceGraph
 	
 	public void addVertex(Object vert_o, double weight, boolean new_group)
 	{
+		if (LangProcSettings.DEBUG_OUTPUT)
+		{
+			LangProcOutput.println("Add vertex (" + (float)weight + ") " + vert_o);
+		}
+		
 		if (new_group && m_num_groups >= m_max_groups) throw new java.lang.IndexOutOfBoundsException("No more groups");
 		if (m_num_vertexes >= m_max_vertexes) throw new java.lang.IndexOutOfBoundsException("No more vertexes");
 		if (!new_group && m_num_groups==0) throw new java.lang.IndexOutOfBoundsException("No group is allocated yet. Use new_group = true!!!");
@@ -532,7 +543,7 @@ public class ChoiceGraph
 	{
 		//java.text.DecimalFormatSymbols dfs = new java.text.DecimalFormatSymbols(new java.util.Locale("en"));
 		//java.text.DecimalFormat df = new java.text.DecimalFormat("#.###", dfs);
-		//System.out.println("(" + v_id1 + ") edge node [right] {" + df.format(weight) + "} ("+ v_id2 +")");
+		//LangProcOutput.println("(" + v_id1 + ") edge node [right] {" + df.format(weight) + "} ("+ v_id2 +")");
 		assert(v_id1!=v_id2);
 		
 		assert( getVertexGroup(v_id1)!=getVertexGroup(v_id2) );
@@ -548,7 +559,10 @@ public class ChoiceGraph
 	{
 		if (weight==0.0) return;
 		
-		System.out.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
+		if (LangProcSettings.DEBUG_OUTPUT)
+		{
+			LangProcOutput.println("Add edge (" + (float)weight + ") " + edge_o + "(" + vert_o1 + "->" + vert_o2+")");
+		}
 		int v_id1 = m_object2vertex_map.get(vert_o1).m_vectex_id;
 		int v_id2 = m_object2vertex_map.get(vert_o2).m_vectex_id;
 		
@@ -605,7 +619,7 @@ public class ChoiceGraph
 		{
 			java.util.Collections.sort(vt);
 			vt.get(vt.size()-1).print(this);
-			System.out.println("------------------");
+			LangProcOutput.println("------------------");
 		}
 	}
 	
@@ -631,12 +645,12 @@ public class ChoiceGraph
 			DirectedEdge e = m_edges.get(v_i).get(v_j);
 			if ( e!=null)
 			{
-				//System.out.println("" + v_i + "->" + v_j + " w=" + e.m_weight + " vw=" + getVertexWeight(v_j));
+				//LangProcOutput.println("" + v_i + "->" + v_j + " w=" + e.m_weight + " vw=" + getVertexWeight(v_j));
 				myEdges.addEdge(nodes[i], nodes[j], 1000 + e.m_weight + getVertexWeight(v_j) );
 			}
 		}
 		
-		Edmonds myed = new Edmonds_Andre();	
+		Edmonds myed = new Edmonds_Andre();
 		AdjacencyList rBranch;
 	    rBranch = myed.getMaxBranching(root, myEdges);
 	    //dumpBranching(rBranch);
@@ -675,10 +689,10 @@ public class ChoiceGraph
 	
 	void dumpBranching(AdjacencyList branching)
 	{
-		System.out.println("dumpBranching");
+		LangProcOutput.println("dumpBranching");
 	    for( com.altmann.Edge e : branching.getAllEdges())
 	    {
-	    	System.out.println(e);
+	    	LangProcOutput.println(e);
 	    }
 	}
 	
@@ -706,7 +720,7 @@ public class ChoiceGraph
 	    
 	    for( com.altmann.Edge e : branching.getAllEdges())
 	    {
-	    	//System.out.println(e);
+	    	//LangProcOutput.println(e);
 	    	if (e.getSource().name==-1)
 	    	{
 	    		tree_root = tree_nodes[m_vertex2group[e.getDest().name]];
@@ -723,9 +737,9 @@ public class ChoiceGraph
 	    
 	    tree_root.updateWeight(this, 0.0);
 	    
-	    //System.out.println("Total = " + max_total);
+	    //LangProcOutput.println("Total = " + max_total);
 	    //tree_root.print(this);
-	    //System.out.println("Total weight = " + tree_root.m_total_weight );
+	    //LangProcOutput.println("Total weight = " + tree_root.m_total_weight );
 		return tree_root;
 	}
 	
@@ -738,7 +752,7 @@ public class ChoiceGraph
 	    	int v1 = e.getSource().name;
 	    	int v2 = e.getDest().name;
 	    	
-	    	//System.out.println("" + v1 + "->" + v2);
+	    	//LangProcOutput.println("" + v1 + "->" + v2);
 	    	
 	    	int c1 = v1==-1?-1:m_vertex2group[v1];
 	    	int c2 = m_vertex2group[v2];
@@ -776,12 +790,12 @@ public class ChoiceGraph
 		// best_connection[vertex_id][child_group] -> (child_vertex || -1)
 		// subtree_weight[vertex_id]->weight
 		
-		System.out.println( "Subtree (" + root_vi +  ") w = " + subtree_weight[root_vi] );
+		LangProcOutput.println( "Subtree (" + root_vi +  ") w = " + subtree_weight[root_vi] );
 		for(int i=0;i<m_num_groups;++i)
 		{
 			if (best_connection[root_vi][i]!=-1)
 			{
-				System.out.print("Connect " + root_vi +" -> ");
+				LangProcOutput.print("Connect " + root_vi +" -> ");
 				printSubtreeFromRootVertex(best_connection[root_vi][i], best_connection, subtree_weight );
 			}
 		}
@@ -805,7 +819,7 @@ public class ChoiceGraph
 		double total = 0;
 	    for( com.altmann.Edge e : branching.getAllEdges())
 	    {
-	    	//System.out.println(e);
+	    	//LangProcOutput.println(e);
 	    	total += e.getWeight();
 	    }
 	    return total;
@@ -823,11 +837,11 @@ public class ChoiceGraph
 		int group_parents[] = calculateGroupParentsFromAdjacencyList(branching);
 		int group_rank[] = calculateGroupRanks(group_parents);
 		int root_group = getRootGroupFromParents(group_parents);
-//		System.out.println("Root = " + root_group);
-//		for(int i=0;i<m_num_groups;++i) System.out.print(" " + group_parents[i]);
-//		System.out.println();
-//		for(int i=0;i<m_num_groups;++i) System.out.print(" " + group_rank[i]);
-//		System.out.println();
+//		LangProcOutput.println("Root = " + root_group);
+//		for(int i=0;i<m_num_groups;++i) LangProcOutput.print(" " + group_parents[i]);
+//		LangProcOutput.println();
+//		for(int i=0;i<m_num_groups;++i) LangProcOutput.print(" " + group_rank[i]);
+//		LangProcOutput.println();
 		
 		for(int rank=0; rank<m_num_groups; ++rank)
 		{
@@ -855,7 +869,7 @@ public class ChoiceGraph
 							
 							double max_child_weight = 0;
 								
-							//System.out.println("Optimize " + vi + "(" + group + ")" + " -> " + child_group);
+							//LangProcOutput.println("Optimize " + vi + "(" + group + ")" + " -> " + child_group);
 							int num_cci = getNumVerticesInGroup(child_group);
 							for(int cci=0; cci < num_cci; ++cci)
 							{
@@ -865,7 +879,7 @@ public class ChoiceGraph
 								DirectedEdge e = m_edges.get(vi).get(cvi);
 								if (e==null)
 								{
-									//System.out.println("Vertex " + vi + " and " + cvi + " are not connected");
+									//LangProcOutput.println("Vertex " + vi + " and " + cvi + " are not connected");
 									continue;
 								}
 								
@@ -888,22 +902,22 @@ public class ChoiceGraph
 						int best_ci = 0;
 						double best_weight = subtree_weight[group_verts.get(0)];
 						
-//						System.out.println("best_weight = " + best_weight);
+//						LangProcOutput.println("best_weight = " + best_weight);
 //						
 //						for(int vi = 0; vi<m_num_vertexes; ++vi)
 //						{
-//							System.out.print(subtree_weight[vi] + " ");
+//							LangProcOutput.print(subtree_weight[vi] + " ");
 //						}
-//						System.out.println();
-//						System.out.println("Possible connection matrix:");
+//						LangProcOutput.println();
+//						LangProcOutput.println("Possible connection matrix:");
 //						
 //						for(int vi = 0; vi<m_num_vertexes; ++vi)
 //						{
 //							for(int chi = 0; chi<m_num_groups; ++chi)
 //							{
-//								System.out.print(best_connection[vi][chi] + " ");
+//								LangProcOutput.print(best_connection[vi][chi] + " ");
 //							}
-//							System.out.println();
+//							LangProcOutput.println();
 //						}
 						
 						for(int ci=1; ci < num_ci; ++ci) // for all other vertexes in the group
@@ -929,6 +943,12 @@ public class ChoiceGraph
 	
 	public Subtree ExhaustiveEdmondSearch()
 	{
+		if (m_num_groups == 0)
+		{
+			LangProcOutput.println("No groups. Return!!!");
+			return null;
+		}
+		
 		int choice_indexes[] = new int[m_num_groups];
 		for(int i=0;i<choice_indexes.length;++i) choice_indexes[i] = 0;
 			
@@ -945,7 +965,7 @@ public class ChoiceGraph
 //		{
 //			total_est += e.getWeight();
 //		}
-//		System.out.println("Estimated max weight = " + total_est);
+//		LangProcOutput.println("Estimated max weight = " + total_est);
 		
 		
 		for(;;)
@@ -955,7 +975,7 @@ public class ChoiceGraph
 			if (isAcceptable(rBranch))
 			{
 			    double total = getBranchingWeight(rBranch);
-			    //System.out.println("Total = " + total);
+			    //LangProcOutput.println("Total = " + total);
 			    
 			    if (total > max_total)
 			    {
@@ -983,8 +1003,8 @@ public class ChoiceGraph
 				}
 			}
 
-			//for(int i=0;i<indexes.length;++i) System.out.print(" " + indexes[i]);
-			//System.out.println();
+			//for(int i=0;i<indexes.length;++i) LangProcOutput.print(" " + indexes[i]);
+			//LangProcOutput.println();
 			
 			if (finished) break;
 		}
@@ -995,7 +1015,7 @@ public class ChoiceGraph
 		if (maxBranch==null) return null;
 		
 	    Subtree st = createSubTreeFromBranching(maxBranch);
-//	    System.out.println("Total weight = " + st.m_total_weight);
+//	    LangProcOutput.println("Total weight = " + st.m_total_weight);
 	    return st;
 	}
 	
@@ -1051,7 +1071,7 @@ public class ChoiceGraph
 			if (isAcceptable(rBranch))
 			{
 			    double total = getBranchingWeight(rBranch);
-			    //System.out.println("Accepted total = " + total);
+			    //LangProcOutput.println("Accepted total = " + total);
 
 			    // optimise until we stuck in local optimum
 			    while (use_optimize)
@@ -1063,7 +1083,7 @@ public class ChoiceGraph
 				    	double new_weight = getBranchingWeight(rBranch1);
 				    	if (new_weight>total)
 				    	{
-				    		//System.out.println("Improve " + total + "->" + new_weight);
+				    		//LangProcOutput.println("Improve " + total + "->" + new_weight);
 				    		rBranch = rBranch1;
 				    		total = new_weight;
 				    	}
@@ -1114,10 +1134,10 @@ public class ChoiceGraph
 	    
 		if (maxBranch==null)
 		{
-			//System.out.println("----------- branching was not found ");
+			//LangProcOutput.println("----------- branching was not found ");
 			return null;
 		}
-	    //System.out.println("-------------- not need just test ");
+	    //LangProcOutput.println("-------------- not need just test ");
 	    
 	    return createSubTreeFromBranching(maxBranch);
 	}
@@ -1181,7 +1201,7 @@ public class ChoiceGraph
 					}
 				}
 			}
-			//System.out.println("num_changes = " + num_changes +
+			//LangProcOutput.println("num_changes = " + num_changes +
 					//", total_tests = " + total_tests + ", subtree_aditions = " + subtree_aditions);
 
 		} while (num_changes>0);
@@ -1189,7 +1209,7 @@ public class ChoiceGraph
 		
 		//dumpBiggest(trees);
 		
-		//System.out.println("0 to 9 ---------------------");
+		//LangProcOutput.println("0 to 9 ---------------------");
 		
 		//Subtree sc_copy1 = new Subtree(trees.get(9).get(0));
 		//Subtree sj_copy1 = new Subtree(trees.get(0).get(0));
@@ -1202,39 +1222,49 @@ public class ChoiceGraph
 		return max_weighted_tree;
 	}
 	
-	public void printComplexity()
+	public double getComplexity()
 	{
-		System.out.println("Num groups = " + m_num_groups);
-		System.out.print("Complexity ");
 		double compl = 1;
 		for(int gi=0;gi<m_num_groups;++gi)
 		{
-			System.out.print( (gi>0?"*":"") + getNumVerticesInGroup(gi) );
 			compl *= getNumVerticesInGroup(gi);
 		}
-		System.out.println(" = " + compl);
+		return compl;
+	}
+	
+	public void printComplexity()
+	{
+		LangProcOutput.println("Num groups = " + m_num_groups);
+		LangProcOutput.print("Complexity ");
+		double compl = 1;
+		for(int gi=0;gi<m_num_groups;++gi)
+		{
+			LangProcOutput.print( (gi>0?"*":"") + getNumVerticesInGroup(gi) );
+			compl *= getNumVerticesInGroup(gi);
+		}
+		LangProcOutput.println(" = " + compl);
 	}
 	
 	public void printComplexityShort()
 	{
-		//System.out.println("Num groups = " + m_num_groups);
-		//System.out.print("Complexity ");
+		//LangProcOutput.println("Num groups = " + m_num_groups);
+		//LangProcOutput.print("Complexity ");
 		double compl = 1;
 		for(int gi=0;gi<m_num_groups;++gi)
 		{
-			//System.out.print( (gi>0?"*":"") + getNumVerticesInGroup(gi) );
+			//LangProcOutput.print( (gi>0?"*":"") + getNumVerticesInGroup(gi) );
 			compl *= getNumVerticesInGroup(gi);
 		}
-		System.out.print("" + compl);
+		LangProcOutput.print("" + compl);
 	}
 	
 	public void print()
 	{
-		//System.out.println(m_vertexes);
-		System.out.println(m_group_vertices);
-		//System.out.println(m_edges);
-		System.out.println(m_object2vertex_map);
-		System.out.println(m_vertex2group);
+		//LangProcOutput.println(m_vertexes);
+		LangProcOutput.println(m_group_vertices);
+		//LangProcOutput.println(m_edges);
+		LangProcOutput.println(m_object2vertex_map);
+		LangProcOutput.println(m_vertex2group);
 		
 		for(int i=0;i<m_num_vertexes;++i)
 		{
@@ -1254,12 +1284,71 @@ public class ChoiceGraph
 				else if (getEdgeWeight(i,j)>0.1) c='1';
 				else if (getEdgeWeight(i,j)>=0.0) c='0';
 				
-				System.out.print(c);
-				System.out.print(' ');
+				LangProcOutput.print(c);
+				LangProcOutput.print(' ');
 			}
-			System.out.println();
+			LangProcOutput.println();
 		}
 		printComplexity();
+	}
+	
+	void print_dependencies()
+	{
+		LangProcOutput.println("\\begin{dependency}");
+		LangProcOutput.println("\\begin{deptext}[column sep=1cm]");
+		
+		for(int i=0;i<m_num_vertexes;++i)
+		{
+			if (i!=0) LangProcOutput.print(" \\& ");
+
+			try
+			{
+				TaggedWord tw = (TaggedWord)m_vertexes.get(i).m_obj;
+				LangProcOutput.print(tw.m_word + " ");
+			}
+			catch(java.lang.Exception e)
+			{
+				LangProcOutput.print(m_vertexes.get(i).m_obj);
+			}
+		}
+		LangProcOutput.println("\\\\");
+		
+		for(int i=0;i<m_num_vertexes;++i)
+		{
+			if (i!=0) LangProcOutput.print(" \\& ");
+
+			try
+			{
+				TaggedWord tw = (TaggedWord)m_vertexes.get(i).m_obj;
+				LangProcOutput.print("(" + tw.m_base_word + ") ");
+			}
+			catch(java.lang.Exception e)
+			{
+			}
+		}
+		LangProcOutput.println("\\\\");
+		
+		for(int i=0;i<m_num_vertexes;++i)
+		{
+			if (i!=0) LangProcOutput.print(" \\& ");
+			LangProcOutput.print( (float)m_vertexes.get(i).m_weight);
+		}
+		LangProcOutput.println("\\\\");
+		
+		// My \& dog \& also \& likes \& eating \& sausage \\
+		LangProcOutput.println("\\end{deptext}");
+		
+		for(int i=0;i<m_num_vertexes;++i) for(int j=0;j<m_num_vertexes;++j)
+		{
+			if (m_edges.get(i).get(j)!=null
+					&& m_edges.get(i).get(j).m_weight>LangProcSettings.OPTIONAL_WEIGHT
+					)
+			{
+				LangProcOutput.println("\\depedge{"+(i+1)+"}{"+(j+1)+"}{" + m_edges.get(i).get(j) + "}");
+			}
+		}
+		
+		LangProcOutput.println("\\end{dependency}");
 	}
 	
 	
@@ -1336,37 +1425,37 @@ public class ChoiceGraph
 			
 			cg.printComplexity();
 			
-			System.out.println("\nExhaustive Edmond Search");
+			LangProcOutput.println("\nExhaustive Edmond Search");
 			long t3_0 = System.nanoTime();
 			Subtree st3 = cg.ExhaustiveEdmondSearch();
 			long t3_1 = System.nanoTime();
-			System.out.println( "Time3 = " + (t3_1-t3_0)/1000 + " mikro-sec" );
-			System.out.println("w3 = " + st3.m_total_weight);
+			LangProcOutput.println( "Time3 = " + (t3_1-t3_0)/1000 + " mikro-sec" );
+			LangProcOutput.println("w3 = " + st3.m_total_weight);
 			
 			double optimal = st3.m_total_weight;
 			long opt_time = t3_1-t3_0;
 			
-			System.out.println("\nRandomized Edmond search SIMPLE");
+			LangProcOutput.println("\nRandomized Edmond search SIMPLE");
 			long t1_0 = System.nanoTime();
 			Subtree st1 = cg.randomizedEdmondSearch(1000, false, false);
 			long t1_1 = System.nanoTime();
-			System.out.println( "Time% = " + (float)(100.0)*(t1_1-t1_0)/opt_time + "%" );
-			System.out.println("w% = " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
+			LangProcOutput.println( "Time% = " + (float)(100.0)*(t1_1-t1_0)/opt_time + "%" );
+			LangProcOutput.println("w% = " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
 			
-			System.out.println("\nRandomized Edmond search OPTIMIZE");
+			LangProcOutput.println("\nRandomized Edmond search OPTIMIZE");
 			long t1o_0 = System.nanoTime();
 			Subtree st1o = cg.randomizedEdmondSearch(1000, true, false);
 			long t1o_1 = System.nanoTime();
-			System.out.println( "Time% = " + (float)(100.0)*(t1o_1-t1o_0)/opt_time + "%" );
-			System.out.println("w% = " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
+			LangProcOutput.println( "Time% = " + (float)(100.0)*(t1o_1-t1o_0)/opt_time + "%" );
+			LangProcOutput.println("w% = " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
 			
-			System.out.println("\nGrowing trees search");
+			LangProcOutput.println("\nGrowing trees search");
 			
 			long t2_0 = System.nanoTime();
 			Subtree st2 = cg.growingTreesSearch();
 			long t2_1 = System.nanoTime();
-			System.out.println( "Time% = " + (float)(100.0)*(t2_1-t2_0)/opt_time + "%" );
-			System.out.println("w% = " + (float)( 100.0 * (1.0 - st2.m_total_weight/optimal)));
+			LangProcOutput.println( "Time% = " + (float)(100.0)*(t2_1-t2_0)/opt_time + "%" );
+			LangProcOutput.println("w% = " + (float)( 100.0 * (1.0 - st2.m_total_weight/optimal)));
 		}
 		catch(java.lang.Exception e)
 		{
@@ -1436,69 +1525,69 @@ public class ChoiceGraph
 					
 			cg.printComplexityShort();
 			
-			//System.out.println("\nExhaustive Edmond Search");
+			//LangProcOutput.println("\nExhaustive Edmond Search");
 			long t3_0 = System.nanoTime();
 			Subtree st3 = cg.ExhaustiveEdmondSearch();
 			long t3_1 = System.nanoTime();
-			System.out.print(" " + (t3_1-t3_0)/1000 );
+			LangProcOutput.print(" " + (t3_1-t3_0)/1000 );
 			double optimal = 1.0;
 			if (st3==null)
 			{
-				System.out.print(" 0.0");
+				LangProcOutput.print(" 0.0");
 			}
 			else
 			{
-				System.out.print(" " + st3.m_total_weight);
+				LangProcOutput.print(" " + st3.m_total_weight);
 				optimal = st3.m_total_weight;
 			}
 			
 			long opt_time = t3_1-t3_0;
 			
-			//System.out.println("\nRandomized Edmond search SIMPLE");
+			//LangProcOutput.println("\nRandomized Edmond search SIMPLE");
 			long t1_0 = System.nanoTime();
 			Subtree st1 = cg.randomizedEdmondSearch(400, false, false);
 			long t1_1 = System.nanoTime();
-			System.out.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
+			LangProcOutput.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
 			if (st1==null)
 			{
-				System.out.print(st3==null?" 0.0":" 100.0");
+				LangProcOutput.print(st3==null?" 0.0":" 100.0");
 			}
 			else
 			{
-				System.out.print(" " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
+				LangProcOutput.print(" " + (float)( 100.0 * (1.0 - st1.m_total_weight/optimal)));
 			}
 			
-			//System.out.println("\nRandomized Edmond search OPTIMIZE");
+			//LangProcOutput.println("\nRandomized Edmond search OPTIMIZE");
 			long t1o_0 = System.nanoTime();
 			Subtree st1o = cg.randomizedEdmondSearch(100, true, false);
 			long t1o_1 = System.nanoTime();
-			System.out.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
+			LangProcOutput.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
 			if (st1o==null)
 			{
-				System.out.print(st3==null?" 0.0":" 100.0");
+				LangProcOutput.print(st3==null?" 0.0":" 100.0");
 			}
 			else
 			{
-				System.out.print(" " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
+				LangProcOutput.print(" " + (float)( 100.0 * (1.0 - st1o.m_total_weight/optimal)));
 			}
 			
-			//System.out.println("\nGrowing trees search");
+			//LangProcOutput.println("\nGrowing trees search");
 			
 //			long t2_0 = System.nanoTime();
 //			Subtree st2 = cg.growingTreesSearch();
 //			long t2_1 = System.nanoTime();
 //			
-//			System.out.print( " " + (float)(100.0)*(t2_1-t2_0)/opt_time );
+//			LangProcOutput.print( " " + (float)(100.0)*(t2_1-t2_0)/opt_time );
 //
 //			if (st2==null)
 //			{
-//				System.out.print(st3==null?" 0.0":" 100.0");
+//				LangProcOutput.print(st3==null?" 0.0":" 100.0");
 //			}
 //			else
 //			{
-//				System.out.print(" " + (float)( 100.0 * (1.0 - st2.m_total_weight/optimal)));
+//				LangProcOutput.print(" " + (float)( 100.0 * (1.0 - st2.m_total_weight/optimal)));
 //			}
-			System.out.println();
+			LangProcOutput.println();
 		}
 		catch(java.lang.Exception e)
 		{
@@ -1579,21 +1668,21 @@ public class ChoiceGraph
 						
 				//cg.printComplexityShort();
 				
-				//System.out.println("\nExhaustive Edmond Search");
+				//LangProcOutput.println("\nExhaustive Edmond Search");
 				long t1 = System.nanoTime();
 				Subtree st = cg.ExhaustiveEdmondSearch();
 				long t2 = System.nanoTime();
-				//System.out.print(" " + (t3_1-t3_0)/1000 );
+				//LangProcOutput.print(" " + (t3_1-t3_0)/1000 );
 				float optimal = 1.0f;
 				if (st==null)
 				{
 					--n;
 					continue;
-					//System.out.print(" 0.0");
+					//LangProcOutput.print(" 0.0");
 				}
 				else
 				{
-					//System.out.print(" " + st3.m_total_weight);
+					//LangProcOutput.print(" " + st3.m_total_weight);
 					optimal = (float)st.m_total_weight;
 				}
 				
@@ -1601,11 +1690,11 @@ public class ChoiceGraph
 				
 				sum_time += opt_time;
 				
-				//System.out.println("\nRandomized Edmond search SIMPLE");
+				//LangProcOutput.println("\nRandomized Edmond search SIMPLE");
 				t1 = System.nanoTime();
 				st = cg.randomizedEdmondSearch(num_random_searches*4, false, false);
 				t2 = System.nanoTime();
-				//System.out.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
+				//LangProcOutput.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
 				
 				sum_time_alg[0] += (t2 - t1);
 				
@@ -1613,11 +1702,11 @@ public class ChoiceGraph
 				sum_sqr_dev_alg[0] += dev * dev;
 				if (dev < 1E-6) num_optimal[0] +=1.0f;
 
-				//System.out.println("\nRandomized Edmond search Bayesian");
+				//LangProcOutput.println("\nRandomized Edmond search Bayesian");
 				t1 = System.nanoTime();
 				st = cg.randomizedEdmondSearch(num_random_searches*4, false, true);
 				t2 = System.nanoTime();
-				//System.out.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
+				//LangProcOutput.print(" " + (float)(100.0)*(t1_1-t1_0)/opt_time );
 				
 				sum_time_alg[1] += (t2 - t1);
 				
@@ -1626,12 +1715,12 @@ public class ChoiceGraph
 				if (dev < 1E-6) num_optimal[1] += 1.0f;
 
 					
-				//System.out.println("\nRandomized Edmond search OPTIMIZE");
+				//LangProcOutput.println("\nRandomized Edmond search OPTIMIZE");
 				t1 = System.nanoTime();
 				st = cg.randomizedEdmondSearch(num_random_searches, true, false);
 				t2 = System.nanoTime();
 				
-				//System.out.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
+				//LangProcOutput.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
 				sum_time_alg[2] += (t2 - t1);
 				
 				dev = (float)(st==null ? 1.0 : (optimal - st.m_total_weight)/optimal);
@@ -1639,19 +1728,19 @@ public class ChoiceGraph
 				if (dev < 1E-6) num_optimal[2] += 1.0f;
 				
 				
-				//System.out.println("\nRandomized Edmond search OPTIMIZE");
+				//LangProcOutput.println("\nRandomized Edmond search OPTIMIZE");
 				t1 = System.nanoTime();
 				st = cg.randomizedEdmondSearch(num_random_searches, true, true);
 				t2 = System.nanoTime();
 				
-				//System.out.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
+				//LangProcOutput.print(" " + (float)(100.0)*(t1o_1-t1o_0)/opt_time );
 				sum_time_alg[3] += (t2 - t1);
 				
 				dev = (float)(st==null ? 1.0 : (optimal - st.m_total_weight)/optimal);
 				sum_sqr_dev_alg[3] += dev * dev;
 				if (dev < 1E-6) num_optimal[3] += 1.0f;
 				
-				//System.out.println();
+				//LangProcOutput.println();
 			}
 			catch(java.lang.Exception e)
 			{
@@ -1659,17 +1748,17 @@ public class ChoiceGraph
 			}
 		}
 		
-		System.out.print("" + num_verts + " " + (float)sum_time / 1.0e9 );
+		LangProcOutput.print("" + num_verts + " " + (float)sum_time / 1.0e9 );
 		
 		for(int i=0;i<4;++i)
 		{
-			System.out.print(
+			LangProcOutput.print(
 					" " + (float)((float)sum_time_alg[i]/sum_time) +
 					" " + (float)java.lang.Math.sqrt(sum_sqr_dev_alg[i]/num_trials) +
 					" " + (float)java.lang.Math.sqrt(num_optimal[i]/num_trials ) );
 		}
 		
-		System.out.println();
+		LangProcOutput.println();
 		
 	}
 	
@@ -1752,7 +1841,7 @@ public class ChoiceGraph
 				}
 				
 				float diff = (float)(st1.m_total_weight - st1o.m_total_weight);
-				//System.out.println("" + st1.m_total_weight + " - " + st1o.m_total_weight + "\t\t" + diff);
+				//LangProcOutput.println("" + st1.m_total_weight + " - " + st1o.m_total_weight + "\t\t" + diff);
 
 				sum_sqr_dev_alg1 += diff<-1e-6? diff*diff : 0.0;
 				sum_sqr_dev_alg2 += diff>+1e-6? diff*diff : 0.0;
@@ -1767,7 +1856,7 @@ public class ChoiceGraph
 			}
 		}
 		
-		System.out.println("" + num_verts + 
+		LangProcOutput.println("" + num_verts + 
 				" " + (float)java.lang.Math.sqrt(sum_sqr_dev_alg1/num_trials) +
 				" " + (float)java.lang.Math.sqrt(sum_sqr_dev_alg2/num_trials)
 				);
@@ -1777,13 +1866,13 @@ public class ChoiceGraph
 	
 	static public void test()
 	{
-		System.out.println("#Verts Base_time(sec) time1_frac time2_frac SQV1 SQV2");
+		LangProcOutput.println("#Verts Base_time(sec) time1_frac time2_frac SQV1 SQV2");
 
 		double arc_coverage = 0.4;  double pow = 1.0;
 		//double arc_coverage = 0.4;  double pow = 0.0;
 		//double arc_coverage = 0.4;  double pow = 0.0;
 		
-		System.out.println("Testing for " + arc_coverage + ";pow=" + pow);
+		LangProcOutput.println("Testing for " + arc_coverage + ";pow=" + pow);
 		
 		testMeanPerformance( 8, 4, arc_coverage, pow);
 		testMeanPerformance(12, 4, arc_coverage, pow);
@@ -1807,10 +1896,10 @@ public class ChoiceGraph
 //		System.out.flush();
 //		testMeanPerformance(36, 4, arc_coverage, pow);
 		
-//		System.out.println("# Complexity Base_time(msk) Maximal_weight Alg1_time(%) Alg1_dev(%) Alg2_time(%) Alg2_dev(%) Alg3_time(%) Alg3_dev(%");
+//		LangProcOutput.println("# Complexity Base_time(msk) Maximal_weight Alg1_time(%) Alg1_dev(%) Alg2_time(%) Alg2_dev(%) Alg3_time(%) Alg3_dev(%");
 //		double arc_coverage = 0.4;
 //		double pow = 1.0;
-//		//System.out.println("Arc coverage=;" + arc_coverage + ";distribition=;" + pow);
+//		//LangProcOutput.println("Arc coverage=;" + arc_coverage + ";distribition=;" + pow);
 //		for(int i=0;i<200;++i)
 //		{
 //			testTable(arc_coverage, pow);
