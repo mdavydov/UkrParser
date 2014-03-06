@@ -1,0 +1,242 @@
+\ProvidesPackage{myheader}
+
+%\usepackage{makeidx}         % allows index generation
+%\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+\usepackage{indentfirst}         % first paragraph indent
+\usepackage{needspace}         % first paragraph indent
+
+% Налагодження кодування шрифта, кодування вхідного файла
+% та вибір необхідних мов
+%\usepackage[T2A]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage[english,ukrainian,russian]{babel}
+
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{alltt}
+\usepackage{moreverb}
+\usepackage{setspace}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{multirow}
+\usepackage{bigstrut}
+\usepackage{makecell}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\usepackage{wrapfig}% використаний замість пакету floatflt, який був вилучений із texlive що посмачається із ubuntu 10.04.
+\usepackage{url}
+\usepackage{array}
+\usepackage{booktabs}
+% Підключення необхідних пакетів. Наприклад,
+% Пакети AMS для підтримки математики, теорем, спеціальних шрифтів
+%\usepackage[intlimits]{amsmath}
+%\allowdisplaybreaks
+\usepackage{amssymb}
+\usepackage{amsthm}
+% Налагодження нумерованих списків
+\usepackage{enumerate}
+% Гіпертекстові документи
+%\usepackage{hyperref}
+% або лише спеціальне форматування URL
+%\usepackage{url}
+% У списку літератури зворотні вказівки на посилання
+%\usepackage{backref}
+% Сортування посилань
+%\usepackage[noadjust]{cite}
+% Останні два пакети несумісні між собою. Крім того, конфліктують з цим класом!
+
+% Налагодження параметрів сторінки (зокрема берегів).
+% Наприклад, за допомогою пакета geometry
+\usepackage{geometry}
+%\geometry{hmargin={30mm,15mm},vmargin={26mm,26mm}}
+%\geometry{total={14cm,20.5cm},includehead}
+%\geometry{hmargin={20mm,20mm},vmargin={20mm,20mm}}
+%\geometry{mag=1414}
+\usepackage{verbatim}
+%\usepackage{color}
+
+%abbreviations
+
+%\usepackage{nomencl}
+%\makenomenclature
+
+
+% TikZ
+\usepackage[version=0.96]{pgf}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{pgfplots}
+%snakes,
+\usetikzlibrary{arrows,shapes,shapes.arrows,shapes.misc,automata,backgrounds,petri,patterns,positioning,scopes,chains,matrix,decorations.pathmorphing,shadows,calc}
+
+
+% Пакет crop дає змогу забрати весь текст або графіку з проекту
+
+\let\origcolor\color
+\expandafter\let\csname origcolor \expandafter\endcsname\csname color \endcsname
+\let\origtextcolor\textcolor
+\expandafter\let\csname origtextcolor \expandafter\endcsname\csname textcolor \endcsname
+% there is also `\pagecolor` but it isn't of relevance here
+
+\newcommand{\restorecolorcmds}{%
+    \let\color\origcolor
+    \expandafter\let\csname color \expandafter\endcsname\csname origcolor \endcsname
+    \let\textcolor\origtextcolor
+    \expandafter\let\csname textcolor \expandafter\endcsname\csname origtextcolor \endcsname
+    \color{black}%
+}
+
+{\makeatletter\gdef\reallynopagebreak{\par\nopagebreak\@nobreaktrue}}
+
+%\newcommand{\restorecolorcmds}{}
+
+%\usepackage[notext]{crop}
+%\usepackage{crop}
+
+% b/w or color images selection
+
+\newcommand*\colorgraphics{\restorecolorcmds} % print them
+%\newcommand*\colorgraphics{\crop[nographics] \color{white} } % don’t!
+
+\newcommand*\monographics{\restorecolorcmds} % print them
+%\newcommand*\monographics{\crop[nographics] \color{white} } % don’t!
+
+
+% Інформація про використані пакети тощо.
+% Може знадобитися для відлагодження класу документа
+%\listfiles
+
+% custom commands
+\gdef\argmin{\mathop{\rm arg\,min}} %define \argmin command
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\dotpr}[2]{\left\langle #1,#2 \right\rangle}
+
+\newcommand{\vectcol}[1]{\left( \begin{array}{c} #1 \end{array} \right)}
+
+\newcommand{\VEC}[1]{\mathbf{#1}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\mif}{\hspace{5pt} \mathtt{if} \hspace{5pt}}
+\newcommand{\minuslineskip}{\vspace{-6pt}}
+
+%\spacing{1.4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Tkz styles %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tikzset{
+  terminal/.style={
+    % The shape:
+    rounded rectangle, 
+    minimum height=10mm,
+    minimum width=80mm,
+    % The border:
+    very thick,
+    draw=black!50,
+    %draw=green!50!black!50,         % 50% red and 50% black,
+                                  % and that mixed with 50% white
+    % The filling:
+    %top color=white,              % a shading that is white at the top...
+    %bottom color=green!50!black!20, % and something else at the bottom
+    % Font
+    font=\itshape,text centered,text width=80mm
+  },
+  decision/.style={
+    inner sep=1pt,
+    % The shape:
+    diamond,    
+    minimum width=80mm,
+    % The rest
+    very thick,draw=black!50,
+    %top color=white,bottom color=black!20,
+    font=\ttfamily,text centered,text width=80mm
+  },
+  process/.style={
+    % The shape:
+    rectangle,
+    % The size:
+    minimum height=20mm,
+    minimum width=80mm,
+    % The rest
+    very thick,draw=black!50,
+    %top color=white,bottom color=black!20,
+    font=\ttfamily,text centered,text width=80mm%,text depth=15mm
+  },  
+  data/.style={
+    % The shape:    
+    trapezium,
+    trapezium left angle=50, 
+    trapezium right angle=130,
+    %trapezium stretches=true,
+    trapezium stretches body,
+    minimum height=20mm,
+    minimum width=80mm,
+    % The rest
+    very thick,draw=black!50,
+    %top color=white,bottom color=black!20,
+    font=\ttfamily,
+    text centered,text width=80mm%,text depth=15mm
+  },
+  dot/.style={
+    circle,
+    minimum height=1mm,    
+    fill=black
+  },
+  thickline/.style={draw, line width=5pt, color=black},
+  line/.style={draw, very thick, color=black!50,rounded corners},
+  help-lines/.style={draw, very thin, color=black!50},
+  arrow/.style={draw, very thick, color=black!50, -latex',rounded corners},
+  helper-arrow/.style={draw, very thin, color=black, -latex'},
+  dashed-line/.style={draw, dashed, color=black},
+  point/.style={coordinate}
+}
+
+\usepackage{tikz-qtree}
+\usetikzlibrary{shapes.multipart}	
+
+\newcommand{\convexpath}[2]{
+[   
+    create hullnodes/.code={
+        \global\edef\namelist{#1}
+        \foreach [count=\counter] \nodename in \namelist {
+            \global\edef\numberofnodes{\counter}
+            \node at (\nodename) [draw=none,name=hullnode\counter] {};
+        }
+        \node at (hullnode\numberofnodes) [name=hullnode0,draw=none] {};
+        \pgfmathtruncatemacro\lastnumber{\numberofnodes+1}
+        \node at (hullnode1) [name=hullnode\lastnumber,draw=none] {};
+    },
+    create hullnodes
+]
+($(hullnode1)!#2!-90:(hullnode0)$)
+\foreach [
+    evaluate=\currentnode as \previousnode using \currentnode-1,
+    evaluate=\currentnode as \nextnode using \currentnode+1
+    ] \currentnode in {1,...,\numberofnodes} {
+-- ($(hullnode\currentnode)!#2!-90:(hullnode\previousnode)$)
+  let \p1 = ($(hullnode\currentnode)!#2!-90:(hullnode\previousnode) - (hullnode\currentnode)$),
+    \n1 = {atan2(\x1,\y1)},
+    \p2 = ($(hullnode\currentnode)!#2!90:(hullnode\nextnode) - (hullnode\currentnode)$),
+    \n2 = {atan2(\x2,\y2)},
+    \n{delta} = {-Mod(\n1-\n2,360)}
+  in 
+    {arc [start angle=\n1, delta angle=\n{delta}, radius=#2]}
+}
+-- cycle
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\floatname{algorithm}{Алгоритм}
+\floatname{forewordname}{Передмова}
+
+\newtheorem{statement}{Твердження}
+\newtheorem{definition}{Означення}
+\newtheorem{thm}{Теорема}
+\newtheorem{lem}{Лема}
+\newtheorem{dfn}{Визначення}
+\newtheorem{probl}{Задача}

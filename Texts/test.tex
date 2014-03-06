@@ -1,0 +1,97 @@
+\documentclass{article}
+
+\usepackage{myheader}
+\usepackage{pgfplots}
+
+\begin{document}
+
+
+\hspace{1em}
+\resizebox{\columnwidth}{!}{
+\begin{tikzpicture}[sibling distance=30pt]
+\Tree 
+[..(.)-0.5 [.ROOT \edge node[auto=left]{0,05 }; [.зберігатиму(зберігати)-0.9 [.IND-OBJ \edge node[auto=left]{0,368 }; [.таємниці(таємниця)-2.0 [.ADJ \edge node[auto=left]{1,5 }; маленькі(маленький)-9.2 ][.ADJ \edge node[auto=left]{0,607 }; твої(твої)-1.1 ] ] ][.ADV \edge node[auto=left]{0,779 }; надійно(надійний)-1.5 ][.SUBJECT \edge node[auto=left]{0,607 }; я(я)-75.9 ] ] ] ]
+\end{tikzpicture}
+}
+
+\begin{figure}
+\centering
+\subfigure[Імовірність повторення слова]{\label{fig:opt-prob-unif}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+	legend pos=outer north east,
+	scatter,
+    scatter src=explicit,
+%    only marks,
+    grid=both,
+    width=10cm,
+    xmin=0,xmax=1000,
+    ymin=0,ymax=1,
+%    xtick={8,12,16,20,24,28,32,36},
+    xlabel = $ N $,
+    ylabel = Імовірність повторення слова,
+]
+\addplot[point meta=1, mark=*, blue] table[x index=0,y index=1] {proza_stats.txt};
+\addlegendentry{Proza}
+
+\addplot[point meta=2, mark=*, yellow] table[x index=0,y index=1] {zakon_stats.txt};
+\addlegendentry{Zakon}
+
+\addplot[point meta=3, mark=*, red] table[x index=0,y index=1] {nauka_stats.txt};
+\addlegendentry{Nauka}
+
+\addplot[point meta=4, mark=x, orange] table[x index=0,y index=1] {new.txt};
+\addlegendentry{NEW}
+
+
+%\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
+%\addlegendentry{zakon3}
+
+\end{axis}
+
+\end{tikzpicture}
+}
+
+\subfigure[Імовірність повторення базової форми слова]{\label{fig:opt-prob-unif}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+	legend pos=outer north east,
+	scatter,
+    scatter src=explicit,
+%    only marks,
+    grid=both,
+    width=10cm,
+    xmin=0,xmax=1000,
+    ymin=0,ymax=1,
+%    xtick={8,12,16,20,24,28,32,36},
+    xlabel = $ N $,
+    ylabel = Імовірність повторення слова,
+]
+\addplot[point meta=1, mark=*, blue] table[x index=0,y index=2] {proza_stats.txt};
+\addlegendentry{Proza}
+
+\addplot[point meta=2, mark=*, yellow] table[x index=0,y index=2] {zakon_stats.txt};
+\addlegendentry{Zakon}
+
+\addplot[point meta=3, mark=*, red] table[x index=0,y index=2] {nauka_stats.txt};
+\addlegendentry{Nauka}
+
+\addplot[point meta=4, mark=x, orange] table[x index=0,y index=2] {new.txt};
+\addlegendentry{NEW}
+
+
+%\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
+%\addlegendentry{zakon3}
+
+\end{axis}
+
+\end{tikzpicture}
+}
+
+\end{figure}
+
+\end{document}

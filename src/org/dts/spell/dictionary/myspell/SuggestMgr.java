@@ -321,9 +321,7 @@ public class SuggestMgr
   private void map_related(String word, int i, List wlst, MapEntry[] maptable)
   {
     int nummap = maptable.length ;
-    char c = word.charAt(i) ;
-
-    //if (c == 0)
+    
     if (word.length() <= i)
     {
       if (!wlst.contains(word) && check(word))
@@ -334,6 +332,11 @@ public class SuggestMgr
 
       return ;
     }
+    
+   	char c = word.charAt(i) ;
+
+    //if (c == 0)
+
 
     boolean in_map = false ;
 

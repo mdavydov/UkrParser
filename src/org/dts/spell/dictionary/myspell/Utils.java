@@ -16,7 +16,7 @@ import java.io.Writer;
  */
 public final class Utils
 {
-  public static int SETSIZE = 4000;
+  public static int SETSIZE = 16000;
   public static int MAXAFFIXES = 256 ;
   public static int MAXWORDLEN = 100 ;
   public static int XPRODUCT = (1 << 0) ;

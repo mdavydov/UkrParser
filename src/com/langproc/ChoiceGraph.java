@@ -1596,7 +1596,7 @@ public class ChoiceGraph
 	}
 	
 	
-	static public void testMeanPerformance(int num_verts, int max_grouping, double arc_coverage, double pow)
+	static public void testMeanPerformance(int num_verts, int max_grouping, float arc_coverage, double pow)
 	{
 		long sum_time = 0;
 		long sum_time_alg[] = {0,0,0,0};
@@ -1748,7 +1748,7 @@ public class ChoiceGraph
 			}
 		}
 		
-		LangProcOutput.print("" + num_verts + " " + (float)sum_time / 1.0e9 );
+		LangProcOutput.print("" + num_verts + " " + arc_coverage + " " + (float)sum_time / 1.0e9 );
 		
 		for(int i=0;i<4;++i)
 		{
@@ -1866,22 +1866,31 @@ public class ChoiceGraph
 	
 	static public void test()
 	{
-		LangProcOutput.println("#Verts Base_time(sec) time1_frac time2_frac SQV1 SQV2");
+		LangProcOutput.println("#Verts Dence Base_time(totalsec) (time_frac RMS_dev opt_ratio) x (RAND RANDOPT RAND+ASCENT RANDOPT+ASCENT)");
 
 		double arc_coverage = 0.4;  double pow = 1.0;
 		//double arc_coverage = 0.4;  double pow = 0.0;
 		//double arc_coverage = 0.4;  double pow = 0.0;
 		
 		LangProcOutput.println("Testing for " + arc_coverage + ";pow=" + pow);
+		LangProcOutput.flush();
 		
-		testMeanPerformance( 8, 4, arc_coverage, pow);
-		testMeanPerformance(12, 4, arc_coverage, pow);
-		testMeanPerformance(16, 4, arc_coverage, pow);
-		testMeanPerformance(20, 4, arc_coverage, pow);
-		testMeanPerformance(24, 4, arc_coverage, pow);
-		testMeanPerformance(28, 4, arc_coverage, pow);
-		testMeanPerformance(32, 4, arc_coverage, pow);
-		testMeanPerformance(36, 4, arc_coverage, pow);
+		int v_count = 40;
+			
+		for(float ac = 0.025f; ac<0.51f; ac += 0.025f)
+		{
+			testMeanPerformance(v_count, 4, ac, pow);
+			LangProcOutput.flush();
+		}
+		
+//		testMeanPerformance( 8, 4, arc_coverage, pow);
+//		testMeanPerformance(12, 4, arc_coverage, pow);
+//		testMeanPerformance(16, 4, arc_coverage, pow);
+//		testMeanPerformance(20, 4, arc_coverage, pow);
+//		testMeanPerformance(24, 4, arc_coverage, pow);
+//		testMeanPerformance(28, 4, arc_coverage, pow);
+//		testMeanPerformance(32, 4, arc_coverage, pow);
+//		testMeanPerformance(36, 4, arc_coverage, pow);
 		
 //		selectTheBest( 8, 4, arc_coverage, pow);
 //		selectTheBest(12, 4, arc_coverage, pow);
