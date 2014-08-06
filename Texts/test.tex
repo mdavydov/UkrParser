@@ -21,7 +21,7 @@
 \begin{tikzpicture}
 
 \begin{axis}[
-	legend pos=outer north east,
+	legend pos=north east,
 	scatter,
     scatter src=explicit,
 %    only marks,
@@ -30,20 +30,56 @@
     xmin=0,xmax=1000,
     ymin=0,ymax=1,
 %    xtick={8,12,16,20,24,28,32,36},
-    xlabel = $ N $,
-    ylabel = Імовірність повторення слова,
+    xlabel = Довжина уривку (слів),
+%    ylabel = Імовірність повторення випадково обраного слова,
 ]
-\addplot[point meta=1, mark=*, blue] table[x index=0,y index=1] {proza_stats.txt};
-\addlegendentry{Proza}
+\addplot[point meta=1, mark=o, black] table[x index=0,y index=1] {zakon_stats.txt};
+\addlegendentry{Законодавство}
 
-\addplot[point meta=2, mark=*, yellow] table[x index=0,y index=1] {zakon_stats.txt};
-\addlegendentry{Zakon}
+\addplot[point meta=1, mark=square, black] table[x index=0,y index=1] {nauka_stats.txt};
+\addlegendentry{Наукова література}
 
-\addplot[point meta=3, mark=*, red] table[x index=0,y index=1] {nauka_stats.txt};
-\addlegendentry{Nauka}
+\addplot[point meta=1, mark=x, black] table[x index=0,y index=1] {proza_stats.txt};
+\addlegendentry{Художня література}
 
-\addplot[point meta=4, mark=x, orange] table[x index=0,y index=1] {new.txt};
-\addlegendentry{NEW}
+%%0.596353 0.556502 0.000976611 0.0127927
+%\addplot[point meta=1, mark=none] expression[domain=1:1000]
+%  { 0.596353 *
+%  ( 0.556502*(1.0 - exp(-0.000976611 * \x)) + (1.0-0.556502)*(1.0 - exp(-0.0127927 * \x)) )
+%  };
+%
+%%0.855526 0.40293 0.000783674 0.012803
+%\addplot[point meta=1, mark=none, gray] expression[domain=1:1000]
+%  { 0.855526 *
+%  ( 0.40293*(1.0 - exp(-0.000783674 * \x)) + (1.0-0.40293)*(1.0 - exp(-0.012803 * \x)) )
+%  };
+%  
+%%0.826024 0.478531 0.000659214 0.0148155
+%\addplot[point meta=1, mark=none, green] expression[domain=1:1000]
+%  { 0.826024 *
+%  ( 0.478531*(1.0 - exp(-0.000659214 * \x)) + (1.0-0.478531)*(1.0 - exp(-0.0148155 * \x)) )
+%  };
+
+%\addplot[point meta=1, mark=none, red] expression[domain=1:3000]
+%{ 0.44129 * (1.0 - exp(-0.00553013 * \x))
+%};
+
+
+
+%\foreach \pas in {1,2,...,10} 
+%{
+%\addplot[point meta=1, mark=none] expression[domain=1:1000]
+%  { 0.8 * ( (1.0 - \pas * 0.1 * exp(-0.001 * \x) - (10-\pas)* 0.1 * exp (-0.014 * \x)) ) };
+%} 
+
+%\addplot[point meta=2, mark=x, yellow] table[x index=0,y index=2] {zakon_stats.txt};
+%\addlegendentry{ZakonTheor}
+%
+%\addplot[point meta=3, mark=*, green] table[x index=0,y index=3] {zakon_stats.txt};
+%\addlegendentry{ZakonBase}
+%
+%\addplot[point meta=3, mark=*, red] table[x index=0,y index=4] {zakon_stats.txt};
+%\addlegendentry{ZakonBase}
 
 
 %\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
@@ -54,6 +90,91 @@
 \end{tikzpicture}
 }
 
+%\end{figure}
+%
+%\begin{figure}
+%\centering
+\subfigure[Імовірність повторення базової форми слова]{\label{fig:opt-prob-unif}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+	legend pos=north west,
+	scatter,
+    scatter src=explicit,
+%    only marks,
+    grid=both,
+    width=10cm,
+    xmin=0,xmax=1000,
+    ymin=0,ymax=1,
+%    xtick={8,12,16,20,24,28,32,36},
+    xlabel = Довжина уривку (слів),
+%    ylabel = Імовірність повторення випадково обраного слова у іншій формі,
+]
+\addplot[point meta=1, mark=o, black] table[x index=0,y index=2] {zakon_stats.txt};
+\addlegendentry{Законодавство}
+
+\addplot[point meta=1, mark=square, black] table[x index=0,y index=2] {nauka_stats.txt};
+\addlegendentry{Наукова література}
+
+\addplot[point meta=1, mark=x, black] table[x index=0,y index=2] {proza_stats.txt};
+\addlegendentry{Художня література}
+
+
+
+
+%%0.596353 0.556502 0.000976611 0.0127927
+%\addplot[point meta=1, mark=none] expression[domain=1:1000]
+%  { 0.596353 *
+%  ( 0.556502*(1.0 - exp(-0.000976611 * \x)) + (1.0-0.556502)*(1.0 - exp(-0.0127927 * \x)) )
+%  };
+%
+%%0.855526 0.40293 0.000783674 0.012803
+%\addplot[point meta=1, mark=none, gray] expression[domain=1:1000]
+%  { 0.855526 *
+%  ( 0.40293*(1.0 - exp(-0.000783674 * \x)) + (1.0-0.40293)*(1.0 - exp(-0.012803 * \x)) )
+%  };
+%  
+%%0.826024 0.478531 0.000659214 0.0148155
+%\addplot[point meta=1, mark=none, green] expression[domain=1:1000]
+%  { 0.826024 *
+%  ( 0.478531*(1.0 - exp(-0.000659214 * \x)) + (1.0-0.478531)*(1.0 - exp(-0.0148155 * \x)) )
+%  };
+
+%\addplot[point meta=1, mark=none, red] expression[domain=1:3000]
+%{ 0.44129 * (1.0 - exp(-0.00553013 * \x))
+%};
+
+
+
+%\foreach \pas in {1,2,...,10} 
+%{
+%\addplot[point meta=1, mark=none] expression[domain=1:1000]
+%  { 0.8 * ( (1.0 - \pas * 0.1 * exp(-0.001 * \x) - (10-\pas)* 0.1 * exp (-0.014 * \x)) ) };
+%} 
+
+%\addplot[point meta=2, mark=x, yellow] table[x index=0,y index=2] {zakon_stats.txt};
+%\addlegendentry{ZakonTheor}
+%
+%\addplot[point meta=3, mark=*, green] table[x index=0,y index=3] {zakon_stats.txt};
+%\addlegendentry{ZakonBase}
+%
+%\addplot[point meta=3, mark=*, red] table[x index=0,y index=4] {zakon_stats.txt};
+%\addlegendentry{ZakonBase}
+
+
+%\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
+%\addlegendentry{zakon3}
+
+\end{axis}
+
+\end{tikzpicture}
+}
+\end{figure}
+
+
+\begin{figure}
+\centering
 \subfigure[Імовірність повторення базової форми слова]{\label{fig:opt-prob-unif}
 
 \begin{tikzpicture}
@@ -71,17 +192,77 @@
     xlabel = $ N $,
     ylabel = Імовірність повторення слова,
 ]
-\addplot[point meta=1, mark=*, blue] table[x index=0,y index=2] {proza_stats.txt};
-\addlegendentry{Proza}
+\addplot[point meta=1, mark=x, blue] table[x index=0,y index=2] {proza_stats.txt};
+\addlegendentry{ProzaReal}
 
-\addplot[point meta=2, mark=*, yellow] table[x index=0,y index=2] {zakon_stats.txt};
-\addlegendentry{Zakon}
+\addplot[point meta=1, mark=o, blue] table[x index=0,y index=2] {zakon_stats.txt};
+\addlegendentry{ZakonReal}
 
-\addplot[point meta=3, mark=*, red] table[x index=0,y index=2] {nauka_stats.txt};
-\addlegendentry{Nauka}
+\addplot[point meta=1, mark=square, blue] table[x index=0,y index=2] {nauka_stats.txt};
+\addlegendentry{NaukaReal}
 
-\addplot[point meta=4, mark=x, orange] table[x index=0,y index=2] {new.txt};
-\addlegendentry{NEW}
+%0.596353 0.556502 0.000976611 0.0127927
+\addplot[point meta=1, mark=none] expression[domain=1:1000]
+  { 0.596353 *
+  ( 0.556502*(1.0 - exp(-0.000976611 * \x)) + (1.0-0.556502)*(1.0 - exp(-0.0127927 * \x)) )
+  };
+
+%0.855526 0.40293 0.000783674 0.012803
+\addplot[point meta=1, mark=none, gray] expression[domain=1:1000]
+  { 0.855526 *
+  ( 0.40293*(1.0 - exp(-0.000783674 * \x)) + (1.0-0.40293)*(1.0 - exp(-0.012803 * \x)) )
+  };
+  
+%0.826024 0.478531 0.000659214 0.0148155
+\addplot[point meta=1, mark=none, green] expression[domain=1:1000]
+  { 0.826024 *
+  ( 0.478531*(1.0 - exp(-0.000659214 * \x)) + (1.0-0.478531)*(1.0 - exp(-0.0148155 * \x)) )
+  };
+
+\addplot[point meta=1, mark=none, red] expression[domain=1:1000]
+{ 0.44129 * (1.0 - exp(-0.00553013 * \x))
+};
+
+
+\end{axis}
+
+\end{tikzpicture}
+}
+
+\end{figure}
+
+
+
+\begin{figure}
+\centering
+\subfigure[Імовірність повторення слова]{\label{fig:opt-prob-unif}
+
+\begin{tikzpicture}
+
+\begin{axis}[
+	legend pos=outer north east,
+	scatter,
+    scatter src=explicit,
+%    only marks,
+    grid=both,
+    width=10cm,
+    xmin=0,xmax=1000,
+    ymin=0,ymax=1,
+%    xtick={8,12,16,20,24,28,32,36},
+    xlabel = $ N $,
+    ylabel = Імовірність повторення слова,
+]
+\addplot[point meta=1, mark=x, blue] table[x index=0,y index=1] {proza_stats.txt};
+\addlegendentry{ProzaReal}
+
+\addplot[point meta=2, mark=x, yellow] table[x index=0,y index=2] {proza_stats.txt};
+\addlegendentry{ProzaRealBase}
+
+\addplot[point meta=3, mark=*, green] table[x index=0,y index=3] {proza_stats.txt};
+\addlegendentry{ProzaTeor}
+
+\addplot[point meta=3, mark=*, red] table[x index=0,y index=4] {proza_stats.txt};
+\addlegendentry{ProzaBase}
 
 
 %\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
@@ -93,5 +274,87 @@
 }
 
 \end{figure}
+
+
+%
+%\begin{figure}
+%\centering
+%\subfigure[Імовірність повторення слова]{\label{fig:opt-prob-unif}
+%
+%\begin{tikzpicture}
+%
+%\begin{axis}[
+%	legend pos=outer north east,
+%	scatter,
+%    scatter src=explicit,
+%%    only marks,
+%    grid=both,
+%    width=10cm,
+%    xmin=0,xmax=1000,
+%    ymin=0,ymax=1,
+%%    xtick={8,12,16,20,24,28,32,36},
+%    xlabel = $ N $,
+%    ylabel = Імовірність повторення слова,
+%]
+%\addplot[point meta=1, mark=*, blue] table[x index=0,y index=1] {proza_stats.txt};
+%\addlegendentry{Proza}
+%
+%\addplot[point meta=2, mark=*, yellow] table[x index=0,y index=1] {zakon_stats.txt};
+%\addlegendentry{Zakon}
+%
+%\addplot[point meta=3, mark=*, red] table[x index=0,y index=1] {nauka_stats.txt};
+%\addlegendentry{Nauka}
+%
+%\addplot[point meta=4, mark=x, orange] table[x index=0,y index=1] {new.txt};
+%\addlegendentry{NEW}
+%
+%
+%%\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
+%%\addlegendentry{zakon3}
+%
+%\end{axis}
+%
+%\end{tikzpicture}
+%}
+%
+%\subfigure[Імовірність повторення базової форми слова]{\label{fig:opt-prob-unif}
+%
+%\begin{tikzpicture}
+%
+%\begin{axis}[
+%	legend pos=outer north east,
+%	scatter,
+%    scatter src=explicit,
+%%    only marks,
+%    grid=both,
+%    width=10cm,
+%    xmin=0,xmax=1000,
+%    ymin=0,ymax=1,
+%%    xtick={8,12,16,20,24,28,32,36},
+%    xlabel = $ N $,
+%    ylabel = Імовірність повторення слова,
+%]
+%\addplot[point meta=1, mark=*, blue] table[x index=0,y index=2] {proza_stats.txt};
+%\addlegendentry{Proza}
+%
+%\addplot[point meta=2, mark=*, yellow] table[x index=0,y index=2] {zakon_stats.txt};
+%\addlegendentry{Zakon}
+%
+%\addplot[point meta=3, mark=*, red] table[x index=0,y index=2] {nauka_stats.txt};
+%\addlegendentry{Nauka}
+%
+%\addplot[point meta=4, mark=x, orange] table[x index=0,y index=2] {new.txt};
+%\addlegendentry{NEW}
+%
+%
+%%\addplot[point meta=2, mark=*, red] table[x index=0,y index=1] {zakon_stats2.txt};
+%%\addlegendentry{zakon3}
+%
+%\end{axis}
+%
+%\end{tikzpicture}
+%}
+%
+%\end{figure}
 
 \end{document}

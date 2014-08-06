@@ -485,7 +485,7 @@ public class Sentence
 	{
 		int vertex_choices[] = new int[numWords()];
 
-		Random randomGen = new Random();
+		Random randomGen = langproc.m_randomGen;
 
 		int i = 0;
 		for (SentenceWord sw : m_words)

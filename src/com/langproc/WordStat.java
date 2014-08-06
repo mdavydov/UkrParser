@@ -25,7 +25,7 @@ public class WordStat
 				effective_interval = m_last_interval;
 			}
 
-			if (effective_interval < 300)
+			if (effective_interval < 0)
 			{
 				m_sum_interval_close += effective_interval;
 				m_rep_close_count += 1;
@@ -44,16 +44,6 @@ public class WordStat
 		return m_repeat_count >= 2;
 	}
 
-	// public float getMeanInterval()
-	// {
-	// if (m_repeat_count<=1) return java.lang.Float.POSITIVE_INFINITY;
-	//
-	// float m_prob_close = m_rep_close_count / (float)(m_rep_close_count +
-	// m_rep_far_count);
-	//
-	// return (float)(m_sum_interval) / (m_repeat_count-1);
-	// }
-
 	public float getProbability(int total_words)
 	{
 		return (float) m_repeat_count / total_words;
@@ -62,12 +52,12 @@ public class WordStat
 	public float getProbabilityForRepetition(int interval_length, int total_words)
 	{
 		float mean_pr = getProbability(total_words);
-		if (m_repeat_count <= 1) return mean_pr * interval_length;
+		if (m_repeat_count <= 1) return 0;//mean_pr * interval_length;
 
 		float m_prob_close = m_rep_close_count / (float) (m_rep_close_count + m_rep_far_count);
 
 		float prob = 0;
-
+		
 		if (m_rep_close_count > 0)
 		{
 			float lambda1 = 1.0f / (m_sum_interval_close / (float) m_rep_close_count);
