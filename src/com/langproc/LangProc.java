@@ -1282,8 +1282,7 @@ public class LangProc
 				java.io.InputStream ips = new java.io.FileInputStream("Texts/Proza/Fata_morgana_1375700832.txt");
 //				java.io.InputStream ips = new java.io.FileInputStream("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt");
 
-				java.io.InputStreamReader ipsr = new java.io.InputStreamReader(
-						ips, "WINDOWS-1251");
+				java.io.InputStreamReader ipsr = new java.io.InputStreamReader( ips, "WINDOWS-1251");
 				java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
 
 				java.io.OutputStream ops = new java.io.FileOutputStream(
