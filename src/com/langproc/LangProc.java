@@ -1247,8 +1247,14 @@ public class LangProc
 			if (result4.equals(s_orig)) ++num_pos4;
 		}		
 	}
-
+	
 	public static void main(String[] args)
+	{
+		PCFGParser.main(args);
+		return;
+	}
+
+	public static void main0(String[] args)
 	{
 		// ChoiceGraph.test();
 

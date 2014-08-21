@@ -18,10 +18,20 @@ public class WordTags
 	{
 		m_tags = tags;
 	}
+	
+	public boolean equals(WordTags wt)
+	{
+		return m_tags == wt.m_tags;
+	}
 
 	public void setTags(long tags)
 	{
 		m_tags |= tags;
+	}
+	
+	public void copy(WordTags wt)
+	{
+		m_tags = wt.m_tags;
 	}
 
 	public boolean hasAllTags(long tags)
@@ -42,6 +52,40 @@ public class WordTags
 	public void setTags(WordTags t)
 	{
 		m_tags |= t.m_tags;
+	}
+	
+	public boolean hasCommonTagsInAllCategories(long tags, long categories)
+	{
+		long res = ~categories | (m_tags & tags);
+		return  (res & WT.COUNT_MASK)!=0 &&
+				(res & WT.PERSON_MASK)!=0 &&
+				(res & WT.GENDER_MASK)!=0 &&
+				(res & WT.CASUS_MASK)!=0 &&
+				(res & WT.PERFECTION_MASK)!=0 &&
+				(res & WT.TIME_MASK)!=0;
+	}
+	
+	public boolean hasCommonTagsInCategories(WordTags wt)
+	{
+		return hasCommonTagsInAllCategories(wt.m_tags, wt.getCategories());
+	}
+	
+	public void limitInCategories(WordTags wt)
+	{
+		m_tags = m_tags&( ~wt.getCategories() | wt.m_tags );
+	}
+	
+	
+	public long getCategories()
+	{
+		long res = 0;
+		if ((m_tags & WT.COUNT_MASK)!=0) res|=WT.COUNT_MASK;
+		if ((m_tags & WT.PERSON_MASK)!=0) res|=WT.PERSON_MASK;
+		if ((m_tags & WT.GENDER_MASK)!=0) res|=WT.GENDER_MASK;
+		if ((m_tags & WT.CASUS_MASK)!=0) res|=WT.CASUS_MASK;
+		if ((m_tags & WT.PERFECTION_MASK)!=0) res|=WT.PERFECTION_MASK;
+		if ((m_tags & WT.TIME_MASK)!=0) res|=WT.TIME_MASK;
+		return res;
 	}
 
 	public boolean hasAllTags(WordTags t)
@@ -168,9 +212,9 @@ public class WordTags
 		if (hasSomeTags(WT.PERSON2)) b.append("p2 ");
 		if (hasSomeTags(WT.PERSON3)) b.append("p3 ");
 		if (hasSomeTags(WT.PERSONLESS)) b.append("p- ");
-		if (hasSomeTags(WT.MALE)) b.append("M ");
-		if (hasSomeTags(WT.FEMALE)) b.append("F ");
-		if (hasSomeTags(WT.NEUTRAL)) b.append("N ");
+		if (hasSomeTags(WT.MALE)) b.append("m ");
+		if (hasSomeTags(WT.FEMALE)) b.append("f ");
+		if (hasSomeTags(WT.NEUTRAL)) b.append("n ");
 		if (hasSomeTags(WT.CASUS1)) b.append("c1 ");
 		if (hasSomeTags(WT.CASUS2)) b.append("c2 ");
 		if (hasSomeTags(WT.CASUS3)) b.append("c3 ");
