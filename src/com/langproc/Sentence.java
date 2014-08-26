@@ -72,8 +72,7 @@ public class Sentence
 		return false;
 	}
 
-	boolean hasWordsWithSomeTagsBetween(int index_from, int index_to,
-			long tags_group1, long tags_group2)
+	boolean hasWordsWithSomeTagsBetween(int index_from, int index_to, long tags_group1, long tags_group2)
 	{
 		if (Math.abs(index_from - index_to) <= 1) return false;
 
@@ -160,8 +159,7 @@ public class Sentence
 		return 0.0;
 	}
 
-	void addPossibleRelation(ChoiceGraph cg, LangProc langproc, TaggedWord w1,
-			TaggedWord w2)
+	void addPossibleRelation(ChoiceGraph cg, LangProc langproc, TaggedWord w1, TaggedWord w2)
 	{
 		WordTags t1 = w1.getTags();
 		WordTags t2 = w2.getTags();
@@ -177,8 +175,7 @@ public class Sentence
 		{
 			if (t2.hasSomeTags(WT.SENTENCE_END))
 			{
-				if (t1.hasSomeTags(WT.VERB | WT.QUESTION)
-						&& !t1.hasSomeTags(WT.INFINITIVE))
+				if (t1.hasSomeTags(WT.VERB | WT.QUESTION) && !t1.hasSomeTags(WT.INFINITIVE))
 				{
 					if (w2.m_word.equals("?")) cg.addEdge("QUESTION", 0.05, w2, w1);
 					else if (w2.m_word.equals("!")) cg.addEdge("EXCLAMATION", 0.05, w2, w1);
@@ -187,22 +184,18 @@ public class Sentence
 				}
 				else
 				{
-					cg.addEdge("OPTIONAL", LangProcSettings.OPTIONAL_WEIGHT,
-							w2, w1);
+					cg.addEdge("OPTIONAL", LangProcSettings.OPTIONAL_WEIGHT, w2, w1);
 				}
 			}
 
-			if (t1.hasAllTags(WT.PRONOUN | WT.INDICATIVE)
-					&& t2.hasAllTags(WT.PRONOUN | WT.QUESTION)
-					&& sp2 == sp1 + 2
+			if (t1.hasAllTags(WT.PRONOUN | WT.INDICATIVE) && t2.hasAllTags(WT.PRONOUN | WT.QUESTION) && sp2 == sp1 + 2
 					&& hasWordsWithSomeTagsBetween(sp1, sp2, WT.COMMA))
 			{ // noun-to-noun
 				// relations
 				cg.addEdge("INDICATES", 1.0, w1, w2);
 			}
 
-			if (t1.hasAllTags(WT.PRONOUN | WT.QUESTION)
-					&& t2.hasAllTags(WT.VERB))
+			if (t1.hasAllTags(WT.PRONOUN | WT.QUESTION) && t2.hasAllTags(WT.VERB))
 			{ // noun-to-noun relations
 				cg.addEdge("QUESTION", linkHardSeq(sp1, sp2), w1, w2);
 			}
@@ -213,24 +206,18 @@ public class Sentence
 				if (t1.sameCasus(t2))
 				{
 					// we should redo this to make it better and more universal
-					if ((hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) || hasWordsWithAllTagsBetween(
-							sp1, sp2, WT.CONJ)))
+					if ((hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) || hasWordsWithAllTagsBetween(sp1, sp2, WT.CONJ)))
 					{
 						cg.addEdge("HOMOG-NOUN", dk, w1, w2);
 					}
-					else if (sp2 == sp1 + 1 && t1.sameCount(t2)
-							&& t1.hasTag(WT.NOUN))
+					else if (sp2 == sp1 + 1 && t1.sameCount(t2) && t1.hasTag(WT.NOUN))
 					{
 						cg.addEdge("APPOSITION", 1.1, w1, w2);
 					}
 				}
 
-				if (t2.hasTag(WT.CASUS2)
-						&& t2.hasSomeTags(WT.NOUN)
-						&& !hasWordsWithAllTagsBetween(sp1, sp2, t1.getCasus()
-								| WT.ANY_NOUN)
-								&& !hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA)
-								&& !hasWordsWithAllTagsBetween(sp1, sp2, WT.CONJ))
+				if (t2.hasTag(WT.CASUS2) && t2.hasSomeTags(WT.NOUN) && !hasWordsWithAllTagsBetween(sp1, sp2, t1.getCasus() | WT.ANY_NOUN)
+						&& !hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) && !hasWordsWithAllTagsBetween(sp1, sp2, WT.CONJ))
 				{
 					if (w2.hasSomeTags(WT.NOUN) && !w1.hasAllTags(WT.NUMERAL))
 					{
@@ -287,8 +274,7 @@ public class Sentence
 				// it better
 				// and more
 				// universal
-				if ((hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) || hasWordsWithAllTagsBetween(
-						sp1, sp2, WT.CONJ)))
+				if ((hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) || hasWordsWithAllTagsBetween(sp1, sp2, WT.CONJ)))
 				{
 					cg.addEdge("HOMOG-ADV", dk, w1, w2);
 				}
@@ -299,8 +285,7 @@ public class Sentence
 				if (t1.sameCasus(t2) && t1.sameCount(t2) && t1.sameGender(t2))
 				{
 					// we should redo this to make it better and more universal
-					if ((hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) || hasWordsWithAllTagsBetween(
-							sp1, sp2, WT.CONJ)))
+					if ((hasWordsWithAllTagsBetween(sp1, sp2, WT.COMMA) || hasWordsWithAllTagsBetween(sp1, sp2, WT.CONJ)))
 					{
 						cg.addEdge("HOMOG-ADJ", dk, w1, w2);
 					}
@@ -311,8 +296,7 @@ public class Sentence
 		if (t1.hasTag(WT.NUMERAL) && t2.hasTag(WT.NOUN))
 		{ // verb-to-verb
 			// relations
-			if (t1.hasTag(WT.CASUS1)
-					&& langproc.m_countable_req_nom.containsKey(w1.m_word))
+			if (t1.hasTag(WT.CASUS1) && langproc.m_countable_req_nom.containsKey(w1.m_word))
 			{
 				if (t2.hasAllTags(WT.CASUS1 | WT.PLURAL))
 				{
@@ -363,8 +347,7 @@ public class Sentence
 		if (t1.hasTag(WT.VERB) && t2.hasSomeTags(WT.ANY_NOUN))
 		{ // verb-to-verb
 			// relations
-			if (t1.samePerson(t2) && t1.sameCount(t2) && t1.sameGender(t2)
-					&& t2.hasTag(WT.CASUS1))
+			if (t1.samePerson(t2) && t1.sameCount(t2) && t1.sameGender(t2) && t2.hasTag(WT.CASUS1))
 			{
 				cg.addEdge("SUBJECT", linkPrefSeq(sp2, sp1), w1, w2);
 			}
@@ -424,9 +407,7 @@ public class Sentence
 		{
 			WordTags req_tags = langproc.m_prepositions.get(w1.m_base_word);
 
-			if (t2.hasSomeTags(req_tags)
-					&& !hasWordsWithSomeTagsBetween(sp1, sp2, WT.ANY_NOUN,
-							req_tags.m_tags))
+			if (t2.hasSomeTags(req_tags) && !hasWordsWithSomeTagsBetween(sp1, sp2, WT.ANY_NOUN, req_tags.m_tags))
 			{
 				cg.addEdge("PREPOS", linkGovernmentPrepos(sp1, sp2), w1, w2);
 			}
@@ -501,7 +482,7 @@ public class Sentence
 				for (int j = 0; j < n; ++j)
 				{
 					TaggedWord tw = sw.getHypothesis(j);
-			
+
 					int weight = langproc.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
 
 					// if (num_base_use!=null &&
@@ -536,7 +517,83 @@ public class Sentence
 
 	}
 
-	public String processSentence(LangProc langproc, boolean use_word_weighting)
+	Token getTokenByWord(PCFGParser parser, TaggedWord tw)
+	{
+		if (tw.m_tags.hasSomeTags(WT.NOUN)) return parser.getTokenByName("noun");
+		if (tw.m_tags.hasSomeTags(WT.VERB)) return parser.getTokenByName("verb");
+		if (tw.m_tags.hasSomeTags(WT.ADV)) return parser.getTokenByName("adv");
+		if (tw.m_tags.hasSomeTags(WT.ADJ)) return parser.getTokenByName("adj");
+		if (tw.m_tags.hasSomeTags(WT.PRONOUN)) return parser.getTokenByName("pronoun");
+		if (tw.m_tags.hasSomeTags(WT.NEGATION)) return parser.getTokenByName("neg");
+		if (tw.m_tags.hasSomeTags(WT.COMMA)) return parser.getTokenByName("comma");
+		if (tw.m_tags.hasSomeTags(WT.CONJ)) return parser.getTokenByName(tw.m_word);
+		if (tw.m_tags.hasSomeTags(WT.NUMERAL)) return parser.getTokenByName("num");
+		if (tw.m_tags.hasSomeTags(WT.PARTICLE)) return parser.getTokenByName("particle");
+		if (tw.m_tags.hasSomeTags(WT.ADVPART)) return parser.getTokenByName("advp");
+		if (tw.m_tags.hasSomeTags(WT.PREPOS)) return parser.getTokenByName(tw.m_word);
+		if (tw.m_tags.hasSomeTags(WT.HELPWORD)) return parser.getTokenByName("help");
+		return parser.getTokenByName(tw.m_word);
+	}
+
+	public String processSentenceWithAPCFG(LangProc langproc, boolean use_word_weighting)
+	{
+		PCFGParser parser = new PCFGParser();
+
+		parser.addRule("DNP[NCG] -> adj[NCG c2c3c4c5c6c7] noun[NCG]");
+
+		parser.addRule("NP[NCG p3] 0.8 -> noun[NCG c1] adj[NCG]");
+		parser.addRule("NP[NCG p3] -> adj[NCG c1] noun[NCG]");
+		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
+
+		parser.addRule("TARGET -> ó DNP[c4]");
+		parser.addRule("S -> NP[PN] VP[PN]");
+
+		parser.addRule("VP[PN] -> verb[PN] TARGET?");
+
+		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
+
+		for (SentenceWord sw : m_words)
+		{
+			java.util.List<ParsedToken> ptl = new java.util.ArrayList<ParsedToken>();
+			int n = sw.numHypotheses();
+			for (int i = 0; i < n; ++i)
+			{
+				TaggedWord tw = sw.getHypothesis(i);
+				float w = 0.5f; // base weight for the word
+				if (use_word_weighting)
+				{
+					int weight = langproc.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
+					w += weight * 0.1f;
+				}
+
+				WordTags token_sp = tw.m_tags;
+				Token req_token = getTokenByWord(parser, tw);
+				ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word);
+				ptl.add(pt);
+			}
+			tokens.add(ptl);
+		}
+
+		java.util.List<ParsedToken> res = parser.parse(tokens);
+
+		if (res == null || res.size() == 0)
+		{
+			System.out.println("No results");
+		}
+		else
+		{
+			for (ParsedToken root : res)
+			{
+				System.out.println("\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=30pt]\n\\Tree");
+				System.out.println(root.toTikzTree());
+				System.out.println("\\end{tikzpicture}\n}\n");
+			}
+		}
+
+		return "";
+	}
+
+	public String processSentenceWithDependencyGrammar(LangProc langproc, boolean use_word_weighting)
 	{
 		ChoiceGraph cg = new ChoiceGraph(numWords(), numHypotheses());
 
@@ -555,7 +612,7 @@ public class Sentence
 				if (use_word_weighting)
 				{
 					int weight = langproc.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
-					
+
 					// if (num_base_use!=null &&
 					// num_base_use.getMeanInterval()>200) weight=0;
 

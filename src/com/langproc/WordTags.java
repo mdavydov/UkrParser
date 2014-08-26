@@ -75,6 +75,25 @@ public class WordTags
 		m_tags = m_tags&( ~wt.getCategories() | wt.m_tags );
 	}
 	
+	public void limitInCategories(WordTags categories, WordTags tags)
+	{
+		m_tags = m_tags&( ~categories.getCategories() | tags.m_tags );
+	}
+	
+	public void limitInCategories(long categories, long tags)
+	{
+		m_tags = m_tags&( ~categories | tags );
+	}
+	
+	public void limitInCategories(WordTags categories, long tags)
+	{
+		m_tags = m_tags&( ~categories.getCategories() | tags );
+	}
+	public void limitInCategories(long categories, WordTags tags)
+	{
+		m_tags = m_tags&( ~categories | tags.m_tags );
+	}
+
 	
 	public long getCategories()
 	{

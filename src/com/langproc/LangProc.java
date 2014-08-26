@@ -993,7 +993,39 @@ public class LangProc
 			ss.print();
 			LangProcOutput.print("\n\\hspace{1em}\n\n");
 		}
-		return ss.processSentence(this, use_word_weighting);
+		return ss.processSentenceWithDependencyGrammar(this, use_word_weighting);
+	}
+	
+	private String checkGrammarAPCFG(String txt, boolean use_word_weighting)
+	{
+		// CharSequenceWordFinder wf = new CharSequenceWordFinder(txt);
+		CharSequenceWordFinder wf = new CharSequenceWordFinder(
+				Pattern.compile(
+						"[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(")
+						.matcher(txt));
+		Sentence ss = new Sentence();
+
+		// SentenceProcessor sp = new SentenceProcessor();
+
+		while (wf.hasNext())
+		{
+			Word w = wf.next();
+			// LangProcOutput.print(w.toString() + " ");
+
+			// LangProcOutput.print(w.toString());
+			// int s = w.toString().length();
+			// for(int i= 20; i>s; --i) LangProcOutput.print(" ");
+			addWordForms(ss, w.toString());
+			// LangProcOutput.print(w.toString() + " ");
+			// LangProcOutput.println();
+		}
+		if (LangProcSettings.SENTENCE_OUTPUT)
+		{
+			LangProcOutput.println("\n");
+			ss.print();
+			LangProcOutput.print("\n\\hspace{1em}\n\n");
+		}
+		return ss.processSentenceWithAPCFG(this, use_word_weighting);
 	}
 
 	private String tryFixRandom(String txt, boolean use_word_weighting)
@@ -1248,17 +1280,11 @@ public class LangProc
 		}		
 	}
 	
-	public static void main(String[] args)
-	{
-		PCFGParser.main(args);
-		return;
-	}
-
-	public static void main0(String[] args)
+	public static void main4(String[] args)
 	{
 		// ChoiceGraph.test();
 
-		final boolean from_file = true;
+		final boolean from_file = false;
 		// final boolean from_file = true; //!LangProcSettings.DEBUG_OUTPUT;
 
 		try
@@ -1346,18 +1372,18 @@ public class LangProc
 
 				//System.exit(0);
 				
-				lp.checkSentencePersistence("Тетяна знову затулилася долонями і змучено глухо відповіла.");
+				//lp.checkSentencePersistence("Тетяна знову затулилася долонями і змучено глухо відповіла.");
 				//lp.checkSentencePersistence("Скрізь нові будинки.");
-				lp.checkSentencePersistence("Та чого ти крутишся по хаті мов дзига?");
-				lp.checkSentencePersistence("На щастя, надходив Андрій.");
+				//lp.checkSentencePersistence("Та чого ти крутишся по хаті мов дзига?");
+				//lp.checkSentencePersistence("На щастя, надходив Андрій.");
 				
-				lp.checkSentencePersistence("На хвилину залягла тиша і натяглася, наче струна.");
-				lp.checkSentencePersistence("Далекі дзвони гуділи в ясному повітрі тихо й мелодійно, і здавалося, що то дзвенить золото сонця.");
+				//lp.checkSentencePersistence("На хвилину залягла тиша і натяглася, наче струна.");
+				//lp.checkSentencePersistence("Далекі дзвони гуділи в ясному повітрі тихо й мелодійно, і здавалося, що то дзвенить золото сонця.");
 
 
-				// lp.checkGrammar(
+				lp.checkGrammar(
 				// "Жив колись змой."
-				// "У четвертому розділі досліджено мовні моделі з використанням графів."
+				"У четвертому розділі досліджено мовні моделі з використанням графів."
 				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
 				// "м'яса"
 				// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
@@ -1404,7 +1430,7 @@ public class LangProc
 				// +
 				// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
 				// ""
-				// );
+				, false);
 
 				LangProcOutput.writer.flush();
 			}
@@ -1414,4 +1440,77 @@ public class LangProc
 			e.printStackTrace();
 		}
 	}
+	
+	public static void main0(String[] args)
+	{
+		PCFGParser.main(args);
+		return;
+	}
+	
+	public static void main(String[] args)
+	{
+		try
+		{
+			LangProc lp = new LangProc(new OpenOfficeSpellDictionary("uk_UA"));
+			LangProcOutput.flush();
+			lp.checkGrammarAPCFG(
+				"У четвертому розділі досліджено мовні моделі з використанням графів."
+				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
+				// "м'яса"
+				// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
+				// "ніщо нічим нічого"
+				// "стільки разів гонили його стрільці."
+				// "Дійшло до того, що він у білий день вибирався на полювання й ніколи не вертавсь з порожніми руками."
+				// "Скільки разів гонили його стрільці, цькували його хортами, ставили на нього капкани або підкидали йому отруєного м'яса, нічим не могли його доконати."
+				// "Лис Микита сміявся собі з них, обминав усякі небезпеки ще й інших своїх товаришів остерігав."
+				// "А вже як вибереться на лови — чи то до курника, чи до комори, то не було сміливішого, вигадливішого та спритнішого злодія."
+				// " Незвичайне щастя і його хитрість зробили його страшенно гордим."
+				// "Йому здавалося, що нема нічого неможливого для нього."
+
+				// "Але на вулиці й на базарі крик, шум, гамір, вози скриплять, колеса гуркотять, коні гримлять копитами, свині кувічуть — одним словом, клекіт такий, якого наш Микита і в сні не бачив, і в гарячці не чув."
+				// "Псів уже наш Микита не одурить."
+				// "До червоної я йшов скелі."+
+				// "Робота зроблена вчасно, але не добре."+
+				// "Робота зроблени вчасно, але не добре."+
+				// "Робота зроблени вчасно."+
+				// "Я йду додому."+
+				// "Йдучи додому."+
+				// "Робота зроблена."+
+				// "Вона знята."+
+				// "Роботу зроблено."+
+				// "Мені цікаво."+
+				// "Зроби мені його машину."+
+				// "Його словник."+
+				// "Ти бачив його словник, йдучи додому?"+
+				// "Який, котрий, котрого, якого, які, якому." +
+				// "Я подивилася цікавий фільм." +
+				// "Я люблю український борщ." +
+				// "Я маю коричневого собаку." +
+				// "Маленька дівчинка годує жовтих курчат." +
+				// "Я знаю українську мову добре." +
+				// "Чоловік купив машину?. " +
+				// "Коли ти купив машину?" +
+				// "Я ніколи не читав цей текст!" +
+				// "Я дивлюсь цікавий фільм." +
+				// "Я дивитимусь цікавий фільм." +
+				// "Я не читав цей текст." +
+				// "Я хочу мати ровер."+
+				// "Моя бабуся має зелене пальто." +
+				// "Прийменники не мають самостійного лексичного значення, тому членами речення не виступають."+
+				// "Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення."
+				// +
+				// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
+				// ""
+				, false);
+
+				LangProcOutput.writer.flush();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return;
+	}
+
+
 }
