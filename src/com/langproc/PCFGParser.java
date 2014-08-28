@@ -27,6 +27,12 @@ class AssociatedRule
 	}
 }
 
+class AttributeSpecials
+{
+	float m_probability=1.0f;
+	boolean m_generate_all_permutations=false;
+};
+
 // terminal or non-terminal token
 class Token
 {
@@ -78,7 +84,8 @@ class ProductionRule
 	// required sub-tokens
 	java.util.Vector<RequiredToken> m_subtokens;
 	
-	ProductionRule(Token result, WordTags def_attr, WordTags inherited_unified_attributes, float probability, java.util.Vector<RequiredToken> subtokens)
+	ProductionRule(Token result, WordTags def_attr, WordTags inherited_unified_attributes, float probability,
+			java.util.Vector<RequiredToken> subtokens, boolean gen_all_permutations)
 	{
 		m_result = result;
 		m_defined_attributes = def_attr;
@@ -86,6 +93,33 @@ class ProductionRule
 		m_probability = probability;
 		m_subtokens = subtokens;
 		addToIndex();
+		if (gen_all_permutations) createAllPermutations(0);
+	}
+	
+	void createAllPermutations(int index_to_start)
+	{
+		int s = m_subtokens.size();
+		for(int i=index_to_start+1;i<s;++i)
+		{
+			java.util.Vector<RequiredToken> new_subtokens = new java.util.Vector<RequiredToken>(m_subtokens);
+			RequiredToken t1 = new_subtokens.get(i);
+			new_subtokens.set(i, new_subtokens.get(index_to_start) );
+			new_subtokens.set(index_to_start, t1);
+			ProductionRule new_pr_rule = new ProductionRule(m_result, m_defined_attributes,
+					m_inherited_unified_attributes, m_probability, new_subtokens, false);
+			new_pr_rule.createAllPermutations(index_to_start+1); 
+		}
+	}
+	
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append(m_result.m_name + " " + m_probability + " -> ");
+		for(RequiredToken rt : m_subtokens)
+		{
+			sb.append(rt.m_token.m_name + " ");
+		}
+		return sb.toString();
 	}
 	
 	boolean canBeOneTermRuleWithTokenAt(int pos)
@@ -100,6 +134,9 @@ class ProductionRule
 	
 	public void addToIndex()
 	{
+		//System.out.print("Add to index ");
+		//dump();
+
 		if (m_subtokens.size()>1)
 		{
 			for(int pos = 0; pos < m_subtokens.size();++pos)
@@ -276,23 +313,52 @@ class ParsedToken
 	
 	String toTikzTree()
 	{
+		int depth = getDepth();
+		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=15pt,level distance=100pt]\n" +
+		"\\tikzset{frontier/.style={distance from root="+(depth*100-50)+"pt}}\n" +
+		"\\Tree\n" + 
+		toTikzTree(null,null,null) + "\n" + 
+		"\\end{tikzpicture}\n}\n";
+	}
+	
+	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res)
+	{
 		StringBuffer res = new StringBuffer();
 		
-		res.append("[.{");
+		WordTags wt;
+		if (req_tokens!=null)
+		{
+			wt = new WordTags(m_attributes);
+			wt.limitInCategories(req_tokens);
+			wt.limitInCategories(to_unify, unif_res);
+		}
+		else
+		{
+			wt = m_attributes;
+		}
+
+		
+		res.append("[.\\pbox[b]{1cm}{");
 		res.append(m_token.m_name);
 		res.append(" (");
-		res.append(m_attributes.toString());
+		res.append(wt.toString());
 		res.append(") ");
 		res.append(m_probabilty);
 		res.append("} ");
 		if (m_subtokens.size()>0)
 		{
+			int rule_ind = 0;
 			for( ParsedToken pt : m_subtokens )
 			{
-				res.append(" \\edge node[auto=left]{");
-				res.append(pt.m_probabilty);
-				res.append("}; ");
-				res.append(pt==null?"<>":pt.toTikzTree());
+				if (pt!=null)
+				{
+					res.append(" \\edge node[auto=left]{");
+					res.append(pt.m_probabilty);
+					res.append("}; ");
+					RequiredToken rt = m_production_rule.m_subtokens.get(rule_ind);
+					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes));
+				}
+				++rule_ind;
 			}
 		}
 		else
@@ -301,6 +367,17 @@ class ParsedToken
 		}
 		res.append(" ]");
 		return res.toString();
+	}
+	
+	int getDepth()
+	{
+		int max = 0;
+		for( ParsedToken pt : m_subtokens )
+		{
+			int d = pt==null? 0 : pt.getDepth();
+			if (d>max) max=d;
+		}
+		return max+1;
 	}
 }
 
@@ -331,6 +408,21 @@ public class PCFGParser
 		}
 		
 		if (leftPart.length()==0) return null;
+		
+		if (leftPart.charAt(0)=='<')
+		{
+			leftPart.deleteCharAt(0);
+			// read until '>'
+			StringBuffer result = new StringBuffer(16);			
+			while(leftPart.length()>0 && leftPart.charAt(0)!='>')
+			{
+				result.append(leftPart.charAt(0));
+				leftPart.deleteCharAt(0);
+			}
+			if (leftPart.length()>0) leftPart.deleteCharAt(0);
+			return result.toString();
+		}
+				
 		if (!Character.isAlphabetic(leftPart.charAt(0))) return null;
 			
 		StringBuffer result = new StringBuffer(16);
@@ -436,6 +528,28 @@ public class PCFGParser
 		}
 		return;
 	}
+	
+	void readAttributeSpecials(StringBuffer inbuf, AttributeSpecials attr_sp)
+	{
+		while(inbuf.length()>0 && Character.isWhitespace(inbuf.charAt(0)))
+		{
+			inbuf.deleteCharAt(0);
+		}
+		if (inbuf.length()==0) return;
+		if (inbuf.charAt(0)=='*')
+		{
+			attr_sp.m_generate_all_permutations = true;
+			inbuf.deleteCharAt(0);
+		}
+		
+		try
+		{
+			attr_sp.m_probability = Float.valueOf(inbuf.toString());
+		}
+		catch(NumberFormatException e) {}
+	}
+	
+
 
 	void addRule(String rule)
 	{
@@ -455,12 +569,9 @@ public class PCFGParser
 		WordTags left_un = new WordTags();
 		readAttributeString(leftPart, left_sp, left_un);
 		
-		float probability = 1.0f;
-		try
-		{
-			probability = Float.valueOf(leftPart.toString());
-		}
-		catch(NumberFormatException e) {}
+		AttributeSpecials sp_attr = new AttributeSpecials();
+		readAttributeSpecials(leftPart, sp_attr);
+		
 		
 		Token result = getTokenByName(leftTokenS);
 		WordTags defined_attributes = left_sp; // no tags yet
@@ -485,7 +596,8 @@ public class PCFGParser
 		}
 		
 		// the rule is added to index in each token that can be produced by this rule
-		new ProductionRule(result, defined_attributes, left_un, probability, subtokens);
+		new ProductionRule(result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
+
 	}
 
 
@@ -507,7 +619,7 @@ public class PCFGParser
 				}
 				else
 				{
-					System.out.println("Fnd (h=" + height + ", p=" + pos_left + ") " + partially_parsed_token.toString());
+					//System.out.println("Fnd (h=" + height + ", p=" + pos_left + ") " + partially_parsed_token.toString());
 					// this one is worser that one in the tree
 					return false;
 				}
@@ -702,6 +814,7 @@ public class PCFGParser
 						 // by default set that all attributes are possible
 						 reusable_token.m_uniform_attributes.m_tags = ~(long)0;
 						 
+						 //System.out.println("One-term rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
 						 reusable_token.setSubtoken(ar.m_token_index, token);
 						 
 						 if (addPossibleTokenCopy(start_pos, start_pos+apply_height+1, reusable_token, false))
@@ -729,6 +842,8 @@ public class PCFGParser
 				{
 					 reusable_token.resetWithRule(ar.m_rule);
 					 reusable_token.setSubtoken(ar.m_token_index, token);
+					 
+					 System.out.println("Try rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
 					 
 					 tryExpandLeft(ar.m_rule, reusable_token,
 							apply_height, ar.m_token_index, start_pos,
@@ -760,6 +875,9 @@ public class PCFGParser
 			for(int start_pos=0; start_pos < m_total_height-apply_height;++start_pos)
 			{
 				fireAllOneTermRules(apply_height, start_pos);
+			}
+			for(int start_pos=0; start_pos < m_total_height-apply_height;++start_pos)
+			{
 				fireAllMultiTermRules(apply_height, start_pos);
 			}
 		}
@@ -792,7 +910,7 @@ public class PCFGParser
 		return parse(tokens);
 	}
 	
-	public static void main(String[] args)
+	public static void main_(String[] args)
 	{
 		System.out.println("PCFG Parser test!!!");
 		PCFGParser parser = new PCFGParser();
@@ -823,9 +941,7 @@ public class PCFGParser
 		{
 			for( ParsedToken root : res)
 			{
-				System.out.println("\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=30pt]\n\\Tree");
 				System.out.println(root.toTikzTree());
-				System.out.println("\\end{tikzpicture}\n}\n");
 			}
 		}
 	}

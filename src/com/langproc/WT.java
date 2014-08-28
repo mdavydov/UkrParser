@@ -4,12 +4,14 @@ public class WT {
 	public static final long PLURAL = (1L << 0);
 	public static final long SINGLE = (1L << 1);
 	public static final long COUNT_MASK = PLURAL | SINGLE;
+	public static final long ANY_COUNT = PLURAL | SINGLE;
 
 	public static final long PERSON1 = (1L << 2);
 	public static final long PERSON2 = (1L << 3);
 	public static final long PERSON3 = (1L << 4);
-	public static final long PERSON_MASK = PERSON1 | PERSON2 | PERSON3;
-	public static final long ANY_PERSON = PERSON1 | PERSON2 | PERSON3;
+	public static final long PERSONLESS = (1L << 34);
+	public static final long PERSON_MASK = PERSON1 | PERSON2 | PERSON3 | PERSONLESS;
+	public static final long ANY_PERSON = PERSON1 | PERSON2 | PERSON3 | PERSONLESS;
 
 	public static final long MALE = (1L << 5);
 	public static final long FEMALE = (1L << 6);
@@ -56,7 +58,6 @@ public class WT {
 	public static final long FUTURE = (1L << 33);
 	public static final long TIME_MASK = PAST | PRESENT | FUTURE;
 
-	public static final long PERSONLESS = (1L << 34);
 	public static final long INFINITIVE = (1L << 35);
 	public static final long SENTENCE_END = (1L << 36);
 	public static final long MODAL = (1L << 37);

@@ -525,12 +525,13 @@ public class Sentence
 		if (tw.m_tags.hasSomeTags(WT.ADJ)) return parser.getTokenByName("adj");
 		if (tw.m_tags.hasSomeTags(WT.PRONOUN)) return parser.getTokenByName("pronoun");
 		if (tw.m_tags.hasSomeTags(WT.NEGATION)) return parser.getTokenByName("neg");
-		if (tw.m_tags.hasSomeTags(WT.COMMA)) return parser.getTokenByName("comma");
+		if (tw.m_tags.hasSomeTags(WT.COMMA)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.CONJ)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.NUMERAL)) return parser.getTokenByName("num");
 		if (tw.m_tags.hasSomeTags(WT.PARTICLE)) return parser.getTokenByName("particle");
 		if (tw.m_tags.hasSomeTags(WT.ADVPART)) return parser.getTokenByName("advp");
 		if (tw.m_tags.hasSomeTags(WT.PREPOS)) return parser.getTokenByName(tw.m_word);
+		if (tw.m_tags.hasSomeTags(WT.SENTENCE_END)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.HELPWORD)) return parser.getTokenByName("help");
 		return parser.getTokenByName(tw.m_word);
 	}
@@ -539,16 +540,20 @@ public class Sentence
 	{
 		PCFGParser parser = new PCFGParser();
 
-		parser.addRule("DNP[NCG] -> adj[NCG c2c3c4c5c6c7] noun[NCG]");
-
-		parser.addRule("NP[NCG p3] 0.8 -> noun[NCG c1] adj[NCG]");
+		parser.addRule("DNP[NCG] *-> adj[NCG c2c3c4c5c6c7]? noun[NCG]");
+		parser.addRule("DNP[NCG] -> DNP[NCG] DNP[c2]");
+		parser.addRule("NP[NCG p3] *0.8-> noun[NCG c1] adj[NCG]");
 		parser.addRule("NP[NCG p3] -> adj[NCG c1] noun[NCG]");
 		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
 
 		parser.addRule("TARGET -> ó DNP[c4]");
-		parser.addRule("S -> NP[PN] VP[PN]");
-
-		parser.addRule("VP[PN] -> verb[PN] TARGET?");
+		parser.addRule("PLACE -> ó DNP[c6]");
+		parser.addRule("ADDITIONAL -> ç DNP[c5]");
+		parser.addRule("OBJECT -> DNP[c4]");
+		//parser.addRule("VP[PN] *-> verb[PN] PLACE? ADDITIONAL? OBJECT?"); // TARGET?
+		parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); // TARGET?
+		parser.addRule("S -> NP[PN] VP[PN] <.>");
+		parser.addRule("S -> VP[p-] <.>");
 
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 
@@ -584,9 +589,7 @@ public class Sentence
 		{
 			for (ParsedToken root : res)
 			{
-				System.out.println("\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=30pt]\n\\Tree");
 				System.out.println(root.toTikzTree());
-				System.out.println("\\end{tikzpicture}\n}\n");
 			}
 		}
 

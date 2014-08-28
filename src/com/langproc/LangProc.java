@@ -711,11 +711,11 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", ".*оя", ".*", ".*", 0, WT.ADJ));
 		m_tag_rules.add(new TagRule(".*", ".*ко|.*но", ".*", ".*", 0, WT.ADV));
 		m_tag_rules.add(new TagRule(".*", ".*но", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS));
+				| WT.PERSONLESS | WT.ANY_COUNT));
 		m_tag_rules.add(new TagRule("нема", ".*", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS));
+				| WT.PERSONLESS | WT.ANY_COUNT));
 		m_tag_rules.add(new TagRule("треба", ".*", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS | WT.MODAL));
+				| WT.PERSONLESS | WT.ANY_COUNT | WT.MODAL));
 		m_tag_rules.add(new TagRule("є", ".*", ".*", ".*", 0, WT.VERB
 				| WT.PERSONLESS | WT.ANY_PERSON));
 		m_tag_rules.add(new TagRule("добре", ".*", ".*", ".*", 0, WT.ADV));
@@ -1013,8 +1013,8 @@ public class LangProc
 			// LangProcOutput.print(w.toString() + " ");
 
 			// LangProcOutput.print(w.toString());
-			// int s = w.toString().length();
-			// for(int i= 20; i>s; --i) LangProcOutput.print(" ");
+			//int s = w.toString().length();
+			//for(int i= 20; i>s; --i) LangProcOutput.print(" ");
 			addWordForms(ss, w.toString());
 			// LangProcOutput.print(w.toString() + " ");
 			// LangProcOutput.println();
@@ -1443,7 +1443,7 @@ public class LangProc
 	
 	public static void main0(String[] args)
 	{
-		PCFGParser.main(args);
+		//PCFGParser.main(args);
 		return;
 	}
 	
