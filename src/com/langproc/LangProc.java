@@ -42,6 +42,8 @@ import com.altmann.*;
 
 public class LangProc
 {
+	final String m_word_pattern="[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’-]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(";
+	
 	OpenOfficeSpellDictionary m_dict;
 	java.util.HashSet<String> m_pronoun_S_C1 = new java.util.HashSet<String>();
 	java.util.HashSet<String> m_pronoun_S_C2 = new java.util.HashSet<String>();
@@ -262,43 +264,43 @@ public class LangProc
 				"котре котрого котрому яке те це воно його йому ним ньому");
 
 		fillSet(m_pronoun_ADJ_S_C1,
-				"мій моя моє твій твоя твоє його її наш наша наше ваш ваша ваше їхній їхня їхнє свій своя своє");
+				"один одна одне мій моя моє твій твоя твоє його її наш наша наше ваш ваша ваше їхній їхня їхнє свій своя своє");
 		fillSet(m_pronoun_ADJ_S_C2,
-				"мого моєї твого твоєї його її нашого нашої вашого вашої їхнього їхньої свого своєї");
+				"одного однієї мого моєї твого твоєї його її нашого нашої вашого вашої їхнього їхньої свого своєї");
 		fillSet(m_pronoun_ADJ_S_C3,
-				"моєму моїй твоєму твоїй його її нашому нашій вашому вашій їхньому їхній своєму своїй");
+				"одному однім одній моєму моїй твоєму твоїй його її нашому нашій вашому вашій їхньому їхній своєму своїй");
 		fillSet(m_pronoun_ADJ_S_C4,
-				"мій мою моє твій твою твоє його її наш нашу наше ваш вашу ваше їхній їхню їхнє свій свою своє");
+				"одного одну мій мою моє твій твою твоє його її наш нашу наше ваш вашу ваше їхній їхню їхнє свій свою своє");
 		fillSet(m_pronoun_ADJ_S_C5,
-				"моїм моєю твоїм твоєю його її нашим нашою вашим вашою їхнім їхньою своїм своєю");
+				"одним однім однією моїм моєю твоїм твоєю його її нашим нашою вашим вашою їхнім їхньою своїм своєю");
 		fillSet(m_pronoun_ADJ_S_C6,
-				"моїм моїй твоїм твоїй його її нашім нашій вашім вашїй їхнім їхній своїм своїй");
+				"одному однім одній моїм моїй твоїм твоїй його її нашім нашій вашім вашїй їхнім їхній своїм своїй");
 
-		fillSet(m_pronoun_ADJ_M_C1, "мої твої його її свої наші ваші їхні");
+		fillSet(m_pronoun_ADJ_M_C1, "одні мої твої його її свої наші ваші їхні");
 		fillSet(m_pronoun_ADJ_M_C2,
-				"моїх твоїх його її своїх наших ваших їхніх");
+				"одних моїх твоїх його її своїх наших ваших їхніх");
 		fillSet(m_pronoun_ADJ_M_C3,
-				"моїм твоїм його її своїм нашим вашим їхнім");
-		fillSet(m_pronoun_ADJ_M_C4, "мої твої його її свої наші ваші їхні");
+				"одним моїм твоїм його її своїм нашим вашим їхнім");
+		fillSet(m_pronoun_ADJ_M_C4, "одні мої твої його її свої наші ваші їхні");
 		fillSet(m_pronoun_ADJ_M_C5,
-				"моїми твоїми його її своїми нашими вашими їхніми");
-		fillSet(m_pronoun_ADJ_M_C6, "моїх твоїх своїх наших ваших їхніх");
+				"одними моїми твоїми його її своїми нашими вашими їхніми");
+		fillSet(m_pronoun_ADJ_M_C6, "одних одніх моїх твоїх своїх наших ваших їхніх");
 
-		fillSet(m_pronoun_ADJ_male, "той цей мій твій наш ваш їхній свій "
+		fillSet(m_pronoun_ADJ_male, "один однім одним одного той цей мій твій наш ваш їхній свій "
 				+ "того цього мого твого нашого вашого їхнього свого "
 				+ "тому цьому моєму твоєму нашому вашому їхньому своєму "
 				+ "той цей мій твій наш ваш їхній свій "
 				+ "тим цим моїм твоїм нашим вашим їхнім своїм "
 				+ "тому тім цьому цім моїм твоїм нашім вашім їхнім своїм ");
 
-		fillSet(m_pronoun_ADJ_female, "та ця моя твоя наша ваша їхня своя "
+		fillSet(m_pronoun_ADJ_female, "одна однієї одну однією одною та ця моя твоя наша ваша їхня своя "
 				+ "тієї тої цією моєї твоєї нашої вашої їхньої своєї "
 				+ "тій цій моїй твоїй нашій вашій їхній своїй "
 				+ "ту цю мою твою нашу вашу їхню свою "
 				+ "тією тою цією моєю твоєю нашою вашою їхньою своєю "
 				+ "тій цій моїй твоїй нашій вашїй їхній своїй ");
 
-		fillSet(m_pronoun_ADJ_neutral, "те це моє твоє наше ваше їхнє своє "
+		fillSet(m_pronoun_ADJ_neutral, "одне одного одним те це моє твоє наше ваше їхнє своє "
 				+ "того цього мого твого нашого вашого їхнього свого "
 				+ "тому цьому моєму твоєму нашому вашому їхньому своєму "
 				+ "те це моє твоє наше ваше їхнє своє "
@@ -357,6 +359,7 @@ public class LangProc
 				"який");
 		fillMap(m_special_pronouns,
 				"той та те того тої тому тій ту тим тою тім тій", "той");
+
 		fillMap(m_special_pronouns, "що", "що");
 
 		fillSet(m_indacative_pronous,
@@ -888,6 +891,29 @@ public class LangProc
 
 		if (list.size() == 0)
 		{
+			int hyphen_ind = word.indexOf('-');
+			if (hyphen_ind!=-1)
+			{
+				String part1 = word.substring(0, hyphen_ind);
+				String part2 = word.substring(hyphen_ind+1);
+				if (part2.startsWith("пре") && part1.equals( part2.substring(3) ))
+				{
+					list = m_dict.checkList(part1);
+					java.util.HashSet<String> proc = new java.util.HashSet<String>();
+					for (HEntry s : list)
+					{
+						s.word = s.word + "-пре" + s.word; 
+						String def = s.word + "(" + s.astr + ")";
+						if (!proc.contains(def))
+						{
+							addHypothesis(sw, index, word, s);
+							proc.add(def);
+						}
+					}
+				}
+				
+			}
+			
 			if (LangProcSettings.GENERATE_SUGGESTIONS)
 			{
 				List su_list = m_dict.getSuggestions(word);
@@ -963,23 +989,18 @@ public class LangProc
 		}
 		ss.addWord(sw);
 	}
-
-	private String checkGrammar(String txt, boolean use_word_weighting)
+	
+	private Sentence parseSentence(String txt)
 	{
-		// CharSequenceWordFinder wf = new CharSequenceWordFinder(txt);
 		CharSequenceWordFinder wf = new CharSequenceWordFinder(
-				Pattern.compile(
-						"[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(")
-						.matcher(txt));
+				Pattern.compile(m_word_pattern).matcher(txt));
 		Sentence ss = new Sentence();
-
 		// SentenceProcessor sp = new SentenceProcessor();
-
 		while (wf.hasNext())
 		{
 			Word w = wf.next();
 			// LangProcOutput.print(w.toString() + " ");
-
+			System.out.println("Next word " + w.toString());
 			// LangProcOutput.print(w.toString());
 			// int s = w.toString().length();
 			// for(int i= 20; i>s; --i) LangProcOutput.print(" ");
@@ -993,47 +1014,25 @@ public class LangProc
 			ss.print();
 			LangProcOutput.print("\n\\hspace{1em}\n\n");
 		}
+		return ss;
+	}
+
+	private String checkGrammar(String txt, boolean use_word_weighting)
+	{
+		Sentence ss = parseSentence(txt);
 		return ss.processSentenceWithDependencyGrammar(this, use_word_weighting);
 	}
 	
 	private String checkGrammarAPCFG(String txt, boolean use_word_weighting)
 	{
-		// CharSequenceWordFinder wf = new CharSequenceWordFinder(txt);
-		CharSequenceWordFinder wf = new CharSequenceWordFinder(
-				Pattern.compile(
-						"[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(")
-						.matcher(txt));
-		Sentence ss = new Sentence();
-
-		// SentenceProcessor sp = new SentenceProcessor();
-
-		while (wf.hasNext())
-		{
-			Word w = wf.next();
-			// LangProcOutput.print(w.toString() + " ");
-
-			// LangProcOutput.print(w.toString());
-			//int s = w.toString().length();
-			//for(int i= 20; i>s; --i) LangProcOutput.print(" ");
-			addWordForms(ss, w.toString());
-			// LangProcOutput.print(w.toString() + " ");
-			// LangProcOutput.println();
-		}
-		if (LangProcSettings.SENTENCE_OUTPUT)
-		{
-			LangProcOutput.println("\n");
-			ss.print();
-			LangProcOutput.print("\n\\hspace{1em}\n\n");
-		}
+		Sentence ss = parseSentence(txt);
 		return ss.processSentenceWithAPCFG(this, use_word_weighting);
 	}
 
 	private String tryFixRandom(String txt, boolean use_word_weighting)
 	{
 		CharSequenceWordFinder wf = new CharSequenceWordFinder(
-				Pattern.compile(
-						"[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюя'’]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(")
-						.matcher(txt));
+				Pattern.compile(m_word_pattern).matcher(txt));
 		Sentence ss = new Sentence();
 
 		while (wf.hasNext())
@@ -1046,17 +1045,7 @@ public class LangProc
 
 	private int getNumCorrectionChoices(String txt)
 	{
-		CharSequenceWordFinder wf = new CharSequenceWordFinder(
-				Pattern.compile(
-						"[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюя'’]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(")
-						.matcher(txt));
-		Sentence ss = new Sentence();
-
-		while (wf.hasNext())
-		{
-			Word w = wf.next();
-			addWordForms(ss, w.toString());
-		}
+		Sentence ss = parseSentence(txt);
 		return ss.getNumCorrectionChoices();
 	}
 
@@ -1454,8 +1443,9 @@ public class LangProc
 			LangProc lp = new LangProc(new OpenOfficeSpellDictionary("uk_UA"));
 			LangProcOutput.flush();
 			lp.checkGrammarAPCFG(
-				"У четвертому розділі досліджено мовні моделі з використанням графів."
-				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
+				//"У четвертому розділі досліджено мовні моделі з використанням графів."
+				//"Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
+				"Жив собі в однім лісі Лис Микита"
 				// "м'яса"
 				// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
 				// "ніщо нічим нічого"

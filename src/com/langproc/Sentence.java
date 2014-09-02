@@ -546,9 +546,15 @@ public class Sentence
 		parser.addRule("NP[NCG p3] -> adj[NCG c1] noun[NCG]");
 		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
 
-		parser.addRule("TARGET -> ó DNP[c4]");
-		parser.addRule("PLACE -> ó DNP[c6]");
-		parser.addRule("ADDITIONAL -> ç DNP[c5]");
+		parser.addRule("V -> ó");
+		parser.addRule("V -> â");
+		parser.addRule("Z -> ç");
+		parser.addRule("Z -> ³ç");
+		parser.addRule("Z -> ç³");
+		
+		parser.addRule("TARGET -> V DNP[c4]");
+		parser.addRule("PLACE -> V DNP[c6]");
+		parser.addRule("ADDITIONAL -> Z DNP[c5]");
 		parser.addRule("OBJECT -> DNP[c4]");
 		//parser.addRule("VP[PN] *-> verb[PN] PLACE? ADDITIONAL? OBJECT?"); // TARGET?
 		parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); // TARGET?
@@ -574,10 +580,12 @@ public class Sentence
 				WordTags token_sp = tw.m_tags;
 				Token req_token = getTokenByWord(parser, tw);
 				ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word);
+				System.out.println("Add token " + pt);
 				ptl.add(pt);
 			}
 			tokens.add(ptl);
 		}
+		System.out.println();
 
 		java.util.List<ParsedToken> res = parser.parse(tokens);
 

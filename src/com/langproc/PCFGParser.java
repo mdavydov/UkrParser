@@ -843,7 +843,7 @@ public class PCFGParser
 					 reusable_token.resetWithRule(ar.m_rule);
 					 reusable_token.setSubtoken(ar.m_token_index, token);
 					 
-					 System.out.println("Try rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
+					 //System.out.println("Try rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
 					 
 					 tryExpandLeft(ar.m_rule, reusable_token,
 							apply_height, ar.m_token_index, start_pos,
