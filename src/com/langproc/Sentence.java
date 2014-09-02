@@ -540,28 +540,47 @@ public class Sentence
 	{
 		PCFGParser parser = new PCFGParser();
 
-		parser.addRule("DNP[NCG] *-> adj[NCG c2c3c4c5c6c7]? noun[NCG]");
-		parser.addRule("DNP[NCG] -> DNP[NCG] DNP[c2]");
-		parser.addRule("NP[NCG p3] *0.8-> noun[NCG c1] adj[NCG]");
-		parser.addRule("NP[NCG p3] -> adj[NCG c1] noun[NCG]");
+		// attributed noun "Лис Микита"
+		
+		parser.addRule("V -> у | в");
+		parser.addRule("Z -> з | із | зі");
+		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
+		
+		
+		parser.addRule("AN[NCG] -> noun[NCG] noun[NCGU]?");
+		// noun group (adjectives, etc)
+		parser.addRule("COMMEDADJG[NCG] -> <,> adj[NCG] GENCOMMA!");
+		parser.addRule("COMMEDADJG[NCG] -> ADJG[NCG] adj[NCG] GENCOMMA!");
+		
+		parser.addRule("NG[NCG] -> adj[NCG]? AN[NCG] NG[c2]? COMMEDADJG[NCG]?");
+		parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] COMMEDADJG[NCG]?");
+		parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
+		parser.addRule("NP[NCG p3] -> NG[NCG c1]");
 		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
 
-		parser.addRule("V -> у");
-		parser.addRule("V -> в");
-		parser.addRule("Z -> з");
-		parser.addRule("Z -> із");
-		parser.addRule("Z -> зі");
 		
 		parser.addRule("TARGET -> V DNP[c4]");
+		parser.addRule("ADDRESS -> DNP[c3]");
 		parser.addRule("PLACE -> V DNP[c6]");
 		parser.addRule("ADDITIONAL -> Z DNP[c5]");
 		parser.addRule("OBJECT -> DNP[c4]");
-		//parser.addRule("VP[PN] *-> verb[PN] PLACE? ADDITIONAL? OBJECT?"); // TARGET?
-		parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); // TARGET?
-		parser.addRule("S -> NP[PN] VP[PN] <.>");
-		parser.addRule("S -> VP[p-] <.>");
+		parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT?"); // TARGET?
+		
+		//parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); // TARGET?
+		//parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
+		//parser.addRule("S *-> NP[NP] VP[NP]");
+		parser.addRule("S *-> VP[NP] NP[NP]");
+		parser.addRule("S -> VP[p-]");
+		parser.addRule("FULLS -> START S <.>");
+		
 
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
+		
+		java.util.List<ParsedToken> ptl_start = new java.util.ArrayList<ParsedToken>();
+		ParsedToken pt_start = new ParsedToken(parser.getTokenByName("START"), new WordTags(), 1.0f, "");
+		System.out.println("Add token " + pt_start);
+		ptl_start.add(pt_start);
+		tokens.add(ptl_start);
 
 		for (SentenceWord sw : m_words)
 		{
@@ -579,7 +598,7 @@ public class Sentence
 
 				WordTags token_sp = tw.m_tags;
 				Token req_token = getTokenByWord(parser, tw);
-				ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word);
+				ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word_as_was_written);
 				System.out.println("Add token " + pt);
 				ptl.add(pt);
 			}
@@ -592,12 +611,13 @@ public class Sentence
 		if (res == null || res.size() == 0)
 		{
 			System.out.println("No results");
+			System.exit(0);
 		}
 		else
 		{
 			for (ParsedToken root : res)
 			{
-				System.out.println(root.toTikzTree());
+				System.out.println(root.toTikzTree(false));
 			}
 		}
 

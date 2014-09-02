@@ -4,16 +4,27 @@ public class TaggedWord
 {
 	int m_sentence_pos;
 	int m_hypo_index;
+	String m_word_as_was_written;
 	String m_word;
 	String m_base_word;
 	String m_dict_tags; // tags from SpellChecker dictionary
 	WordTags m_tags = new WordTags();
 
-	public TaggedWord(int sentence_pos, String word, String base_word,
+	public TaggedWord(int sentence_pos, String sentence_word, String base_word,
 			String dict_tags)
 	{
 		m_sentence_pos = sentence_pos;
-		m_word = word;
+		m_word_as_was_written = sentence_word;
+		
+		if (Character.isLowerCase(base_word.charAt(0)))
+		{
+			m_word = sentence_word.toLowerCase();
+		}
+		else
+		{
+			m_word = sentence_word;
+		}
+		
 		m_base_word = base_word;
 		m_dict_tags = dict_tags;
 	}
@@ -65,7 +76,7 @@ public class TaggedWord
 
 	public String toString()
 	{
-		return m_word + "(" + m_base_word + ")";
+		return m_word_as_was_written + "(" + m_base_word + ")";
 
 	}
 

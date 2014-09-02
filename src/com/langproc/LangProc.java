@@ -39,11 +39,10 @@ import java.util.regex.Pattern;
 
 import com.altmann.*;
 
-
 public class LangProc
 {
-	final String m_word_pattern="[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’-]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(";
-	
+	final String m_word_pattern = "[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’-]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(";
+
 	OpenOfficeSpellDictionary m_dict;
 	java.util.HashSet<String> m_pronoun_S_C1 = new java.util.HashSet<String>();
 	java.util.HashSet<String> m_pronoun_S_C2 = new java.util.HashSet<String>();
@@ -116,8 +115,7 @@ public class LangProc
 		}
 	}
 
-	static void fillMap(java.util.HashMap<String, String> map, String s_from,
-			String s_to)
+	static void fillMap(java.util.HashMap<String, String> map, String s_from, String s_to)
 	{
 		CharSequenceWordFinder wf = new CharSequenceWordFinder(s_from);
 		while (wf.hasNext())
@@ -127,8 +125,7 @@ public class LangProc
 		}
 	}
 
-	static void fillMapTags(java.util.HashMap<String, WordTags> map,
-			String s_from, long wt)
+	static void fillMapTags(java.util.HashMap<String, WordTags> map, String s_from, long wt)
 	{
 		CharSequenceWordFinder wf = new CharSequenceWordFinder(s_from);
 		while (wf.hasNext())
@@ -236,18 +233,12 @@ public class LangProc
 		m_parenthesis_words.add("так би мовити");
 		m_parenthesis_words.add("як кажуть");
 
-		fillSet(m_pronoun_S_C1,
-				"котрий котра котре який яка яке той та те цей це ця я ти він вона воно");
-		fillSet(m_pronoun_S_C2,
-				"котрого котрої якого того тієї тої цього цієї мене тебе його нього її неї себе");
-		fillSet(m_pronoun_S_C3,
-				"котрому котрій якому тому тій цьому цій мені тобі йому їй собі");
-		fillSet(m_pronoun_S_C4,
-				"котрого котру котре якого яке яку той ту те цей це цю мене тебе його нього її неї себе");
-		fillSet(m_pronoun_S_C5,
-				"котрим котрою яким тим тією тою цим цією мною тобою ним нею собою");
-		fillSet(m_pronoun_S_C6,
-				"котрому котрім котрій якому якій тому тім тій цьому цім цій мені тобі ньому ній собі");
+		fillSet(m_pronoun_S_C1, "котрий котра котре який яка яке той та те цей це ця я ти він вона воно");
+		fillSet(m_pronoun_S_C2, "котрого котрої якого того тієї тої цього цієї мене тебе його нього її неї себе");
+		fillSet(m_pronoun_S_C3, "котрому котрій якому тому тій цьому цій мені тобі йому їй собі");
+		fillSet(m_pronoun_S_C4, "котрого котру котре якого яке яку той ту те цей це цю мене тебе його нього її неї себе");
+		fillSet(m_pronoun_S_C5, "котрим котрою яким тим тією тою цим цією мною тобою ним нею собою");
+		fillSet(m_pronoun_S_C6, "котрому котрім котрій якому якій тому тім тій цьому цім цій мені тобі ньому ній собі");
 
 		fillSet(m_pronoun_M_C1, "котрі які ті ці ми ви вони");
 		fillSet(m_pronoun_M_C2, "котрих яких тих цих нас вас їх них");
@@ -256,56 +247,35 @@ public class LangProc
 		fillSet(m_pronoun_M_C5, "котрими якими тими цими нами вами ними");
 		fillSet(m_pronoun_M_C6, "яких тих цих нас вас них");
 
-		fillSet(m_pronoun_male,
-				"котрий котрого котрому якого який той цей він його йому ним ньому");
-		fillSet(m_pronoun_female,
-				"котра котрої котрій яку яка якій та тій ця вона її їй нею ній");
-		fillSet(m_pronoun_neutral,
-				"котре котрого котрому яке те це воно його йому ним ньому");
+		fillSet(m_pronoun_male, "котрий котрого котрому якого який той цей він його йому ним ньому");
+		fillSet(m_pronoun_female, "котра котрої котрій яку яка якій та тій ця вона її їй нею ній");
+		fillSet(m_pronoun_neutral, "котре котрого котрому яке те це воно його йому ним ньому");
 
-		fillSet(m_pronoun_ADJ_S_C1,
-				"один одна одне мій моя моє твій твоя твоє його її наш наша наше ваш ваша ваше їхній їхня їхнє свій своя своє");
-		fillSet(m_pronoun_ADJ_S_C2,
-				"одного однієї мого моєї твого твоєї його її нашого нашої вашого вашої їхнього їхньої свого своєї");
-		fillSet(m_pronoun_ADJ_S_C3,
-				"одному однім одній моєму моїй твоєму твоїй його її нашому нашій вашому вашій їхньому їхній своєму своїй");
-		fillSet(m_pronoun_ADJ_S_C4,
-				"одного одну мій мою моє твій твою твоє його її наш нашу наше ваш вашу ваше їхній їхню їхнє свій свою своє");
-		fillSet(m_pronoun_ADJ_S_C5,
-				"одним однім однією моїм моєю твоїм твоєю його її нашим нашою вашим вашою їхнім їхньою своїм своєю");
-		fillSet(m_pronoun_ADJ_S_C6,
-				"одному однім одній моїм моїй твоїм твоїй його її нашім нашій вашім вашїй їхнім їхній своїм своїй");
+		fillSet(m_pronoun_ADJ_S_C1, "один одна одне мій моя моє твій твоя твоє його її наш наша наше ваш ваша ваше їхній їхня їхнє свій своя своє");
+		fillSet(m_pronoun_ADJ_S_C2, "одного однієї мого моєї твого твоєї його її нашого нашої вашого вашої їхнього їхньої свого своєї");
+		fillSet(m_pronoun_ADJ_S_C3, "одному однім одній моєму моїй твоєму твоїй його її нашому нашій вашому вашій їхньому їхній своєму своїй");
+		fillSet(m_pronoun_ADJ_S_C4, "одного одну мій мою моє твій твою твоє його її наш нашу наше ваш вашу ваше їхній їхню їхнє свій свою своє");
+		fillSet(m_pronoun_ADJ_S_C5, "одним однім однією моїм моєю твоїм твоєю його її нашим нашою вашим вашою їхнім їхньою своїм своєю");
+		fillSet(m_pronoun_ADJ_S_C6, "одному однім одній моїм моїй твоїм твоїй його її нашім нашій вашім вашїй їхнім їхній своїм своїй");
 
 		fillSet(m_pronoun_ADJ_M_C1, "одні мої твої його її свої наші ваші їхні");
-		fillSet(m_pronoun_ADJ_M_C2,
-				"одних моїх твоїх його її своїх наших ваших їхніх");
-		fillSet(m_pronoun_ADJ_M_C3,
-				"одним моїм твоїм його її своїм нашим вашим їхнім");
+		fillSet(m_pronoun_ADJ_M_C2, "одних моїх твоїх його її своїх наших ваших їхніх");
+		fillSet(m_pronoun_ADJ_M_C3, "одним моїм твоїм його її своїм нашим вашим їхнім");
 		fillSet(m_pronoun_ADJ_M_C4, "одні мої твої його її свої наші ваші їхні");
-		fillSet(m_pronoun_ADJ_M_C5,
-				"одними моїми твоїми його її своїми нашими вашими їхніми");
+		fillSet(m_pronoun_ADJ_M_C5, "одними моїми твоїми його її своїми нашими вашими їхніми");
 		fillSet(m_pronoun_ADJ_M_C6, "одних одніх моїх твоїх своїх наших ваших їхніх");
 
-		fillSet(m_pronoun_ADJ_male, "один однім одним одного той цей мій твій наш ваш їхній свій "
-				+ "того цього мого твого нашого вашого їхнього свого "
-				+ "тому цьому моєму твоєму нашому вашому їхньому своєму "
-				+ "той цей мій твій наш ваш їхній свій "
-				+ "тим цим моїм твоїм нашим вашим їхнім своїм "
-				+ "тому тім цьому цім моїм твоїм нашім вашім їхнім своїм ");
+		fillSet(m_pronoun_ADJ_male, "один однім одним одного той цей мій твій наш ваш їхній свій " + "того цього мого твого нашого вашого їхнього свого "
+				+ "тому цьому моєму твоєму нашому вашому їхньому своєму " + "той цей мій твій наш ваш їхній свій "
+				+ "тим цим моїм твоїм нашим вашим їхнім своїм " + "тому тім цьому цім моїм твоїм нашім вашім їхнім своїм ");
 
 		fillSet(m_pronoun_ADJ_female, "одна однієї одну однією одною та ця моя твоя наша ваша їхня своя "
-				+ "тієї тої цією моєї твоєї нашої вашої їхньої своєї "
-				+ "тій цій моїй твоїй нашій вашій їхній своїй "
-				+ "ту цю мою твою нашу вашу їхню свою "
-				+ "тією тою цією моєю твоєю нашою вашою їхньою своєю "
-				+ "тій цій моїй твоїй нашій вашїй їхній своїй ");
+				+ "тієї тої цією моєї твоєї нашої вашої їхньої своєї " + "тій цій моїй твоїй нашій вашій їхній своїй " + "ту цю мою твою нашу вашу їхню свою "
+				+ "тією тою цією моєю твоєю нашою вашою їхньою своєю " + "тій цій моїй твоїй нашій вашїй їхній своїй ");
 
-		fillSet(m_pronoun_ADJ_neutral, "одне одного одним те це моє твоє наше ваше їхнє своє "
-				+ "того цього мого твого нашого вашого їхнього свого "
-				+ "тому цьому моєму твоєму нашому вашому їхньому своєму "
-				+ "те це моє твоє наше ваше їхнє своє "
-				+ "тим цим моїм твоїм нашим вашим їхнім своїм "
-				+ "тому цьому цім моїм твоїм нашім вашім їхнім своїм ");
+		fillSet(m_pronoun_ADJ_neutral, "одне одного одним те це моє твоє наше ваше їхнє своє " + "того цього мого твого нашого вашого їхнього свого "
+				+ "тому цьому моєму твоєму нашому вашому їхньому своєму " + "те це моє твоє наше ваше їхнє своє "
+				+ "тим цим моїм твоїм нашим вашим їхнім своїм " + "тому цьому цім моїм твоїм нашім вашім їхнім своїм ");
 
 		fillSet(m_particles, "ось, осьде, он, от, ото, це, оце");
 		fillSet(m_particles, "якраз, ледве, просто, прямо, власне, майже, саме");
@@ -316,8 +286,7 @@ public class LangProc
 		fillSet(m_particles, "би, б, ну");
 		fillSet(m_particles, "так, отак, еге, авжеж, отож, гаразд");
 		fillSet(m_particles, "чи, невже, хіба, та ну, що за");
-		fillSet(m_particles,
-				"мов, мовби, немов, наче, неначе, начебто, ніби, нібито");
+		fillSet(m_particles, "мов, мовби, немов, наче, неначе, начебто, ніби, нібито");
 		fillSet(m_particles, "як, що за тому");
 
 		fillSet(m_negations, "не");
@@ -326,44 +295,29 @@ public class LangProc
 
 		fillSet(m_question_adv, "коли, чому, скільки, як, навіщо ніколи");
 
-		fillSet(m_adverbs,
-				"додому завтра сьогодні вчора позавчора післязавтра колись");
-		fillSet(m_adverbs,
-				"наліво направо назад вперед вниз донизу нагору вгору додолу");
+		fillSet(m_adverbs, "додому завтра сьогодні вчора позавчора післязавтра колись");
+		fillSet(m_adverbs, "наліво направо назад вперед вниз донизу нагору вгору додолу");
 
-		fillMap(m_special_verbs,
-				"могти міг могла могло могли можу можеш може можемо можете можуть",
-				"могти");
-		fillMap(m_special_verbs,
-				"хотіти хотів хотіла хотіло хотіли хочу хочеш хоче хочемо хочете хочуть",
-				"хотіти");
+		fillMap(m_special_verbs, "могти міг могла могло могли можу можеш може можемо можете можуть", "могти");
+		fillMap(m_special_verbs, "хотіти хотів хотіла хотіло хотіли хочу хочеш хоче хочемо хочете хочуть", "хотіти");
 
-		fillSet(m_modal_verbs,
-				"могти хотіти бажати збирати намагатися пропонувати задумати треба важливо необхідно");
-		fillSet(m_modal_verbs,
-				"заохочувати забороняти провокувати мусити зобов'язаний зобов'язати");
+		fillSet(m_modal_verbs, "могти хотіти бажати збирати намагатися пропонувати задумати треба важливо необхідно");
+		fillSet(m_modal_verbs, "заохочувати забороняти провокувати мусити зобов'язаний зобов'язати");
 		fillSet(m_modal_verbs, "почати закінчити розпочати кінчити");
 
 		fillSet(m_state_words, "треба важливо необхідно");
 
 		fillMap(m_special_nouns, "ніщо нічого нічому нічим", "ніщо");
 		fillMap(m_special_nouns, "щось чогось чомусь чимось", "щось");
-		fillMap(m_special_nouns, "сну сном сні сни снів снам снами снах сон",
-				"сон");
+		fillMap(m_special_nouns, "сну сном сні сни снів снам снами снах сон", "сон");
 
-		fillMap(m_special_pronouns,
-				"котрий котра котре котрого котрої котрому котрій котру котрим котрою котрім котрій",
-				"котрий");
-		fillMap(m_special_pronouns,
-				"який яка яке якого якої якому якій яку яким якою ятякій",
-				"який");
-		fillMap(m_special_pronouns,
-				"той та те того тої тому тій ту тим тою тім тій", "той");
+		fillMap(m_special_pronouns, "котрий котра котре котрого котрої котрому котрій котру котрим котрою котрім котрій", "котрий");
+		fillMap(m_special_pronouns, "який яка яке якого якої якому якій яку яким якою ятякій", "який");
+		fillMap(m_special_pronouns, "той та те того тої тому тій ту тим тою тім тій", "той");
 
 		fillMap(m_special_pronouns, "що", "що");
 
-		fillSet(m_indacative_pronous,
-				"цей, оцей, сей, той, стільки, такий, отакий");
+		fillSet(m_indacative_pronous, "цей, оцей, сей, той, стільки, такий, отакий");
 		fillSet(m_question_pronous, "що хто скільки який чий котрий");
 
 		fillSet(m_pronoun_M_C1, "котрі які ті ці ми ви вони");
@@ -373,43 +327,24 @@ public class LangProc
 		fillSet(m_pronoun_M_C5, "котрими якими тими цими нами вами ними");
 		fillSet(m_pronoun_M_C6, "яких тих цих нас вас них");
 
-		fillMapTags(m_countable_req_nom, "два три чотири обидва", WT.PLURAL
-				| WT.CASUS1 | WT.CASUS4);
-		fillMapTags(m_countable, "двох трьох чотирьох обидвох", WT.PLURAL
-				| WT.CASUS2 | WT.CASUS6);
-		fillMapTags(m_countable, "двом трьом чотирьом обидвом", WT.PLURAL
-				| WT.CASUS3);
-		fillMapTags(m_countable, "двома трьома чотирма обидвома", WT.PLURAL
-				| WT.CASUS5);
+		fillMapTags(m_countable_req_nom, "два три чотири обидва", WT.PLURAL | WT.CASUS1 | WT.CASUS4);
+		fillMapTags(m_countable, "двох трьох чотирьох обидвох", WT.PLURAL | WT.CASUS2 | WT.CASUS6);
+		fillMapTags(m_countable, "двом трьом чотирьом обидвом", WT.PLURAL | WT.CASUS3);
+		fillMapTags(m_countable, "двома трьома чотирма обидвома", WT.PLURAL | WT.CASUS5);
 
-		fillMapTags(m_countable, "п'ять шість сім вісім дев'ять", WT.PLURAL
-				| WT.CASUS1 | WT.CASUS4);
-		fillMapTags(m_countable, "п'яти шести семи восьми дев'яти", WT.PLURAL
-				| WT.CASUS2 | WT.CASUS6);
-		fillMapTags(m_countable, "п'ятьом шістьом сімом вісьмом дев'ятьом",
-				WT.PLURAL | WT.CASUS3);
-		fillMapTags(m_countable, "п'ятьма шістьма сімома вісьмома дев'ятьма",
-				WT.PLURAL | WT.CASUS5);
+		fillMapTags(m_countable, "п'ять шість сім вісім дев'ять", WT.PLURAL | WT.CASUS1 | WT.CASUS4);
+		fillMapTags(m_countable, "п'яти шести семи восьми дев'яти", WT.PLURAL | WT.CASUS2 | WT.CASUS6);
+		fillMapTags(m_countable, "п'ятьом шістьом сімом вісьмом дев'ятьом", WT.PLURAL | WT.CASUS3);
+		fillMapTags(m_countable, "п'ятьма шістьма сімома вісьмома дев'ятьма", WT.PLURAL | WT.CASUS5);
 
-		fillMapTags(m_countable, "десять одинядцять дванадцять тринадцять",
-				WT.PLURAL | WT.CASUS1 | WT.CASUS4);
-		fillMapTags(m_countable,
-				"чотирнадцять п'ятнадцять шістнадцять сімнадцять", WT.PLURAL
-						| WT.CASUS1 | WT.CASUS4);
-		fillMapTags(m_countable,
-				"вісімнадцять дев'ятнадцять двадцять тридцять", WT.PLURAL
-						| WT.CASUS1 | WT.CASUS4);
+		fillMapTags(m_countable, "десять одинядцять дванадцять тринадцять", WT.PLURAL | WT.CASUS1 | WT.CASUS4);
+		fillMapTags(m_countable, "чотирнадцять п'ятнадцять шістнадцять сімнадцять", WT.PLURAL | WT.CASUS1 | WT.CASUS4);
+		fillMapTags(m_countable, "вісімнадцять дев'ятнадцять двадцять тридцять", WT.PLURAL | WT.CASUS1 | WT.CASUS4);
 
-		fillMapTags(
-				m_countable,
-				"скільки стільки багато мало достатньо недостатньо немало небагато",
-				WT.PLURAL | WT.CASUS1 | WT.CASUS4);
-		fillMapTags(m_countable, "скількох стількох багатьох", WT.PLURAL
-				| WT.CASUS2 | WT.CASUS6);
-		fillMapTags(m_countable, "скільком стільком багатьом небагатьом",
-				WT.PLURAL | WT.CASUS3);
-		fillMapTags(m_countable, "скількома стількома багатьма небагатьма",
-				WT.PLURAL | WT.CASUS5);
+		fillMapTags(m_countable, "скільки стільки багато мало достатньо недостатньо немало небагато", WT.PLURAL | WT.CASUS1 | WT.CASUS4);
+		fillMapTags(m_countable, "скількох стількох багатьох", WT.PLURAL | WT.CASUS2 | WT.CASUS6);
+		fillMapTags(m_countable, "скільком стільком багатьом небагатьом", WT.PLURAL | WT.CASUS3);
+		fillMapTags(m_countable, "скількома стількома багатьма небагатьма", WT.PLURAL | WT.CASUS5);
 
 		// m_tag_rules.add(new TagRule(".*оя", ".*оя", ".*", ".*", WT.ADJ,
 		// WT.CASUS1 | WT.SINGLE | WT.ANY_GENDER ));
@@ -553,7 +488,7 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
-		
+
 		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
 		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ку", WT.NOUN, WT.CASUS2 | WT.CASUS6 | WT.CASUS3 | WT.SINGLE | WT.MALE));
 		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "кові", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
@@ -563,7 +498,6 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "кам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
 		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ками", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
 		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ках", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
-
 
 		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
 		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[іи]", WT.NOUN, WT.CASUS2 | WT.CASUS3 | WT.SINGLE | WT.FEMALE));
@@ -705,22 +639,17 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", "йти", ".*", "дете", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule(".*", "йти", ".*", "дуть", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.ANY_GENDER));
 
-		m_tag_rules.add(new TagRule(".*", ".*", ".*[abcdefghijklmnoqp].*",
-				".*", 0, WT.NOUN));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*[abcdefghijklmnoqp].*", ".*", 0, WT.NOUN));
 		m_tag_rules.add(new TagRule(".*", ".+ти", ".*", ".*", 0, WT.VERB));
 		m_tag_rules.add(new TagRule(".*", ".*тися", ".*", ".*", 0, WT.VERB));
 		m_tag_rules.add(new TagRule(".*", ".*ий", ".*", ".*", 0, WT.ADJ));
 		m_tag_rules.add(new TagRule(".*", ".*ий", ".*", "о", 0, WT.ADV));
 		m_tag_rules.add(new TagRule(".*", ".*оя", ".*", ".*", 0, WT.ADJ));
 		m_tag_rules.add(new TagRule(".*", ".*ко|.*но", ".*", ".*", 0, WT.ADV));
-		m_tag_rules.add(new TagRule(".*", ".*но", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS | WT.ANY_COUNT));
-		m_tag_rules.add(new TagRule("нема", ".*", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS | WT.ANY_COUNT));
-		m_tag_rules.add(new TagRule("треба", ".*", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS | WT.ANY_COUNT | WT.MODAL));
-		m_tag_rules.add(new TagRule("є", ".*", ".*", ".*", 0, WT.VERB
-				| WT.PERSONLESS | WT.ANY_PERSON));
+		m_tag_rules.add(new TagRule(".*", ".*но", ".*", ".*", 0, WT.VERB | WT.PERSONLESS | WT.ANY_COUNT));
+		m_tag_rules.add(new TagRule("нема", ".*", ".*", ".*", 0, WT.VERB | WT.PERSONLESS | WT.ANY_COUNT));
+		m_tag_rules.add(new TagRule("треба", ".*", ".*", ".*", 0, WT.VERB | WT.PERSONLESS | WT.ANY_COUNT | WT.MODAL));
+		m_tag_rules.add(new TagRule("є", ".*", ".*", ".*", 0, WT.VERB | WT.PERSONLESS | WT.ANY_PERSON));
 		m_tag_rules.add(new TagRule("добре", ".*", ".*", ".*", 0, WT.ADV));
 		m_tag_rules.add(new TagRule(".*", ".*чи", ".*", ".*", 0, WT.ADVPART));
 
@@ -731,8 +660,7 @@ public class LangProc
 		return Pattern.compile(regexp, flags).matcher(text);
 	}
 
-	private void addHypothesis(SentenceWord sw, int index, String base_form,
-			HEntry s)
+	private void addWordHypotheses(SentenceWord sw, int index, String sentence_form, HEntry dictionary_form)
 	{
 		// if (LangProcSettings.DEBUG_OUTPUT)
 		// {
@@ -740,10 +668,9 @@ public class LangProc
 		// s.word + " " + s.astr);
 		// }
 
-		String use_base = base_form;
-		if (Character.isLowerCase(s.word.charAt(0))) use_base = base_form.toLowerCase();
+		boolean starts_uppercase = Character.isUpperCase(sentence_form.charAt(0));
 
-		TaggedWord w = new TaggedWord(index, use_base, s.word, s.astr);
+		TaggedWord w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
 		TaggedWord w1 = null;
 
 		// if (word.equals(word.toUpperCase())) w.addTag("Cap");
@@ -753,28 +680,28 @@ public class LangProc
 
 		// LangProcOutput.print( "   " + s.word + " " + s.astr + " " );
 
-		if (m_pronoun_S_C1.contains(s.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS1);
-		if (m_pronoun_S_C2.contains(s.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS2);
-		if (m_pronoun_S_C3.contains(s.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS3);
-		if (m_pronoun_S_C4.contains(s.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS4);
-		if (m_pronoun_S_C5.contains(s.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS5);
-		if (m_pronoun_S_C6.contains(s.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS6);
+		if (m_pronoun_S_C1.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS1);
+		if (m_pronoun_S_C2.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS2);
+		if (m_pronoun_S_C3.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS3);
+		if (m_pronoun_S_C4.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS4);
+		if (m_pronoun_S_C5.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS5);
+		if (m_pronoun_S_C6.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS6);
 
-		if (m_pronoun_M_C1.contains(s.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS1);
-		if (m_pronoun_M_C2.contains(s.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS2);
-		if (m_pronoun_M_C3.contains(s.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS3);
-		if (m_pronoun_M_C4.contains(s.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS4);
-		if (m_pronoun_M_C5.contains(s.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS5);
-		if (m_pronoun_M_C6.contains(s.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS6);
+		if (m_pronoun_M_C1.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS1);
+		if (m_pronoun_M_C2.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS2);
+		if (m_pronoun_M_C3.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS3);
+		if (m_pronoun_M_C4.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS4);
+		if (m_pronoun_M_C5.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS5);
+		if (m_pronoun_M_C6.contains(dictionary_form.word)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS6);
 
-		if (m_pronoun_male.contains(s.word)) w.addTags(WT.MALE);
-		if (m_pronoun_female.contains(s.word)) w.addTags(WT.FEMALE);
-		if (m_pronoun_neutral.contains(s.word)) w.addTags(WT.NEUTRAL);
+		if (m_pronoun_male.contains(dictionary_form.word)) w.addTags(WT.MALE);
+		if (m_pronoun_female.contains(dictionary_form.word)) w.addTags(WT.FEMALE);
+		if (m_pronoun_neutral.contains(dictionary_form.word)) w.addTags(WT.NEUTRAL);
 
-		if (m_special_pronouns.containsKey(s.word))
+		if (m_special_pronouns.containsKey(dictionary_form.word))
 		{
 			w.addTags(WT.PRONOUN);
-			w.m_base_word = m_special_pronouns.get(s.word);
+			w.m_base_word = m_special_pronouns.get(dictionary_form.word);
 		}
 
 		if (m_indacative_pronous.contains(w.m_base_word))
@@ -791,26 +718,26 @@ public class LangProc
 		if (w.hasSomeTags(WT.PRONOUN))
 		{
 			w1 = w;
-			w = new TaggedWord(index, use_base, s.word, s.astr);
+			w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
 		}
 
-		if (m_pronoun_ADJ_S_C1.contains(s.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS1);
-		if (m_pronoun_ADJ_S_C2.contains(s.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS2);
-		if (m_pronoun_ADJ_S_C3.contains(s.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS3);
-		if (m_pronoun_ADJ_S_C4.contains(s.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS4);
-		if (m_pronoun_ADJ_S_C5.contains(s.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS5);
-		if (m_pronoun_ADJ_S_C6.contains(s.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS6);
+		if (m_pronoun_ADJ_S_C1.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS1);
+		if (m_pronoun_ADJ_S_C2.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS2);
+		if (m_pronoun_ADJ_S_C3.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS3);
+		if (m_pronoun_ADJ_S_C4.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS4);
+		if (m_pronoun_ADJ_S_C5.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS5);
+		if (m_pronoun_ADJ_S_C6.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS6);
 
-		if (m_pronoun_ADJ_M_C1.contains(s.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS1);
-		if (m_pronoun_ADJ_M_C2.contains(s.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS2);
-		if (m_pronoun_ADJ_M_C3.contains(s.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS3);
-		if (m_pronoun_ADJ_M_C4.contains(s.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS4);
-		if (m_pronoun_ADJ_M_C5.contains(s.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS5);
-		if (m_pronoun_ADJ_M_C6.contains(s.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS6);
+		if (m_pronoun_ADJ_M_C1.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS1);
+		if (m_pronoun_ADJ_M_C2.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS2);
+		if (m_pronoun_ADJ_M_C3.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS3);
+		if (m_pronoun_ADJ_M_C4.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS4);
+		if (m_pronoun_ADJ_M_C5.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS5);
+		if (m_pronoun_ADJ_M_C6.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS6);
 
-		if (m_pronoun_ADJ_male.contains(s.word)) w.addTags(WT.MALE);
-		if (m_pronoun_ADJ_female.contains(s.word)) w.addTags(WT.FEMALE);
-		if (m_pronoun_ADJ_neutral.contains(s.word)) w.addTags(WT.NEUTRAL);
+		if (m_pronoun_ADJ_male.contains(dictionary_form.word)) w.addTags(WT.MALE);
+		if (m_pronoun_ADJ_female.contains(dictionary_form.word)) w.addTags(WT.FEMALE);
+		if (m_pronoun_ADJ_neutral.contains(dictionary_form.word)) w.addTags(WT.NEUTRAL);
 
 		if (w.hasAllTags(WT.ADJ) && !w.hasSomeTags(WT.ANY_GENDER)) w.addTags(WT.ANY_GENDER);
 
@@ -827,27 +754,27 @@ public class LangProc
 			w = w1;
 		}
 
-		if (m_prepositions.containsKey(s.word)) w.addTags(WT.PREPOS);
-		if (m_parenthesis_words.contains(s.word)) w.addTags(WT.ADV);
-		if (m_particles.contains(s.word)) w.addTags(WT.PARTICLE);
-		if (m_negations.contains(s.word)) w.addTags(WT.NEGATION);
-		if (m_conjunction.contains(s.word)) w.addTags(WT.CONJ);
-		if (m_question_adv.contains(s.word)) w.addTags(WT.ADV);
-		if (m_adverbs.contains(s.word)) w.addTags(WT.ADV);
-		if (s.astr.indexOf('V') != -1) w.addTags(WT.ADJ);
+		if (m_prepositions.containsKey(dictionary_form.word)) w.addTags(WT.PREPOS);
+		if (m_parenthesis_words.contains(dictionary_form.word)) w.addTags(WT.ADV);
+		if (m_particles.contains(dictionary_form.word)) w.addTags(WT.PARTICLE);
+		if (m_negations.contains(dictionary_form.word)) w.addTags(WT.NEGATION);
+		if (m_conjunction.contains(dictionary_form.word)) w.addTags(WT.CONJ);
+		if (m_question_adv.contains(dictionary_form.word)) w.addTags(WT.ADV);
+		if (m_adverbs.contains(dictionary_form.word)) w.addTags(WT.ADV);
+		if (dictionary_form.astr.indexOf('V') != -1) w.addTags(WT.ADJ);
 
-		if (m_special_verbs.containsKey(s.word))
+		if (m_special_verbs.containsKey(dictionary_form.word))
 		{
 			w.addTags(WT.VERB);
-			w.m_base_word = m_special_verbs.get(s.word);
+			w.m_base_word = m_special_verbs.get(dictionary_form.word);
 		}
 		if (m_modal_verbs.contains(w.m_base_word)) w.addTags(WT.MODAL);
 		if (m_state_words.contains(w.m_base_word)) w.addTags(WT.STATE);
 
-		if (m_special_nouns.containsKey(s.word))
+		if (m_special_nouns.containsKey(dictionary_form.word))
 		{
 			w.addTags(WT.NOUN);
-			w.m_base_word = m_special_nouns.get(s.word);
+			w.m_base_word = m_special_nouns.get(dictionary_form.word);
 		}
 
 		if (m_countable.containsKey(w.m_base_word))
@@ -856,22 +783,28 @@ public class LangProc
 		}
 		if (m_countable_req_nom.containsKey(w.m_base_word))
 		{
-			w.addTags(WT.NUMERAL
-					| m_countable_req_nom.get(w.m_base_word).m_tags);
+			w.addTags(WT.NUMERAL | m_countable_req_nom.get(w.m_base_word).m_tags);
 		}
 
 		// if (s.word.equals("Микита")) w.addTags(WT.NOUN);
 
 		ApplyRules(w);
 
+		if (w.hasSomeTags(WT.NOUN | WT.ADV) && starts_uppercase)
+		{
+			w.addTags(WT.PROPERNAME);
+			// if upper-case in the middle of the sentence -> can't be adjective
+			if (index > 0) w.m_tags.removeTags(WT.ADJ);
+		}
+
 		sw.addHypothesis(w);
 
 		// LangProcOutput.print("|" + w);
 	}
-	
+
 	public int getWordStatisticalWeight(String word, String base_form)
 	{
-		if (m_word_stat_counter==null) return 0;
+		if (m_word_stat_counter == null) return 0;
 		return m_word_stat_counter.getWordStatisticalWeight(word, base_form);
 	}
 
@@ -892,28 +825,28 @@ public class LangProc
 		if (list.size() == 0)
 		{
 			int hyphen_ind = word.indexOf('-');
-			if (hyphen_ind!=-1)
+			if (hyphen_ind != -1)
 			{
 				String part1 = word.substring(0, hyphen_ind);
-				String part2 = word.substring(hyphen_ind+1);
-				if (part2.startsWith("пре") && part1.equals( part2.substring(3) ))
+				String part2 = word.substring(hyphen_ind + 1);
+				if (part2.startsWith("пре") && part1.equals(part2.substring(3)))
 				{
 					list = m_dict.checkList(part1);
 					java.util.HashSet<String> proc = new java.util.HashSet<String>();
 					for (HEntry s : list)
 					{
-						s.word = s.word + "-пре" + s.word; 
+						s.word = s.word + "-пре" + s.word;
 						String def = s.word + "(" + s.astr + ")";
 						if (!proc.contains(def))
 						{
-							addHypothesis(sw, index, word, s);
+							addWordHypotheses(sw, index, word, s);
 							proc.add(def);
 						}
 					}
 				}
-				
+
 			}
-			
+
 			if (LangProcSettings.GENERATE_SUGGESTIONS)
 			{
 				List su_list = m_dict.getSuggestions(word);
@@ -921,8 +854,7 @@ public class LangProc
 				if (su_list.size() == 0)
 				{
 					TaggedWord w = new TaggedWord(index, word, word, "");
-					if (word.equals(".") || word.equals("?")
-							|| word.equals("!") || word.equals(";"))
+					if (word.equals(".") || word.equals("?") || word.equals("!") || word.equals(";"))
 					{
 						w.addTags(WT.SENTENCE_END);
 					}
@@ -938,12 +870,10 @@ public class LangProc
 					{
 						// LangProcOutput.print(o.toString() + " ");
 
-						List<HEntry> alt_list = m_dict.checkList(o.toString()
-								.toLowerCase());
+						List<HEntry> alt_list = m_dict.checkList(o.toString().toLowerCase());
 						for (HEntry alt_s : alt_list)
 						{
-							addHypothesis(sw, index,
-									o.toString().toLowerCase(), alt_s);
+							addWordHypotheses(sw, index, o.toString().toLowerCase(), alt_s);
 						}
 					}
 					// LangProcOutput.println("");
@@ -960,8 +890,7 @@ public class LangProc
 				else
 				{
 					TaggedWord w = new TaggedWord(index, word, word, "");
-					if (word.equals(".") || word.equals("?")
-							|| word.equals("!") || word.equals(";"))
+					if (word.equals(".") || word.equals("?") || word.equals("!") || word.equals(";"))
 					{
 						w.addTags(WT.SENTENCE_END);
 					}
@@ -981,7 +910,7 @@ public class LangProc
 				String def = s.word + "(" + s.astr + ")";
 				if (!proc.contains(def))
 				{
-					addHypothesis(sw, index, word, s);
+					addWordHypotheses(sw, index, word, s);
 					proc.add(def);
 				}
 
@@ -989,11 +918,10 @@ public class LangProc
 		}
 		ss.addWord(sw);
 	}
-	
+
 	private Sentence parseSentence(String txt)
 	{
-		CharSequenceWordFinder wf = new CharSequenceWordFinder(
-				Pattern.compile(m_word_pattern).matcher(txt));
+		CharSequenceWordFinder wf = new CharSequenceWordFinder(Pattern.compile(m_word_pattern).matcher(txt));
 		Sentence ss = new Sentence();
 		// SentenceProcessor sp = new SentenceProcessor();
 		while (wf.hasNext())
@@ -1022,7 +950,7 @@ public class LangProc
 		Sentence ss = parseSentence(txt);
 		return ss.processSentenceWithDependencyGrammar(this, use_word_weighting);
 	}
-	
+
 	private String checkGrammarAPCFG(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = parseSentence(txt);
@@ -1031,8 +959,7 @@ public class LangProc
 
 	private String tryFixRandom(String txt, boolean use_word_weighting)
 	{
-		CharSequenceWordFinder wf = new CharSequenceWordFinder(
-				Pattern.compile(m_word_pattern).matcher(txt));
+		CharSequenceWordFinder wf = new CharSequenceWordFinder(Pattern.compile(m_word_pattern).matcher(txt));
 		Sentence ss = new Sentence();
 
 		while (wf.hasNext())
@@ -1122,10 +1049,8 @@ public class LangProc
 	{
 		try
 		{
-			java.io.OutputStream ops = new java.io.FileOutputStream(
-					"out_graph_test.txt");
-			java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(
-					ops, "WINDOWS-1251");
+			java.io.OutputStream ops = new java.io.FileOutputStream("out_graph_test.txt");
+			java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "WINDOWS-1251");
 			LangProcOutput.writer = new java.io.BufferedWriter(opsr);
 
 			ChoiceGraph.test();
@@ -1139,7 +1064,7 @@ public class LangProc
 		}
 
 	}
-	
+
 	int num_pos1 = 0;
 	int num_pos2 = 0;
 	int num_pos3 = 0;
@@ -1147,29 +1072,24 @@ public class LangProc
 	int num_single = 0;
 	int num_not_possible = 0;
 	int num_all = 0;
-	long t1=0,t2=0,t3=0,t4=0;
-	
+	long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
+
 	Random m_randomGen = new Random();
 
-
-	
 	void printSentencePersistence()
 	{
-		System.out.println("Single=" + (100.0f*num_single/(num_not_possible+num_single+num_all)) +
-				"% NotPoss=" + (100.0f*num_not_possible/(num_not_possible+num_single+num_all)) +
-				"% Positive gr=" + 100.0f*num_pos1/num_all +
-				"% gr_stat=" + 100.0f*num_pos2/num_all +
-				"% rand=" + 100.0f*num_pos3/num_all +
-				"% rand_stat=" + 100.0f*num_pos4/num_all + "%");
-		
-		System.out.println("t1="+t1+" t2="+t2+" t3="+t3+" t4="+t4);
+		System.out.println("Single=" + (100.0f * num_single / (num_not_possible + num_single + num_all)) + "% NotPoss="
+				+ (100.0f * num_not_possible / (num_not_possible + num_single + num_all)) + "% Positive gr=" + 100.0f * num_pos1 / num_all + "% gr_stat="
+				+ 100.0f * num_pos2 / num_all + "% rand=" + 100.0f * num_pos3 / num_all + "% rand_stat=" + 100.0f * num_pos4 / num_all + "%");
+
+		System.out.println("t1=" + t1 + " t2=" + t2 + " t3=" + t3 + " t4=" + t4);
 	}
-	
+
 	void checkSentencePersistence(String s)
 	{
-		//checkGrammar(s,true);
-			
-		if (s.length()<20 || s.length()>150) return;
+		// checkGrammar(s,true);
+
+		if (s.length() < 20 || s.length() > 150) return;
 		if (s.contains("0")) return;
 		if (s.contains("1")) return;
 		if (s.contains("2")) return;
@@ -1190,19 +1110,17 @@ public class LangProc
 		if (s.contains("•")) return;
 		if (s.contains("«")) return;
 		if (s.contains("»")) return;
-	
+
 		String s_orig = s;
 
 		StringBuffer sb = new StringBuffer(s_orig);
-		while (java.lang.Character.isWhitespace(sb.charAt(0)) || sb.charAt(0)=='-')
+		while (java.lang.Character.isWhitespace(sb.charAt(0)) || sb.charAt(0) == '-')
 		{
 			sb.deleteCharAt(0);
 		}
 		s_orig = sb.toString();
-		
-		
 
-		for (int i = 0; i < 5;++i)
+		for (int i = 0; i < 5; ++i)
 		{
 			sb = new StringBuffer(s_orig);
 
@@ -1210,65 +1128,73 @@ public class LangProc
 			if (sb.charAt(change_ind1) == ' ') continue;
 			sb.setCharAt(change_ind1, (char) ('а' + m_randomGen.nextInt(33)));
 
-			if (getNumCorrectionChoices(sb.toString()) == 1) { num_single += 1; continue; }
-			
-//			boolean possible=false;
-//			for(int j=0;j<100;++j)
-//			{
-//				if ( tryFixRandom(sb.toString(), false).equals(s_orig) )
-//				{
-//					possible = true;
-//					break;
-//				}
-//			}
-//			
-//			if (!possible) { num_not_possible += 1; continue; }		
-			
+			if (getNumCorrectionChoices(sb.toString()) == 1)
+			{
+				num_single += 1;
+				continue;
+			}
+
+			// boolean possible=false;
+			// for(int j=0;j<100;++j)
+			// {
+			// if ( tryFixRandom(sb.toString(), false).equals(s_orig) )
+			// {
+			// possible = true;
+			// break;
+			// }
+			// }
+			//
+			// if (!possible) { num_not_possible += 1; continue; }
+
 			String result1, result2, result3, result4;
 			try
 			{
-				//System.out.println(num_all);
-				//System.out.println(s_orig);
-				//System.out.println(sb);
+				// System.out.println(num_all);
+				// System.out.println(s_orig);
+				// System.out.println(sb);
 
-				long t=0;
+				long t = 0;
 				t = System.nanoTime();
 				result1 = checkGrammar(sb.toString(), false);
-				t1 += System.nanoTime()-t;
-				//System.out.println(result1 + (result1.equals(s_orig)?" +":" -"));
-				
+				t1 += System.nanoTime() - t;
+				// System.out.println(result1 +
+				// (result1.equals(s_orig)?" +":" -"));
+
 				t = System.nanoTime();
 				result2 = checkGrammar(sb.toString(), true);
-				t2 += System.nanoTime()-t;
-				
-				//System.out.println(result2 + (result2.equals(s_orig)?" +":" -"));
+				t2 += System.nanoTime() - t;
+
+				// System.out.println(result2 +
+				// (result2.equals(s_orig)?" +":" -"));
 				t = System.nanoTime();
 				result3 = tryFixRandom(sb.toString(), false);
-				t3 += System.nanoTime()-t;
-				
-				//System.out.println(result3 + (result3.equals(s_orig)?" +":" -"));
+				t3 += System.nanoTime() - t;
+
+				// System.out.println(result3 +
+				// (result3.equals(s_orig)?" +":" -"));
 				t = System.nanoTime();
 				result4 = tryFixRandom(sb.toString(), true);
-				t4 += System.nanoTime()-t;
-				 
-				//System.out.println(result4 + (result4.equals(s_orig)?" +":" -"));
-				//System.out.println();
+				t4 += System.nanoTime() - t;
+
+				// System.out.println(result4 +
+				// (result4.equals(s_orig)?" +":" -"));
+				// System.out.println();
 			}
 			catch (java.lang.Exception e)
 			{
 				num_not_possible += 1;
 				continue;
 			}
-			
-			num_all+=1;
+
+			num_all += 1;
 
 			if (result1.equals(s_orig)) ++num_pos1;
 			if (result2.equals(s_orig)) ++num_pos2;
 			if (result3.equals(s_orig)) ++num_pos3;
 			if (result4.equals(s_orig)) ++num_pos4;
-		}		
+		}
 	}
-	
+
 	public static void main4(String[] args)
 	{
 		// ChoiceGraph.test();
@@ -1278,43 +1204,47 @@ public class LangProc
 
 		try
 		{
-			LangProc lp = new LangProc(new OpenOfficeSpellDictionary(
-					"uk_UA"));
-			
+			LangProc lp = new LangProc(new OpenOfficeSpellDictionary("uk_UA"));
+
 			WordStatisticsCounter wsc = new WordStatisticsCounter(lp);
 
 			// lp.buildStatisticalTextModel("Жив колись змій. Він їв людей і не давав їм проходу. І врятував людей од цього змія один коваль.");
-			//wsc.buildStatisticalTextModelForFile("Texts/Zakon/Pro_militsiu.txt", "Texts/zakon_stats.txt");
-//			wsc.buildStatisticalTextModelForFile("Texts/Zakon/law2332-14.txt", "Texts/zakon_stats1.txt");
-//			wsc.buildStatisticalTextModelForFile("Texts/Zakon/ryd_rights_pelipenko.txt", "Texts/zakon_stats2.txt");
+			// wsc.buildStatisticalTextModelForFile("Texts/Zakon/Pro_militsiu.txt",
+			// "Texts/zakon_stats.txt");
+			// wsc.buildStatisticalTextModelForFile("Texts/Zakon/law2332-14.txt",
+			// "Texts/zakon_stats1.txt");
+			// wsc.buildStatisticalTextModelForFile("Texts/Zakon/ryd_rights_pelipenko.txt",
+			// "Texts/zakon_stats2.txt");
 			wsc.buildStatisticalTextModelForFile("Texts/Proza/Fata_morgana_1375700832.txt", "Texts/proza_stats.txt");
-			//wsc.buildStatisticalTextModelForFile("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt", "Texts/nauka_stats.txt");
-//			wsc.buildStatisticalTextModelForFile("Texts/Proza/Z_Rosii_z_liuboviu.txt", "Texts/new.txt");
+			// wsc.buildStatisticalTextModelForFile("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt",
+			// "Texts/nauka_stats.txt");
+			// wsc.buildStatisticalTextModelForFile("Texts/Proza/Z_Rosii_z_liuboviu.txt",
+			// "Texts/new.txt");
 
 			// lp.checkGrammar("Побачив змій коваля та почав тікати.");
 			lp.m_word_stat_counter = wsc;
-			//lp.checkGrammar("Я надійно зберігатиму твої маленькі таємниці.", true);
-			//lp.checkGrammar("Скрізь нові будинки.", true);
+			// lp.checkGrammar("Я надійно зберігатиму твої маленькі таємниці.",
+			// true);
+			// lp.checkGrammar("Скрізь нові будинки.", true);
 			LangProcOutput.flush();
-			
+
 			if (from_file)
 			{
 				LangProcOutput.println("Reading file");
 				java.io.InputStream ips = new java.io.FileInputStream("Texts/Proza/Fata_morgana_1375700832.txt");
-//				java.io.InputStream ips = new java.io.FileInputStream("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt");
+				// java.io.InputStream ips = new
+				// java.io.FileInputStream("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt");
 
-				java.io.InputStreamReader ipsr = new java.io.InputStreamReader( ips, "WINDOWS-1251");
+				java.io.InputStreamReader ipsr = new java.io.InputStreamReader(ips, "WINDOWS-1251");
 				java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
 
-				java.io.OutputStream ops = new java.io.FileOutputStream(
-						"out.txt");
-				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(
-						ops, "WINDOWS-1251");
+				java.io.OutputStream ops = new java.io.FileOutputStream("out.txt");
+				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "WINDOWS-1251");
 				LangProcOutput.writer = new java.io.BufferedWriter(opsr);
 
 				StringBuffer full_text = new StringBuffer();
 				String line = null;
-				
+
 				int sentence_n = 0;
 
 				while ((line = reader.readLine()) != null && lp.num_all < 2000)
@@ -1337,12 +1267,11 @@ public class LangProc
 							++sentence_n;
 							LangProcOutput.println();
 
-							LangProcOutput.println("" + sentence_n + ": "
-									+ substr);
+							LangProcOutput.println("" + sentence_n + ": " + substr);
 
 							lp.checkSentencePersistence(substr);
-							//lp.checkGrammar(substr, false);
-							
+							// lp.checkGrammar(substr, false);
+
 						}
 						else
 						{
@@ -1350,7 +1279,7 @@ public class LangProc
 						}
 					}
 				}
-				
+
 				lp.printSentencePersistence();
 
 				LangProcOutput.writer.flush();
@@ -1359,67 +1288,66 @@ public class LangProc
 			else
 			{
 
-				//System.exit(0);
-				
-				//lp.checkSentencePersistence("Тетяна знову затулилася долонями і змучено глухо відповіла.");
-				//lp.checkSentencePersistence("Скрізь нові будинки.");
-				//lp.checkSentencePersistence("Та чого ти крутишся по хаті мов дзига?");
-				//lp.checkSentencePersistence("На щастя, надходив Андрій.");
-				
-				//lp.checkSentencePersistence("На хвилину залягла тиша і натяглася, наче струна.");
-				//lp.checkSentencePersistence("Далекі дзвони гуділи в ясному повітрі тихо й мелодійно, і здавалося, що то дзвенить золото сонця.");
+				// System.exit(0);
 
+				// lp.checkSentencePersistence("Тетяна знову затулилася долонями і змучено глухо відповіла.");
+				// lp.checkSentencePersistence("Скрізь нові будинки.");
+				// lp.checkSentencePersistence("Та чого ти крутишся по хаті мов дзига?");
+				// lp.checkSentencePersistence("На щастя, надходив Андрій.");
+
+				// lp.checkSentencePersistence("На хвилину залягла тиша і натяглася, наче струна.");
+				// lp.checkSentencePersistence("Далекі дзвони гуділи в ясному повітрі тихо й мелодійно, і здавалося, що то дзвенить золото сонця.");
 
 				lp.checkGrammar(
 				// "Жив колись змой."
-				"У четвертому розділі досліджено мовні моделі з використанням графів."
-				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
-				// "м'яса"
-				// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
-				// "ніщо нічим нічого"
-				// "стільки разів гонили його стрільці."
-				// "Дійшло до того, що він у білий день вибирався на полювання й ніколи не вертавсь з порожніми руками."
-				// "Скільки разів гонили його стрільці, цькували його хортами, ставили на нього капкани або підкидали йому отруєного м'яса, нічим не могли його доконати."
-				// "Лис Микита сміявся собі з них, обминав усякі небезпеки ще й інших своїх товаришів остерігав."
-				// "А вже як вибереться на лови — чи то до курника, чи до комори, то не було сміливішого, вигадливішого та спритнішого злодія."
-				// " Незвичайне щастя і його хитрість зробили його страшенно гордим."
-				// "Йому здавалося, що нема нічого неможливого для нього."
+						"У четвертому розділі досліджено мовні моделі з використанням графів."
+						// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
+						// "м'яса"
+						// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
+						// "ніщо нічим нічого"
+						// "стільки разів гонили його стрільці."
+						// "Дійшло до того, що він у білий день вибирався на полювання й ніколи не вертавсь з порожніми руками."
+						// "Скільки разів гонили його стрільці, цькували його хортами, ставили на нього капкани або підкидали йому отруєного м'яса, нічим не могли його доконати."
+						// "Лис Микита сміявся собі з них, обминав усякі небезпеки ще й інших своїх товаришів остерігав."
+						// "А вже як вибереться на лови — чи то до курника, чи до комори, то не було сміливішого, вигадливішого та спритнішого злодія."
+						// " Незвичайне щастя і його хитрість зробили його страшенно гордим."
+						// "Йому здавалося, що нема нічого неможливого для нього."
 
-				// "Але на вулиці й на базарі крик, шум, гамір, вози скриплять, колеса гуркотять, коні гримлять копитами, свині кувічуть — одним словом, клекіт такий, якого наш Микита і в сні не бачив, і в гарячці не чув."
-				// "Псів уже наш Микита не одурить."
-				// "До червоної я йшов скелі."+
-				// "Робота зроблена вчасно, але не добре."+
-				// "Робота зроблени вчасно, але не добре."+
-				// "Робота зроблени вчасно."+
-				// "Я йду додому."+
-				// "Йдучи додому."+
-				// "Робота зроблена."+
-				// "Вона знята."+
-				// "Роботу зроблено."+
-				// "Мені цікаво."+
-				// "Зроби мені його машину."+
-				// "Його словник."+
-				// "Ти бачив його словник, йдучи додому?"+
-				// "Який, котрий, котрого, якого, які, якому." +
-				// "Я подивилася цікавий фільм." +
-				// "Я люблю український борщ." +
-				// "Я маю коричневого собаку." +
-				// "Маленька дівчинка годує жовтих курчат." +
-				// "Я знаю українську мову добре." +
-				// "Чоловік купив машину?. " +
-				// "Коли ти купив машину?" +
-				// "Я ніколи не читав цей текст!" +
-				// "Я дивлюсь цікавий фільм." +
-				// "Я дивитимусь цікавий фільм." +
-				// "Я не читав цей текст." +
-				// "Я хочу мати ровер."+
-				// "Моя бабуся має зелене пальто." +
-				// "Прийменники не мають самостійного лексичного значення, тому членами речення не виступають."+
-				// "Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення."
-				// +
-				// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
-				// ""
-				, false);
+						// "Але на вулиці й на базарі крик, шум, гамір, вози скриплять, колеса гуркотять, коні гримлять копитами, свині кувічуть — одним словом, клекіт такий, якого наш Микита і в сні не бачив, і в гарячці не чув."
+						// "Псів уже наш Микита не одурить."
+						// "До червоної я йшов скелі."+
+						// "Робота зроблена вчасно, але не добре."+
+						// "Робота зроблени вчасно, але не добре."+
+						// "Робота зроблени вчасно."+
+						// "Я йду додому."+
+						// "Йдучи додому."+
+						// "Робота зроблена."+
+						// "Вона знята."+
+						// "Роботу зроблено."+
+						// "Мені цікаво."+
+						// "Зроби мені його машину."+
+						// "Його словник."+
+						// "Ти бачив його словник, йдучи додому?"+
+						// "Який, котрий, котрого, якого, які, якому." +
+						// "Я подивилася цікавий фільм." +
+						// "Я люблю український борщ." +
+						// "Я маю коричневого собаку." +
+						// "Маленька дівчинка годує жовтих курчат." +
+						// "Я знаю українську мову добре." +
+						// "Чоловік купив машину?. " +
+						// "Коли ти купив машину?" +
+						// "Я ніколи не читав цей текст!" +
+						// "Я дивлюсь цікавий фільм." +
+						// "Я дивитимусь цікавий фільм." +
+						// "Я не читав цей текст." +
+						// "Я хочу мати ровер."+
+						// "Моя бабуся має зелене пальто." +
+						// "Прийменники не мають самостійного лексичного значення, тому членами речення не виступають."+
+						// "Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення."
+						// +
+						// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
+						// ""
+						, false);
 
 				LangProcOutput.writer.flush();
 			}
@@ -1429,71 +1357,132 @@ public class LangProc
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main0(String[] args)
 	{
-		//PCFGParser.main(args);
+		// PCFGParser.main(args);
 		return;
 	}
-	
+
 	public static void main(String[] args)
 	{
 		try
 		{
 			LangProc lp = new LangProc(new OpenOfficeSpellDictionary("uk_UA"));
 			LangProcOutput.flush();
-			lp.checkGrammarAPCFG(
-				//"У четвертому розділі досліджено мовні моделі з використанням графів."
-				//"Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
-				"Жив собі в однім лісі Лис Микита"
-				// "м'яса"
-				// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
-				// "ніщо нічим нічого"
-				// "стільки разів гонили його стрільці."
-				// "Дійшло до того, що він у білий день вибирався на полювання й ніколи не вертавсь з порожніми руками."
-				// "Скільки разів гонили його стрільці, цькували його хортами, ставили на нього капкани або підкидали йому отруєного м'яса, нічим не могли його доконати."
-				// "Лис Микита сміявся собі з них, обминав усякі небезпеки ще й інших своїх товаришів остерігав."
-				// "А вже як вибереться на лови — чи то до курника, чи до комори, то не було сміливішого, вигадливішого та спритнішого злодія."
-				// " Незвичайне щастя і його хитрість зробили його страшенно гордим."
-				// "Йому здавалося, що нема нічого неможливого для нього."
 
-				// "Але на вулиці й на базарі крик, шум, гамір, вози скриплять, колеса гуркотять, коні гримлять копитами, свині кувічуть — одним словом, клекіт такий, якого наш Микита і в сні не бачив, і в гарячці не чув."
-				// "Псів уже наш Микита не одурить."
-				// "До червоної я йшов скелі."+
-				// "Робота зроблена вчасно, але не добре."+
-				// "Робота зроблени вчасно, але не добре."+
-				// "Робота зроблени вчасно."+
-				// "Я йду додому."+
-				// "Йдучи додому."+
-				// "Робота зроблена."+
-				// "Вона знята."+
-				// "Роботу зроблено."+
-				// "Мені цікаво."+
-				// "Зроби мені його машину."+
-				// "Його словник."+
-				// "Ти бачив його словник, йдучи додому?"+
-				// "Який, котрий, котрого, якого, які, якому." +
-				// "Я подивилася цікавий фільм." +
-				// "Я люблю український борщ." +
-				// "Я маю коричневого собаку." +
-				// "Маленька дівчинка годує жовтих курчат." +
-				// "Я знаю українську мову добре." +
-				// "Чоловік купив машину?. " +
-				// "Коли ти купив машину?" +
-				// "Я ніколи не читав цей текст!" +
-				// "Я дивлюсь цікавий фільм." +
-				// "Я дивитимусь цікавий фільм." +
-				// "Я не читав цей текст." +
-				// "Я хочу мати ровер."+
-				// "Моя бабуся має зелене пальто." +
-				// "Прийменники не мають самостійного лексичного значення, тому членами речення не виступають."+
-				// "Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення."
-				// +
-				// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
-				// ""
-				, false);
+			final boolean from_file = true;
+			// final boolean from_file = true; //!LangProcSettings.DEBUG_OUTPUT;
+
+			LangProcOutput.flush();
+
+			if (from_file)
+			{
+				LangProcOutput.println("Reading file");
+				java.io.InputStream ips = new java.io.FileInputStream("test.txt");
+				java.io.InputStreamReader ipsr = new java.io.InputStreamReader(ips, "WINDOWS-1251");
+				java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
+				java.io.OutputStream ops = new java.io.FileOutputStream("out.txt");
+				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "WINDOWS-1251");
+				LangProcOutput.writer = new java.io.BufferedWriter(opsr);
+
+				StringBuffer full_text = new StringBuffer();
+				String line = null;
+
+				int sentence_n = 0;
+				while ((line = reader.readLine()) != null && lp.num_all < 2000)
+				{
+					// LangProcOutput.println("Read line " + line);
+					full_text.append(line).append(" ");
+
+					int i = 0;
+					while (i < full_text.length())
+					{
+						char c = full_text.charAt(i);
+						if ((int) c == 8217) full_text.setCharAt(i, '\'');
+						if ((int) c == '’') full_text.setCharAt(i, '\'');
+
+						if (c == '.' || c == '!' || c == '?' || c == ';')
+						{
+							String substr = full_text.substring(0, i + 1);
+							full_text.delete(0, i + 1);
+							i = 0;
+							++sentence_n;
+							LangProcOutput.println();
+
+							LangProcOutput.println("" + sentence_n + ": " + substr);
+
+							lp.checkGrammarAPCFG(substr, false);
+							// lp.checkGrammar(substr, false);
+
+						}
+						else
+						{
+							++i;
+						}
+					}
+				}
+
+				lp.printSentencePersistence();
 
 				LangProcOutput.writer.flush();
+				ops.close();
+			}
+			else
+			{
+				lp.checkGrammarAPCFG(
+				// "У четвертому розділі досліджено мовні моделі з використанням графів."
+				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
+						"Жив собі в однім лісі Лис Микита."
+						// "м'яса"
+						// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
+						// "ніщо нічим нічого"
+						// "стільки разів гонили його стрільці."
+						// "Дійшло до того, що він у білий день вибирався на полювання й ніколи не вертавсь з порожніми руками."
+						// "Скільки разів гонили його стрільці, цькували його хортами, ставили на нього капкани або підкидали йому отруєного м'яса, нічим не могли його доконати."
+						// "Лис Микита сміявся собі з них, обминав усякі небезпеки ще й інших своїх товаришів остерігав."
+						// "А вже як вибереться на лови — чи то до курника, чи до комори, то не було сміливішого, вигадливішого та спритнішого злодія."
+						// " Незвичайне щастя і його хитрість зробили його страшенно гордим."
+						// "Йому здавалося, що нема нічого неможливого для нього."
+
+						// "Але на вулиці й на базарі крик, шум, гамір, вози скриплять, колеса гуркотять, коні гримлять копитами, свині кувічуть — одним словом, клекіт такий, якого наш Микита і в сні не бачив, і в гарячці не чув."
+						// "Псів уже наш Микита не одурить."
+						// "До червоної я йшов скелі."+
+						// "Робота зроблена вчасно, але не добре."+
+						// "Робота зроблени вчасно, але не добре."+
+						// "Робота зроблени вчасно."+
+						// "Я йду додому."+
+						// "Йдучи додому."+
+						// "Робота зроблена."+
+						// "Вона знята."+
+						// "Роботу зроблено."+
+						// "Мені цікаво."+
+						// "Зроби мені його машину."+
+						// "Його словник."+
+						// "Ти бачив його словник, йдучи додому?"+
+						// "Який, котрий, котрого, якого, які, якому." +
+						// "Я подивилася цікавий фільм." +
+						// "Я люблю український борщ." +
+						// "Я маю коричневого собаку." +
+						// "Маленька дівчинка годує жовтих курчат." +
+						// "Я знаю українську мову добре." +
+						// "Чоловік купив машину?. " +
+						// "Коли ти купив машину?" +
+						// "Я ніколи не читав цей текст!" +
+						// "Я дивлюсь цікавий фільм." +
+						// "Я дивитимусь цікавий фільм." +
+						// "Я не читав цей текст." +
+						// "Я хочу мати ровер."+
+						// "Моя бабуся має зелене пальто." +
+						// "Прийменники не мають самостійного лексичного значення, тому членами речення не виступають."+
+						// "Належачи до іменників, числівників, займенників, вони входять до складу другорядних членів речення."
+						// +
+						// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
+						// ""
+						, false);
+
+			}
+			LangProcOutput.writer.flush();
 		}
 		catch (Exception e)
 		{
@@ -1501,6 +1490,5 @@ public class LangProc
 		}
 		return;
 	}
-
 
 }

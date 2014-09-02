@@ -64,6 +64,9 @@ public class WT {
 	public static final long INDICATIVE = (1L << 38);
 	public static final long QUESTION = (1L << 39);
 	public static final long STATE = (1L << 40);
+	
+	public static final long PROPERNAME = (1L << 41);
+	
 
 	public static final long ANY_PUNCT = COMMA | SENTENCE_END;
 	public static final long ANY_NOUN = NOUN | PRONOUN | NUMERAL;

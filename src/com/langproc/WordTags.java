@@ -53,6 +53,8 @@ public class WordTags
 	{
 		m_tags |= t.m_tags;
 	}
+	public void removeTags(WordTags t) { m_tags &= ~t.m_tags; }
+	public void removeTags(long tags)  { m_tags &= ~tags; }
 	
 	public boolean hasCommonTagsInAllCategories(long tags, long categories)
 	{
@@ -262,6 +264,8 @@ public class WordTags
 		if (hasSomeTags(WT.PAST)) b.append("PAST ");
 		if (hasSomeTags(WT.PRESENT)) b.append("PRESENT ");
 		if (hasSomeTags(WT.FUTURE)) b.append("FUTURE ");
+		if (hasSomeTags(WT.STATE)) b.append("STATE ");
+		if (hasSomeTags(WT.PROPERNAME)) b.append("PROPER ");
 
 		if (hasSomeTags(WT.INFINITIVE)) b.append("INF ");
 		if (hasSomeTags(WT.SENTENCE_END)) b.append("S-END ");

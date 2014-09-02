@@ -3,6 +3,8 @@
 
 package com.langproc;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 // P -> abc (0,75) | Abc
 
 // (adv_place) дійти до зеленої гори  
@@ -33,6 +35,11 @@ class AttributeSpecials
 	boolean m_generate_all_permutations=false;
 };
 
+class TokenSpecials
+{
+	boolean m_is_required=true;
+	boolean m_optional_consume=false;
+};
 // terminal or non-terminal token
 class Token
 {
@@ -62,17 +69,19 @@ class RequiredToken
 	// attributes that should be uniform across the rule
 	WordTags m_uniform_attributes;
 	// the assumption level about presence of this token. 1.0 means should always be present 
-	float m_presence_assumption;
+	TokenSpecials m_token_specials;
 	
 	RequiredToken(Token token, WordTags required_attributes,
-			WordTags inherited_attributes, WordTags uniform_attributes, float presence_assumption)
+			WordTags inherited_attributes, WordTags uniform_attributes, TokenSpecials ta)
 	{
 		m_token = token;
 		m_required_attributes = required_attributes;
 		m_inherited_attributes = inherited_attributes;
 		m_uniform_attributes = uniform_attributes;
-		m_presence_assumption = presence_assumption;
+		m_token_specials = ta;
 	}
+	boolean isRequired() { return m_token_specials.m_is_required; }
+	boolean isOptionalConsumable() { return m_token_specials.m_optional_consume; }
 }
 
 class ProductionRule
@@ -127,7 +136,7 @@ class ProductionRule
 		for(int i = 0; i < m_subtokens.size();++i)
 		{
 			RequiredToken rt = m_subtokens.get(i);
-			if (i!=pos && rt.m_presence_assumption==1.0f) return false;
+			if (i!=pos && rt.isRequired() && !rt.isOptionalConsumable()) return false;
 		}
 		return true;
 	}
@@ -142,7 +151,6 @@ class ProductionRule
 			for(int pos = 0; pos < m_subtokens.size();++pos)
 			{
 				RequiredToken rt = m_subtokens.get(pos);
-				//if (rt.m_presence_assumption!=1.0) continue;
 				rt.m_token.m_associated_multi_term_rules.add(new AssociatedRule(pos, this, rt) );
 			}
 		}
@@ -155,6 +163,17 @@ class ProductionRule
 				rt.m_token.m_associated_one_term_rules.add(new AssociatedRule(pos, this, rt) );
 			}
 		}		
+	}
+
+	public boolean hasOptionalConsumables()
+	{
+		// TODO Auto-generated method stub
+		for(int i = 0; i < m_subtokens.size();++i)
+		{
+			RequiredToken rt = m_subtokens.get(i);
+			if (rt.isOptionalConsumable()) return true;
+		}
+		return false;
 	}
 }
 
@@ -311,17 +330,18 @@ class ParsedToken
 		return res.toString();
 	}
 	
-	String toTikzTree()
+	String toTikzTree(boolean show_attr)
 	{
+		int level_d = show_attr ? 100 : 30;
 		int depth = getDepth();
-		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=15pt,level distance=100pt]\n" +
-		"\\tikzset{frontier/.style={distance from root="+(depth*100-50)+"pt}}\n" +
+		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=15pt,level distance="+level_d+"pt]\n" +
+		"\\tikzset{frontier/.style={distance from root="+(depth*level_d-level_d/2)+"pt}}\n" +
 		"\\Tree\n" + 
-		toTikzTree(null,null,null) + "\n" + 
+		toTikzTree(null,null,null, show_attr) + "\n" + 
 		"\\end{tikzpicture}\n}\n";
 	}
 	
-	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res)
+	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr)
 	{
 		StringBuffer res = new StringBuffer();
 		
@@ -340,10 +360,13 @@ class ParsedToken
 		
 		res.append("[.\\pbox[b]{1cm}{");
 		res.append(m_token.m_name);
-		res.append(" (");
-		res.append(wt.toString());
-		res.append(") ");
-		res.append(m_probabilty);
+		if (show_attr)
+		{
+			res.append(" (");
+			res.append(wt.toString());
+			res.append(") ");
+			res.append(m_probabilty);
+		}
 		res.append("} ");
 		if (m_subtokens.size()>0)
 		{
@@ -356,7 +379,7 @@ class ParsedToken
 					res.append(pt.m_probabilty);
 					res.append("}; ");
 					RequiredToken rt = m_production_rule.m_subtokens.get(rule_ind);
-					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes));
+					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr));
 				}
 				++rule_ind;
 			}
@@ -399,54 +422,74 @@ public class PCFGParser
 		return t;
 	}
 	
-	String readTokenString(StringBuffer leftPart)
+	boolean readORSign(StringBuffer buf)
 	{
-		// read one token from the string and advance string pointer p
-		while(leftPart.length()>0 && Character.isWhitespace(leftPart.charAt(0)))
+		while(buf.length()>0 && Character.isWhitespace(buf.charAt(0)))
 		{
-			leftPart.deleteCharAt(0);
+			buf.deleteCharAt(0);
 		}
 		
-		if (leftPart.length()==0) return null;
-		
-		if (leftPart.charAt(0)=='<')
+		if (buf.length()==0) return false;
+		if (buf.charAt(0)=='|')
 		{
-			leftPart.deleteCharAt(0);
+			buf.deleteCharAt(0);
+			return true;
+		}
+		return false;
+	}
+	
+	String readTokenString(StringBuffer buf)
+	{
+		// read one token from the string and advance string pointer p
+		while(buf.length()>0 && Character.isWhitespace(buf.charAt(0)))
+		{
+			buf.deleteCharAt(0);
+		}
+		
+		if (buf.length()==0) return null;
+		
+		if (buf.charAt(0)=='<')
+		{
+			buf.deleteCharAt(0);
 			// read until '>'
 			StringBuffer result = new StringBuffer(16);			
-			while(leftPart.length()>0 && leftPart.charAt(0)!='>')
+			while(buf.length()>0 && buf.charAt(0)!='>')
 			{
-				result.append(leftPart.charAt(0));
-				leftPart.deleteCharAt(0);
+				result.append(buf.charAt(0));
+				buf.deleteCharAt(0);
 			}
-			if (leftPart.length()>0) leftPart.deleteCharAt(0);
+			if (buf.length()>0) buf.deleteCharAt(0);
 			return result.toString();
 		}
 				
-		if (!Character.isAlphabetic(leftPart.charAt(0))) return null;
+		if (!Character.isAlphabetic(buf.charAt(0))) return null;
 			
 		StringBuffer result = new StringBuffer(16);
 		
-		while(leftPart.length()>0 && Character.isAlphabetic(leftPart.charAt(0)) )
+		while(buf.length()>0 && Character.isAlphabetic(buf.charAt(0)) )
 		{
-			result.append(leftPart.charAt(0));
-			leftPart.deleteCharAt(0);
+			result.append(buf.charAt(0));
+			buf.deleteCharAt(0);
 		}
 		return result.toString();
 	}
 
-	float readRequiredTag(StringBuffer inbuf)
+	TokenSpecials readTokenSpecials(StringBuffer buf)
 	{
-		float required = 1.0f;
+		TokenSpecials ts = new TokenSpecials();
 		// read one token from the string and advance string pointer p
-		while(inbuf.length()>0 && Character.isWhitespace(inbuf.charAt(0)))
+		while(buf.length()>0 && Character.isWhitespace(buf.charAt(0)))
 		{
-			inbuf.deleteCharAt(0);
+			buf.deleteCharAt(0);
 		}
-		if (inbuf.length()==0) return required;
 		
-		if (inbuf.charAt(0)=='?') { required=0.5f; inbuf.deleteCharAt(0); }
-		return required;
+		for(;;)
+		{
+			if (buf.length()==0) return ts;
+			if (buf.charAt(0)=='?') { ts.m_is_required = false; buf.deleteCharAt(0); continue; }
+			if (buf.charAt(0)=='!') { ts.m_optional_consume = true; buf.deleteCharAt(0); continue; }
+			return ts;
+		}
 	}
 
 	
@@ -486,6 +529,8 @@ public class PCFGParser
 				case 'm': specified.m_tags |= WT.MALE; break;
 				case 'f': specified.m_tags |= WT.FEMALE; break;
 				case 'n': specified.m_tags |= WT.NEUTRAL; break;
+
+				case 'U': specified.m_tags |= WT.PROPERNAME; break;
 				
 				case 's': specified.m_tags |= WT.SINGLE; break;
 				case '*': specified.m_tags |= WT.PLURAL; break;
@@ -575,29 +620,39 @@ public class PCFGParser
 		
 		Token result = getTokenByName(leftTokenS);
 		WordTags defined_attributes = left_sp; // no tags yet
-		java.util.Vector<RequiredToken> subtokens = new java.util.Vector<RequiredToken>();
 		
 		for(;;)
 		{
-			String rightTokenS = readTokenString(rightPart);
-			if (rightTokenS==null) break;
+			java.util.Vector<RequiredToken> subtokens = new java.util.Vector<RequiredToken>();
 			
-			WordTags token_sp = new WordTags();
-			WordTags token_un = new WordTags();
-			readAttributeString(rightPart, token_sp, token_un);
-			
-			float required = readRequiredTag(rightPart);
+			for(;;)
+			{
+				String rightTokenS = readTokenString(rightPart);
+				if (rightTokenS==null) break;
+				
+				WordTags token_sp = new WordTags();
+				WordTags token_un = new WordTags();
+				readAttributeString(rightPart, token_sp, token_un);
 
-			//System.out.println("Right part: " + rightTokenS);
-			Token req_token =  getTokenByName(rightTokenS);
+				TokenSpecials ts = readTokenSpecials(rightPart);
+				
+				//System.out.println("Right part: " + rightTokenS);
+				Token req_token =  getTokenByName(rightTokenS);
+				
+				subtokens.add( new RequiredToken(req_token, token_sp,
+						new WordTags(token_un.m_tags), token_un, ts) );
+			}
 			
-			subtokens.add( new RequiredToken(req_token, token_sp,
-					new WordTags(token_un.m_tags), token_un, required) );
+			if (subtokens.size()>0)
+			{
+				// the rule is added to index in each token that can be produced by this rule
+				new ProductionRule(result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
+				
+			}
+				
+			
+			if (!readORSign(rightPart)) break;
 		}
-		
-		// the rule is added to index in each token that can be produced by this rule
-		new ProductionRule(result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
-
 	}
 
 
@@ -642,15 +697,18 @@ public class PCFGParser
 	{
 		if (rule_token_after_right==rule.m_subtokens.size())
 		{
-			// finished parsing the rule
-			addPossibleTokenCopy(pos_left, pos_after_right, partially_parsed_token, true);
+			// finished parsing the rule. Write only if goes to upper level of pyramid
+			if (pos_after_right - pos_left - 1 > apply_height)
+			{
+				addPossibleTokenCopy(pos_left, pos_after_right, partially_parsed_token, true);
+			}
 			return;
 		}
 
 		int required_tokens_on_the_right = 0;
 		for(int i=rule_token_after_right;i<rule.m_subtokens.size();++i)
 		{
-			if (rule.m_subtokens.get(i).m_presence_assumption==1.0) ++required_tokens_on_the_right;
+			if (rule.m_subtokens.get(i).isRequired()) ++required_tokens_on_the_right;
 		}
 		
 		// can't satisfy if too little tokens left
@@ -660,7 +718,10 @@ public class PCFGParser
 		{
 			// all parts that are left where optional. Add current token
 			// TODO: adjust the probability of partial token
-			addPossibleTokenCopy(pos_left, pos_after_right, partially_parsed_token, true);
+			if (pos_after_right - pos_left - 1 > apply_height)
+			{
+				addPossibleTokenCopy(pos_left, pos_after_right, partially_parsed_token, true);
+			}
 			return;
 		}
 
@@ -678,18 +739,29 @@ public class PCFGParser
 		
 		long required_to_be_uniform =  req_token.m_uniform_attributes.m_tags;
 
-		if (req_token.m_presence_assumption!=1.0)
+		if (!req_token.isRequired())
 		{
 			// add parse option where next token is omitted
 			tryMatchRight(rule, partially_parsed_token, apply_height, pos_left, rule_token_after_right+1, pos_after_right);
 		}
+		// now next token should be present
+		if (required_tokens_on_the_right==0) required_tokens_on_the_right=1;
 
 		int max_height = m_total_height - pos_after_right - required_tokens_on_the_right;
 		if (max_height>apply_height) max_height = apply_height;
 		// try match the token on the right
 		for(int i=0;i<=max_height;++i)
 		{
-			java.util.List<ParsedToken> next_token_list = m_parse_piramide[i][pos_after_right];
+			
+			java.util.List<ParsedToken> next_token_list=null;
+			try
+			{
+				next_token_list = m_parse_piramide[i][pos_after_right];
+			}
+			catch(java.lang.ArrayIndexOutOfBoundsException e)
+			{
+				System.err.println("ArrayIndexOutOfBoundsException");
+			}
 			if (next_token_list==null) break;
 			for(ParsedToken t: next_token_list)
 			{
@@ -701,6 +773,11 @@ public class PCFGParser
 				{
 					partially_parsed_token.setSubtoken(rule_token_after_right, t);
 					
+					if (req_token.isOptionalConsumable())
+					{
+						tryMatchRight(rule, partially_parsed_token,
+								apply_height, pos_left, rule_token_after_right+1, pos_after_right );
+					}
 					tryMatchRight(rule, partially_parsed_token,
 							apply_height, pos_left, rule_token_after_right+1, pos_after_right+(i+1) );
 					
@@ -727,7 +804,7 @@ public class PCFGParser
 		int required_tokens_on_the_left = 0;
 		for(int i=0; i<rule_token_left;++i)
 		{
-			if (rule.m_subtokens.get(i).m_presence_assumption==1.0) ++required_tokens_on_the_left;
+			if (rule.m_subtokens.get(i).isRequired()) ++required_tokens_on_the_left;
 		}
 		
 		// can't satisfy if too little tokens left
@@ -754,19 +831,31 @@ public class PCFGParser
 		
 		long required_to_be_uniform =  req_token.m_uniform_attributes.m_tags;
 		
-		if (req_token.m_presence_assumption!=1.0)
+		if (!req_token.isRequired())
 		{
 			// add parse option where next token is omitted
 			// TODO: add skip penalty
 			tryExpandLeft(rule, partially_parsed_token, apply_height, rule_token_left-1, pos_left, rule_token_after_right, pos_after_right);
 		}
+		
+		// here we check the case when token on the left is not ommitted. So we can set required tokens to at least 1
+		if (required_tokens_on_the_left==0) required_tokens_on_the_left=1;
 
 		int max_height = pos_left - required_tokens_on_the_left;
 		if (max_height>=apply_height) max_height = apply_height-1;
 		// try match the token on the right
 		for(int i=0;i<=max_height;++i)
 		{
-			java.util.List<ParsedToken> next_token_list = m_parse_piramide[i][pos_left-i-1];
+			java.util.List<ParsedToken> next_token_list = null;
+			
+			try
+			{
+				next_token_list = m_parse_piramide[i][pos_left-i-1];
+			}
+			catch(java.lang.ArrayIndexOutOfBoundsException e)
+			{
+				System.err.println("ArrayIndexOutOfBoundsException");
+			}
 			if (next_token_list==null) break;
 			for(ParsedToken t: next_token_list)
 			{
@@ -778,6 +867,11 @@ public class PCFGParser
 				{
 					partially_parsed_token.setSubtoken(rule_token_left-1, t);
 					
+					if (req_token.isOptionalConsumable())
+					{
+						tryExpandLeft(rule, partially_parsed_token,
+								apply_height, rule_token_left-1, pos_left, rule_token_after_right, pos_after_right );
+					}
 					tryExpandLeft(rule, partially_parsed_token,
 							apply_height, rule_token_left-1, pos_left-i-1, rule_token_after_right, pos_after_right );
 					
@@ -817,6 +911,11 @@ public class PCFGParser
 						 //System.out.println("One-term rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
 						 reusable_token.setSubtoken(ar.m_token_index, token);
 						 
+						 if (ar.m_rule.hasOptionalConsumables())
+						 {
+							 throw new NotImplementedException();
+						 }
+						 
 						 if (addPossibleTokenCopy(start_pos, start_pos+apply_height+1, reusable_token, false))
 						 {
 							 changed = true;
@@ -844,6 +943,13 @@ public class PCFGParser
 					 reusable_token.setSubtoken(ar.m_token_index, token);
 					 
 					 //System.out.println("Try rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
+					 
+					 if (ar.m_required_token.isOptionalConsumable())
+					 {
+						 tryExpandLeft(ar.m_rule, reusable_token,
+									apply_height, ar.m_token_index, start_pos,
+									ar.m_token_index+1, start_pos+1);
+					 }
 					 
 					 tryExpandLeft(ar.m_rule, reusable_token,
 							apply_height, ar.m_token_index, start_pos,
@@ -936,12 +1042,13 @@ public class PCFGParser
 		if (res==null)
 		{
 			System.out.println("No results");
+			throw new java.lang.IndexOutOfBoundsException();
 		}
 		else
 		{
 			for( ParsedToken root : res)
 			{
-				System.out.println(root.toTikzTree());
+				System.out.println(root.toTikzTree(false));
 			}
 		}
 	}
