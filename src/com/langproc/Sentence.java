@@ -557,7 +557,6 @@ public class Sentence
 		parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
 		parser.addRule("NP[NCG p3] -> NG[NCG c1]");
 		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
-
 		
 		parser.addRule("TARGET -> V DNP[c4]");
 		parser.addRule("ADDRESS -> DNP[c3]");

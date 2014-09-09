@@ -38,7 +38,8 @@ class AttributeSpecials
 class TokenSpecials
 {
 	boolean m_is_required=true;
-	boolean m_optional_consume=false;
+	boolean m_should_consume=true;  // if true rule should consumes the symbol. If not can be optional
+	boolean m_non_consumable=false; // if true means that rule can't consume the symbol. Not compatible with m_should_consume=true
 };
 // terminal or non-terminal token
 class Token
@@ -81,7 +82,8 @@ class RequiredToken
 		m_token_specials = ta;
 	}
 	boolean isRequired() { return m_token_specials.m_is_required; }
-	boolean isOptionalConsumable() { return m_token_specials.m_optional_consume; }
+	boolean shouldConsume() { return m_token_specials.m_should_consume; }
+	boolean canConsume() { return !m_token_specials.m_non_consumable; }
 }
 
 class ProductionRule
@@ -136,7 +138,7 @@ class ProductionRule
 		for(int i = 0; i < m_subtokens.size();++i)
 		{
 			RequiredToken rt = m_subtokens.get(i);
-			if (i!=pos && rt.isRequired() && !rt.isOptionalConsumable()) return false;
+			if (i!=pos && rt.isRequired() && rt.shouldConsume()) return false;
 		}
 		return true;
 	}
@@ -167,11 +169,10 @@ class ProductionRule
 
 	public boolean hasOptionalConsumables()
 	{
-		// TODO Auto-generated method stub
 		for(int i = 0; i < m_subtokens.size();++i)
 		{
 			RequiredToken rt = m_subtokens.get(i);
-			if (rt.isOptionalConsumable()) return true;
+			if (!rt.shouldConsume()) return true;
 		}
 		return false;
 	}
@@ -487,7 +488,19 @@ public class PCFGParser
 		{
 			if (buf.length()==0) return ts;
 			if (buf.charAt(0)=='?') { ts.m_is_required = false; buf.deleteCharAt(0); continue; }
-			if (buf.charAt(0)=='!') { ts.m_optional_consume = true; buf.deleteCharAt(0); continue; }
+			if (buf.charAt(0)=='!')
+			{
+				if (ts.m_should_consume==true) // single ! is for optional consume
+				{
+					ts.m_should_consume = false;
+				}
+				else
+				{
+					ts.m_non_consumable = true; // !! is for non consumable
+				}
+				buf.deleteCharAt(0);
+				continue;
+			}
 			return ts;
 		}
 	}
@@ -773,13 +786,16 @@ public class PCFGParser
 				{
 					partially_parsed_token.setSubtoken(rule_token_after_right, t);
 					
-					if (req_token.isOptionalConsumable())
+					if (!req_token.shouldConsume())
 					{
 						tryMatchRight(rule, partially_parsed_token,
 								apply_height, pos_left, rule_token_after_right+1, pos_after_right );
 					}
-					tryMatchRight(rule, partially_parsed_token,
+					if (req_token.canConsume())
+					{
+						tryMatchRight(rule, partially_parsed_token,
 							apply_height, pos_left, rule_token_after_right+1, pos_after_right+(i+1) );
+					}
 					
 					partially_parsed_token.removeSubtoken(rule_token_after_right, saved_tags, saved_uniform_tags, saved_prob);
 				}
@@ -867,13 +883,16 @@ public class PCFGParser
 				{
 					partially_parsed_token.setSubtoken(rule_token_left-1, t);
 					
-					if (req_token.isOptionalConsumable())
+					if (!req_token.shouldConsume())
 					{
 						tryExpandLeft(rule, partially_parsed_token,
 								apply_height, rule_token_left-1, pos_left, rule_token_after_right, pos_after_right );
 					}
-					tryExpandLeft(rule, partially_parsed_token,
+					if (req_token.canConsume())
+					{
+						tryExpandLeft(rule, partially_parsed_token,
 							apply_height, rule_token_left-1, pos_left-i-1, rule_token_after_right, pos_after_right );
+					}
 					
 					partially_parsed_token.removeSubtoken(rule_token_left-1, saved_tags, saved_uniform_tags, saved_prob);
 				}
@@ -944,16 +963,18 @@ public class PCFGParser
 					 
 					 //System.out.println("Try rule (" + ar.m_rule + ") at h=" + apply_height + " p=" + start_pos);
 					 
-					 if (ar.m_required_token.isOptionalConsumable())
+					 if (!ar.m_required_token.shouldConsume())
 					 {
 						 tryExpandLeft(ar.m_rule, reusable_token,
 									apply_height, ar.m_token_index, start_pos,
 									ar.m_token_index+1, start_pos+1);
 					 }
-					 
-					 tryExpandLeft(ar.m_rule, reusable_token,
+					 if (ar.m_required_token.canConsume())
+					 {
+						 tryExpandLeft(ar.m_rule, reusable_token,
 							apply_height, ar.m_token_index, start_pos,
 							ar.m_token_index+1, start_pos+apply_height+1);
+					 }
 				}
 			}
 		}
