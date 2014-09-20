@@ -1,7 +1,6 @@
 ﻿/*******************************************************************************
  * UkrParser
- * Copyright (c) 2013
- * Maksym Davydov
+ * Copyright (c) 2013-2014 Maksym Davydov
  * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
@@ -465,16 +464,16 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*ми", ".*", "abc", ".*", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
 		m_tag_rules.add(new TagRule(".*[ая]х", ".*", "abc", ".*", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "и", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "ці", WT.NOUN, WT.CASUS3 | WT.CASUS6 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "у", WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "ою", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "и", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "", WT.NOUN, WT.CASUS2 | WT.CASUS4 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ad", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "и", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "ц?і", WT.NOUN, WT.CASUS3 | WT.CASUS6 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "у", WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "ою", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "и", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.FEMALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "", WT.NOUN, WT.CASUS2 | WT.CASUS4 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[od]", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.FEMALE));
 
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.MALE | WT.PERSON3));
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "и", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
@@ -1371,7 +1370,7 @@ public class LangProc
 			LangProc lp = new LangProc(new OpenOfficeSpellDictionary("uk_UA"));
 			LangProcOutput.flush();
 
-			final boolean from_file = true;
+			final boolean from_file = false;
 			// final boolean from_file = true; //!LangProcSettings.DEBUG_OUTPUT;
 
 			LangProcOutput.flush();
@@ -1433,7 +1432,8 @@ public class LangProc
 				lp.checkGrammarAPCFG(
 				// "У четвертому розділі досліджено мовні моделі з використанням графів."
 				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
-						"Жив собі в однім лісі Лис Микита."
+						"Хлопець несе рюкзак зі школи."
+						//"Жив собі в однім лісі Лис Микита."
 						// "м'яса"
 						// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"
 						// "ніщо нічим нічого"
