@@ -527,7 +527,7 @@ public class Sentence
 
 	}
 
-	Token getTokenByWord(PCFGParser parser, TaggedWord tw)
+	Token getTokenByGrammar(PCFGParser parser, TaggedWord tw)
 	{
 		if (tw.m_tags.hasSomeTags(WT.NOUN)) return parser.getTokenByName("noun");
 		if (tw.m_tags.hasSomeTags(WT.VERB)) return parser.getTokenByName("verb");
@@ -536,59 +536,108 @@ public class Sentence
 		if (tw.m_tags.hasSomeTags(WT.PRONOUN)) return parser.getTokenByName("pronoun");
 		if (tw.m_tags.hasSomeTags(WT.NEGATION)) return parser.getTokenByName("neg");
 		if (tw.m_tags.hasSomeTags(WT.COMMA)) return parser.getTokenByName(tw.m_word);
-		if (tw.m_tags.hasSomeTags(WT.CONJ)) return parser.getTokenByName(tw.m_word);
+		if (tw.m_tags.hasSomeTags(WT.CONJ)) return parser.getTokenByName("conj");
 		if (tw.m_tags.hasSomeTags(WT.NUMERAL)) return parser.getTokenByName("num");
 		if (tw.m_tags.hasSomeTags(WT.PARTICLE)) return parser.getTokenByName("particle");
 		if (tw.m_tags.hasSomeTags(WT.ADVPART)) return parser.getTokenByName("advp");
 		if (tw.m_tags.hasSomeTags(WT.PREPOS)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.SENTENCE_END)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.HELPWORD)) return parser.getTokenByName("help");
-		return parser.getTokenByName(tw.m_word);
+		return null; // no grammar name can be found
+		// return parser.getTokenByName(tw.m_word);
 	}
 
+	static PCFGParser parser=null;
+	
 	public String processSentenceWithAPCFG(LangProc langproc, boolean use_word_weighting)
 	{
-		PCFGParser parser = new PCFGParser();
-
-		// attributed noun "Лис Микита"
-		
-		parser.addRule("V -> у | в");
-		parser.addRule("Z -> з | із | зі");
-		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
-		
-		
-		parser.addRule("AN[NCG] -> noun[NCG] noun[NCGU]?");
-		// noun group (adjectives, etc)
-		parser.addRule("COMMEDADJG[NCG] -> <,> adj[NCG] GENCOMMA!");
-		parser.addRule("COMMEDADJG[NCG] -> ADJG[NCG] adj[NCG] GENCOMMA!");
-		
-		parser.addRule("NG[NCG] -> adj[NCG]? AN[NCG] NG[c2]? COMMEDADJG[NCG]?");
-		parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] COMMEDADJG[NCG]?");
-		parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
-		parser.addRule("NP[NCG p3] -> NG[NCG c1]");
-		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
-		
-		parser.addRule("TARGET -> V DNP[c4]");
-		parser.addRule("ADDRESS -> DNP[c3]");
-		parser.addRule("PLACE -> V DNP[c6]");
-		parser.addRule("ADDITIONAL -> Z DNP[c5]");
-		parser.addRule("FROM -> Z DNP[c2]");	
-		parser.addRule("OBJECT -> DNP[c4]");
-		parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM?"); // TARGET?
-		
-		//parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); // TARGET?
-		//parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
-		//parser.addRule("S *-> NP[NP] VP[NP]");
-		parser.addRule("S *-> VP[NP] NP[NP]");
-		parser.addRule("S -> VP[p-]");
-		parser.addRule("FULLS -> START S <.>");
-		
+		if (parser==null)
+		{
+			parser = new PCFGParser();
+	
+			// attributed noun "Лис Микита"
+			parser.addRule("QS *-> <скільки> PLACE? DNP[c2]");
+	
+			parser.addRule("V -> у | в");
+			parser.addRule("Z -> з | із | зі");
+			parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
+	
+			parser.addRule("AN[NCG] -> noun[NCG] noun[NCGU]?");
+			// noun group (adjectives, etc)
+			parser.addRule("COMMEDADJG[NCG] -> <,> adj[NCG] GENCOMMA!");
+			parser.addRule("COMMEDADJG[NCG] -> COMMEDADJG[NCG] <,> adj[NCG] GENCOMMA!");
+			parser.addRule("ADJG[NCG] -> adj[NCG]");
+			parser.addRule("ADJG[NCG] -> COMMEDADJG[NCG]");
+	
+			parser.addRule("NG[NCG] -> adj[NCG]? AN[NCG] NG[c2]? ADJG[NCG]?");
+			parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] ADJG[NCG]?");
+			parser.addRule("NG[*C] -> NG[C] conj NG[C]");
+	
+			parser.addRule("NG[NCG] -> adj[NCG] NG[NCG]");
+			parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
+			parser.addRule("NP[NCG p3] -> NG[NCG c1]");
+			parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
+			parser.addRule("NP[NCGP] -> NP <чи> NP[NCGP]");
+	
+			parser.addRule("TARGET -> V DNP[c4] | <до> DNP[c2] | <додому> | <туди> | <сюди>");
+			parser.addRule("NAME -> noun[NCGU]");
+			parser.addRule("ADDRESS -> DNP[c3]");
+			parser.addRule("PLACE -> V DNP[c6] | <тут> | <там>");
+			parser.addRule("ADDITIONAL -> Z DNP[c5]");
+			parser.addRule("TIME -> <зараз> | <потім>");
+			parser.addRule("FROM -> Z DNP[c2]");
+			parser.addRule("OBJECT -> DNP[c4]");
+			parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
+			parser.addRule("IVP *-> verb[i] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
+			parser.addRule("IVP *-> verb[i] OBJECT? PLACE? NAME");
+			parser.addRule("VP[PN] -> verb[PNM] IVP");
+			parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
+			parser.addRule("VP[PN] -> <не> VP[PN]");
+			parser.addRule("S -> TARGET? VP[p-]");
+	
+			parser.addRule("S *0.8 -> verb[PN] NP[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET?");
+			// parser.addRule("IS *-> verb[i] NP[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM?  TARGET?");
+	
+			parser.addRule("VP[p1p2p3 s*] -> <є> adj[c4c5]"); // TARGET?
+			parser.addRule("VP[p1p2p3 s*] -> <є> DNP[c4c5]"); // TARGET?
+	
+			// parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); //
+			// TARGET?
+			// parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
+			// parser.addRule("S *-> NP[NP] VP[NP]");
+			parser.addRule("S *-> VP[NP] NP[NP]"); // Я зробив завдання
+			parser.addRule("S -> VP[p-]"); // Зроблено завдання
+			parser.addRule("S -> IVP"); // Робити завдання
+			// parser.addRule("EEEE -> <є> adj");
+	
+			parser.addRule("AKSTOSAY[p2 s] -> <розкажи> | <скажи> | <повідом> | <повтори>");
+	
+			parser.addRule("QS -> S");
+			parser.addRule("QS -> <чи> S");
+			parser.addRule("QS -> <чи> QS");
+			parser.addRule("QS *-> adv S");
+			parser.addRule("QS *-> adv IVP");
+			parser.addRule("QS *-> pronoun[Q] NP");
+			parser.addRule("QS -> pronoun[Q] S");
+	
+			// parser.addRule("QS -> <скільки> DNP[c2] PLACE?");
+	
+			parser.addRule("FULLS -> START S <.>");
+			parser.addRule("SHORTS -> START NP <.>");
+			parser.addRule("FULLQ -> START NP <?>");
+			parser.addRule("FULLQ -> START VP <?>");
+			parser.addRule("FULLQ -> START QS <?>");
+			parser.addRule("FULLQ -> START AKSTOSAY QS <?>");
+		}
 
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
-		
+
 		java.util.List<ParsedToken> ptl_start = new java.util.ArrayList<ParsedToken>();
 		ParsedToken pt_start = new ParsedToken(parser.getTokenByName("START"), new WordTags(), 1.0f, "");
-		System.out.println("Add token " + pt_start);
+		if (LangProcSettings.DEBUG_OUTPUT)
+		{
+			System.out.println("Add token " + pt_start);
+		}
 		ptl_start.add(pt_start);
 		tokens.add(ptl_start);
 
@@ -607,10 +656,24 @@ public class Sentence
 				}
 
 				WordTags token_sp = tw.m_tags;
-				Token req_token = getTokenByWord(parser, tw);
-				ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word_as_was_written);
-				System.out.println("Add token " + pt);
-				ptl.add(pt);
+				Token req_token = getTokenByGrammar(parser, tw);
+				if (req_token != null)
+				{
+					ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word_as_was_written);
+					if (LangProcSettings.DEBUG_OUTPUT)
+					{
+						System.out.println("Add token " + pt);
+					}
+					ptl.add(pt);
+				}
+
+				Token byname_token = parser.getTokenByName(tw.m_word);
+				ParsedToken pt1 = new ParsedToken(byname_token, token_sp, 1.0f, tw.m_word_as_was_written);
+				if (LangProcSettings.DEBUG_OUTPUT)
+				{
+					System.out.println("Add token " + pt1);
+				}
+				ptl.add(pt1);
 			}
 			tokens.add(ptl);
 		}
@@ -621,7 +684,7 @@ public class Sentence
 		if (res == null || res.size() == 0)
 		{
 			System.out.println("No results");
-			System.exit(0);
+			//System.exit(0);
 		}
 		else
 		{
@@ -736,6 +799,7 @@ public class Sentence
 			w.print();
 			LangProcOutput.println();
 			LangProcOutput.println();
+			LangProcOutput.flush();
 		}
 	}
 }

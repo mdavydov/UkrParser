@@ -90,7 +90,7 @@ public class TaggedWord
 
 	}
 
-	public String getFullFesc()
+	public String getFullDesc()
 	{
 		StringBuffer b = new StringBuffer(200);
 		b.append(m_sentence_pos);

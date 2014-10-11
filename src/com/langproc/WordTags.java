@@ -283,6 +283,9 @@ public class WordTags
 		if (hasSomeTags(WT.INDICATIVE)) b.append("IND ");
 		if (hasSomeTags(WT.QUESTION)) b.append("QUE ");
 		if (hasSomeTags(WT.STATE)) b.append("STATE ");
+		
+		if (hasSomeTags(WT.SELF)) b.append("SELF ");
+
 		return b.toString();
 	}
 }

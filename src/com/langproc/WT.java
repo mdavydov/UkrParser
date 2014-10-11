@@ -77,6 +77,7 @@ public class WT {
 	
 	public static final long PROPERNAME = (1L << 41);
 	
+	public static final long SELF = (1L << 42); // митися
 
 	public static final long ANY_PUNCT = COMMA | SENTENCE_END;
 	public static final long ANY_NOUN = NOUN | PRONOUN | NUMERAL;

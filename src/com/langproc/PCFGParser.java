@@ -112,13 +112,18 @@ class ProductionRule
 		m_inherited_unified_attributes = inherited_unified_attributes;
 		m_probability = probability;
 		m_subtokens = subtokens;
+		
 		addToIndex();
-		if (gen_all_permutations) createAllPermutations(0);
+		if (gen_all_permutations)
+		{
+			createAllPermutations(0);
+		}
 	}
 	
 	void createAllPermutations(int index_to_start)
 	{
 		int s = m_subtokens.size();
+		if (index_to_start<s-1) createAllPermutations(index_to_start+1);
 		for(int i=index_to_start+1;i<s;++i)
 		{
 			java.util.Vector<RequiredToken> new_subtokens = new java.util.Vector<RequiredToken>(m_subtokens);
@@ -154,8 +159,8 @@ class ProductionRule
 	
 	public void addToIndex()
 	{
-		//System.out.print("Add to index ");
-		//dump();
+		//System.out.println("Add to index " + this);
+		
 
 		if (m_subtokens.size()>1)
 		{
@@ -210,6 +215,7 @@ class ParsedToken
 	ParsedToken() {}
 	ParsedToken(Token token, WordTags attributes, float probabilty, String token_text)
 	{
+		if (token==null) throw new java.lang.NullPointerException();
 		m_token = token;
 		m_attributes.m_tags = attributes.m_tags;
 		m_probabilty=probabilty;
@@ -304,8 +310,14 @@ class ParsedToken
 		
 		StringBuffer res = new StringBuffer();
 
-		if (m_token_text!=null) res.append("<" + m_token_text + ">");
-		res.append(m_token.m_name);
+		if (m_token_text!=null)
+		{
+			res.append("<" + m_token_text + ">");
+		}
+		if (m_token.m_name!=null)
+		{
+			res.append(m_token.m_name);
+		}
 		res.append(" (");
 		//res.append(m_attributes.toString());
 		res.append(wt.toString());
@@ -354,6 +366,23 @@ class ParsedToken
 	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr)
 	{
 		StringBuffer res = new StringBuffer();
+
+		int child_num=2;
+		for( ParsedToken pt : m_subtokens ) if (pt!=null) ++child_num;
+		
+		if (child_num==1)
+		{
+			int rule_ind1 = 0;
+			for( ParsedToken pt : m_subtokens )
+			{
+				if (pt!=null)
+				{
+					RequiredToken rt = m_production_rule.m_subtokens.get(rule_ind1);
+					return pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr);
+				}
+				++rule_ind1;
+			}
+		}
 		
 		WordTags wt;
 		if (req_tokens!=null)
@@ -378,7 +407,7 @@ class ParsedToken
 			res.append(m_probabilty);
 		}
 		res.append("} ");
-		if (m_subtokens.size()>0)
+		if (m_subtokens.size()>1)
 		{
 			int rule_ind = 0;
 			for( ParsedToken pt : m_subtokens )
@@ -541,6 +570,8 @@ public class PCFGParser
 			}
 			switch(inbuf.charAt(0))
 			{
+				case 'Q': unified.m_tags |= WT.QUESTION; break;
+				case 'M': unified.m_tags |= WT.MODAL; break;
 				case 'G': unified.m_tags |= WT.GENDER_MASK; break;
 				case 'C': unified.m_tags |= WT.CASUS_MASK; break;
 				case 'N': unified.m_tags |= WT.COUNT_MASK; break;
@@ -691,7 +722,10 @@ public class PCFGParser
 				if (p.m_probabilty < partially_parsed_token.m_probabilty)
 				{
 					p.copyFrom(partially_parsed_token);
-					System.out.println("Rep (h=" + height + ", p=" + pos_left + ") " + p.toString());
+					if (LangProcSettings.DEBUG_OUTPUT)
+					{
+						System.out.println("Rep (h=" + height + ", p=" + pos_left + ") " + p.toString());
+					}
 					return true;
 				}
 				else
@@ -706,7 +740,10 @@ public class PCFGParser
 		// not found
 		ParsedToken pt = new ParsedToken(partially_parsed_token);
 		tokens.add( pt );
-		System.out.println("Add (h=" + height + ", p=" + pos_left + ") " + pt.toString());
+		if (LangProcSettings.DEBUG_OUTPUT)
+		{
+			System.out.println("Add (h=" + height + ", p=" + pos_left + ") " + pt.toString());
+		}
 		return true;
 	}
 	
@@ -1046,42 +1083,42 @@ public class PCFGParser
 		return parse(tokens);
 	}
 	
-	public static void main_(String[] args)
-	{
-		System.out.println("PCFG Parser test!!!");
-		PCFGParser parser = new PCFGParser();
-		//parser.addRule("DNP[NCG] 0.8 -> noun[NCG c2c3c4c5c6c7] adj[NCG]");
-		parser.addRule("DNP[NCG] -> adj[NCG c2c3c4c5c6c7] noun[NCG]");
-		
-		parser.addRule("NP[NCG p3] 0.8 -> noun[NCG c1] adj[NCG]");
-		parser.addRule("NP[NCG p3] -> adj[NCG c1] noun[NCG]");
-		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
-		
-		parser.addRule("TARGET -> u DNP[c4]");
-		parser.addRule("S -> NP[PN] VP[PN]");
-		
-		parser.addRule("VP[PN] -> verb[PN] TARGET?");
-		
-		parser.addRule("A 0.6 -> B adj");
-		parser.addRule("A 0.7 -> noun D");
-		parser.addRule("D -> C");
-		
-		
-		java.util.List<ParsedToken> res = parser.parse("pronoun[p1 s c1] verb[p1 s] u adj[m s c4] noun[m s c4]");
-		
-		if (res==null)
-		{
-			System.out.println("No results");
-			throw new java.lang.IndexOutOfBoundsException();
-		}
-		else
-		{
-			for( ParsedToken root : res)
-			{
-				System.out.println(root.toTikzTree(false));
-			}
-		}
-	}
+//	public static void main_(String[] args)
+//	{
+//		System.out.println("PCFG Parser test!!!");
+//		PCFGParser parser = new PCFGParser();
+//		//parser.addRule("DNP[NCG] 0.8 -> noun[NCG c2c3c4c5c6c7] adj[NCG]");
+//		parser.addRule("DNP[NCG] -> adj[NCG c2c3c4c5c6c7] noun[NCG]");
+//		
+//		parser.addRule("NP[NCG p3] 0.8 -> noun[NCG c1] adj[NCG]");
+//		parser.addRule("NP[NCG p3] -> adj[NCG c1] noun[NCG]");
+//		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
+//		
+//		parser.addRule("TARGET -> u DNP[c4]");
+//		parser.addRule("S -> NP[PN] VP[PN]");
+//		
+//		parser.addRule("VP[PN] -> verb[PN] TARGET?");
+//		
+//		parser.addRule("A 0.6 -> B adj");
+//		parser.addRule("A 0.7 -> noun D");
+//		parser.addRule("D -> C");
+//		
+//		
+//		java.util.List<ParsedToken> res = parser.parse("pronoun[p1 s c1] verb[p1 s] u adj[m s c4] noun[m s c4]");
+//		
+//		if (res==null)
+//		{
+//			System.out.println("No results");
+//			//throw new java.lang.IndexOutOfBoundsException();
+//		}
+//		else
+//		{
+//			for( ParsedToken root : res)
+//			{
+//				System.out.println(root.toTikzTree(false));
+//			}
+//		}
+//	}
 }
 
 

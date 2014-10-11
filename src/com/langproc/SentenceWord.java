@@ -95,7 +95,7 @@ public class SentenceWord
 		// {
 		for (TaggedWord t : m_hypotheses)
 		{
-			LangProcOutput.print(t.getFullFesc());
+			LangProcOutput.print(t.getFullDesc());
 			LangProcOutput.print(" || ");
 		}
 		// }
