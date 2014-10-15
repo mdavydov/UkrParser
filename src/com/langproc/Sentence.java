@@ -1,4 +1,4 @@
-/*******************************************************************************
+п»ї/*******************************************************************************
  * UkrParser
  * Copyright (c) 2013-2014 Maksym Davydov
  * 
@@ -240,11 +240,11 @@ public class Sentence
 			{
 				if (m_words.get(sp2 - 1).hasHypothesisWithAllTags(WT.COMMA))
 				{
-					if (w2.m_word.equals("тому"))
+					if (w2.m_word.equals("С‚РѕРјСѓ"))
 					{
 						cg.addEdge("RESULT", 10, w2, w1);
 					}
-					if (w2.m_word.equals("оскільки"))
+					if (w2.m_word.equals("РѕСЃРєС–Р»СЊРєРё"))
 					{
 						cg.addEdge("REASON", 10, w2, w1);
 					}
@@ -255,11 +255,11 @@ public class Sentence
 			{
 				if (m_words.get(sp1 - 1).hasHypothesisWithAllTags(WT.COMMA))
 				{
-					if (w1.m_word.equals("тому"))
+					if (w1.m_word.equals("С‚РѕРјСѓ"))
 					{
 						cg.addEdge("REASON", 10, w1, w2);
 					}
-					if (w1.m_word.equals("оскільки"))
+					if (w1.m_word.equals("РѕСЃРєС–Р»СЊРєРё"))
 					{
 						cg.addEdge("RESULT", 10, w1, w2);
 					}
@@ -332,11 +332,11 @@ public class Sentence
 
 		if (t1.hasTag(WT.STATE) && t2.hasTag(WT.VERB))
 		{
-			if (w2.m_word.equals("було"))
+			if (w2.m_word.equals("Р±СѓР»Рѕ"))
 			{
 				cg.addEdge("TIME-MOD", linkPrefSeq(sp1, sp2), w1, w2);
 			}
-			else if (w2.m_word.equals("буде"))
+			else if (w2.m_word.equals("Р±СѓРґРµ"))
 			{
 				cg.addEdge("TIME-MOD", linkPrefSeq(sp1, sp2), w1, w2);
 			}
@@ -375,7 +375,7 @@ public class Sentence
 
 		if (t1.hasTag(WT.VERB) && t2.hasTag(WT.ADJ))
 		{ // verb-to-adjective relations
-			if (t2.hasTag(WT.CASUS5)) // "Зробити веселим"
+			if (t2.hasTag(WT.CASUS5)) // "Р—СЂРѕР±РёС‚Рё РІРµСЃРµР»РёРј"
 			{
 				cg.addEdge("ADVERBIAL", linkPrefSeq(sp1, sp2), w1, w2);
 			}
@@ -555,11 +555,11 @@ public class Sentence
 		{
 			parser = new PCFGParser();
 	
-			// attributed noun "Лис Микита"
-			parser.addRule("QS *-> <скільки> PLACE? DNP[c2]");
+			// attributed noun "Р›РёСЃ РњРёРєРёС‚Р°"
+			parser.addRule("QS *-> <СЃРєС–Р»СЊРєРё> PLACE? DNP[c2]");
 	
-			parser.addRule("V -> у | в");
-			parser.addRule("Z -> з | із | зі");
+			parser.addRule("V -> Сѓ | РІ");
+			parser.addRule("Z -> Р· | С–Р· | Р·С–");
 			parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
 	
 			parser.addRule("AN[NCG] -> noun[NCG] noun[NCGU]?");
@@ -577,14 +577,14 @@ public class Sentence
 			parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
 			parser.addRule("NP[NCG p3] -> NG[NCG c1]");
 			parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
-			parser.addRule("NP[NCGP] -> NP <чи> NP[NCGP]");
+			parser.addRule("NP[NCGP] -> NP <С‡Рё> NP[NCGP]");
 	
-			parser.addRule("TARGET -> V DNP[c4] | <до> DNP[c2] | <додому> | <туди> | <сюди>");
+			parser.addRule("TARGET -> V DNP[c4] | <РґРѕ> DNP[c2] | <РґРѕРґРѕРјСѓ> | <С‚СѓРґРё> | <СЃСЋРґРё>");
 			parser.addRule("NAME -> noun[NCGU]");
 			parser.addRule("ADDRESS -> DNP[c3]");
-			parser.addRule("PLACE -> V DNP[c6] | <тут> | <там>");
+			parser.addRule("PLACE -> V DNP[c6] | <С‚СѓС‚> | <С‚Р°Рј>");
 			parser.addRule("ADDITIONAL -> Z DNP[c5]");
-			parser.addRule("TIME -> <зараз> | <потім>");
+			parser.addRule("TIME -> <Р·Р°СЂР°Р·> | <РїРѕС‚С–Рј>");
 			parser.addRule("FROM -> Z DNP[c2]");
 			parser.addRule("OBJECT -> DNP[c4]");
 			parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
@@ -592,35 +592,35 @@ public class Sentence
 			parser.addRule("IVP *-> verb[i] OBJECT? PLACE? NAME");
 			parser.addRule("VP[PN] -> verb[PNM] IVP");
 			parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
-			parser.addRule("VP[PN] -> <не> VP[PN]");
+			parser.addRule("VP[PN] -> <РЅРµ> VP[PN]");
 			parser.addRule("S -> TARGET? VP[p-]");
 	
 			parser.addRule("S *0.8 -> verb[PN] NP[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET?");
 			// parser.addRule("IS *-> verb[i] NP[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM?  TARGET?");
 	
-			parser.addRule("VP[p1p2p3 s*] -> <є> adj[c4c5]"); // TARGET?
-			parser.addRule("VP[p1p2p3 s*] -> <є> DNP[c4c5]"); // TARGET?
+			parser.addRule("VP[p1p2p3 s*] -> <С”> adj[c4c5]"); // TARGET?
+			parser.addRule("VP[p1p2p3 s*] -> <С”> DNP[c4c5]"); // TARGET?
 	
 			// parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); //
 			// TARGET?
 			// parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
 			// parser.addRule("S *-> NP[NP] VP[NP]");
-			parser.addRule("S *-> VP[NP] NP[NP]"); // Я зробив завдання
-			parser.addRule("S -> VP[p-]"); // Зроблено завдання
-			parser.addRule("S -> IVP"); // Робити завдання
-			// parser.addRule("EEEE -> <є> adj");
+			parser.addRule("S *-> VP[NP] NP[NP]"); // РЇ Р·СЂРѕР±РёРІ Р·Р°РІРґР°РЅРЅСЏ
+			parser.addRule("S -> VP[p-]"); // Р—СЂРѕР±Р»РµРЅРѕ Р·Р°РІРґР°РЅРЅСЏ
+			parser.addRule("S -> IVP"); // Р РѕР±РёС‚Рё Р·Р°РІРґР°РЅРЅСЏ
+			// parser.addRule("EEEE -> <С”> adj");
 	
-			parser.addRule("AKSTOSAY[p2 s] -> <розкажи> | <скажи> | <повідом> | <повтори>");
+			parser.addRule("AKSTOSAY[p2 s] -> <СЂРѕР·РєР°Р¶Рё> | <СЃРєР°Р¶Рё> | <РїРѕРІС–РґРѕРј> | <РїРѕРІС‚РѕСЂРё>");
 	
 			parser.addRule("QS -> S");
-			parser.addRule("QS -> <чи> S");
-			parser.addRule("QS -> <чи> QS");
+			parser.addRule("QS -> <С‡Рё> S");
+			parser.addRule("QS -> <С‡Рё> QS");
 			parser.addRule("QS *-> adv S");
 			parser.addRule("QS *-> adv IVP");
 			parser.addRule("QS *-> pronoun[Q] NP");
 			parser.addRule("QS -> pronoun[Q] S");
 	
-			// parser.addRule("QS -> <скільки> DNP[c2] PLACE?");
+			// parser.addRule("QS -> <СЃРєС–Р»СЊРєРё> DNP[c2] PLACE?");
 	
 			parser.addRule("FULLS -> START S <.>");
 			parser.addRule("SHORTS -> START NP <.>");
@@ -711,7 +711,7 @@ public class Sentence
 				// TODO: reevaluate word weight. Now all are 1.0f :-)
 				TaggedWord tw = sw.getHypothesis(i);
 				float w = 0.5f; // base weight for the word
-				// if (tw.m_base_word.equals("робот")) w = 0.9f;
+				// if (tw.m_base_word.equals("СЂРѕР±РѕС‚")) w = 0.9f;
 
 				if (use_word_weighting)
 				{

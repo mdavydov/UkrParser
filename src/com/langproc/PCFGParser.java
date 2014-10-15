@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
  * UkrParser
  * Copyright (c) 2013-2014 Maksym Davydov
  * 
@@ -16,9 +16,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 // P -> abc (0,75) | Abc
 
-// (adv_place) ä³éòè äî çåëåíî¿ ãîðè  
+// (adv_place) Ð´Ñ–Ð¹Ñ‚Ð¸ Ð´Ð¾ Ð·ÐµÐ»ÐµÐ½Ð¾Ñ— Ð³Ð¾Ñ€Ð¸  
 
-// (adv_plañe) äî (êîãî/÷îãî?)
+// (adv_plaÑe) Ð´Ð¾ (ÐºÐ¾Ð³Ð¾/Ñ‡Ð¾Ð³Ð¾?)
 
 // G,C = Gender and count that should be the same!!!
 // NP[GC] -> NP[GC] ADV[GC]
@@ -359,18 +359,18 @@ class ParsedToken
 		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=15pt,level distance="+level_d+"pt]\n" +
 		"\\tikzset{frontier/.style={distance from root="+(depth*level_d-level_d/2)+"pt}}\n" +
 		"\\Tree\n" + 
-		toTikzTree(null,null,null, show_attr) + "\n" + 
+		toTikzTree(null,null,null, show_attr, 1) + "\n" + 
 		"\\end{tikzpicture}\n}\n";
 	}
 	
-	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr)
+	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr, int num_parent_children)
 	{
 		StringBuffer res = new StringBuffer();
 
-		int child_num=2;
+		int child_num=0;
 		for( ParsedToken pt : m_subtokens ) if (pt!=null) ++child_num;
 		
-		if (child_num==1)
+		if (child_num==1 && num_parent_children==1)
 		{
 			int rule_ind1 = 0;
 			for( ParsedToken pt : m_subtokens )
@@ -378,7 +378,7 @@ class ParsedToken
 				if (pt!=null)
 				{
 					RequiredToken rt = m_production_rule.m_subtokens.get(rule_ind1);
-					return pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr);
+					return pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr, 1);
 				}
 				++rule_ind1;
 			}
@@ -407,7 +407,7 @@ class ParsedToken
 			res.append(m_probabilty);
 		}
 		res.append("} ");
-		if (m_subtokens.size()>1)
+		if (m_subtokens.size()>=1)
 		{
 			int rule_ind = 0;
 			for( ParsedToken pt : m_subtokens )
@@ -418,14 +418,24 @@ class ParsedToken
 					res.append(pt.m_probabilty);
 					res.append("}; ");
 					RequiredToken rt = m_production_rule.m_subtokens.get(rule_ind);
-					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr));
+					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr, child_num));
 				}
 				++rule_ind;
 			}
 		}
 		else
 		{
-			res.append(" {" + m_token_text + "}");
+			res.append(" {");
+//			if (m_token.m_name!=null)
+//			{
+//				res.append(m_token.m_name);
+//			}
+			if (m_token_text!=null)
+			{
+				//res.append("<" + m_token_text + ">");
+				res.append(m_token_text);
+			}
+			res.append("}");
 		}
 		res.append(" ]");
 		return res.toString();

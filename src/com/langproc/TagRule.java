@@ -1,4 +1,4 @@
-/*******************************************************************************
+п»ї/*******************************************************************************
  * UkrParser
  * Copyright (c) 2013-2014 Maksym Davydov
  * 
@@ -22,9 +22,9 @@ import java.util.regex.Pattern;
 
 public class TagRule
 {
-	// pattern of processed word (.*ого)
+	// pattern of processed word (.*РѕРіРѕ)
 	java.util.regex.Pattern m_word_pattern;
-	// pattern of base word (.*ий)
+	// pattern of base word (.*РёР№)
 	java.util.regex.Pattern m_base_pattern;
 	// tags required for the rule
 	java.util.regex.Pattern m_dict_pattern;
@@ -69,8 +69,8 @@ public class TagRule
 		int w1_len = w.m_word.length();
 		int w2_len = w.m_base_word.length();
 
-		// skip "не" prefix
-		if (w.m_word.indexOf("не") == 0 && w.m_base_word.indexOf("не") != 0)
+		// skip "РЅРµ" prefix
+		if (w.m_word.indexOf("РЅРµ") == 0 && w.m_base_word.indexOf("РЅРµ") != 0)
 		{
 			i1 = 2;
 		}
