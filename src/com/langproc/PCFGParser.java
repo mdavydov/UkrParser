@@ -580,25 +580,28 @@ public class PCFGParser
 			}
 			switch(inbuf.charAt(0))
 			{
-				case 'Q': unified.m_tags |= WT.QUESTION; break;
-				case 'M': unified.m_tags |= WT.MODAL; break;
 				case 'G': unified.m_tags |= WT.GENDER_MASK; break;
 				case 'C': unified.m_tags |= WT.CASUS_MASK; break;
 				case 'N': unified.m_tags |= WT.COUNT_MASK; break;
 				case 'P': unified.m_tags |= WT.PERSON_MASK; break;
 				case 'T': unified.m_tags |= WT.TIME_MASK; break;
 				case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
-				
-				case 'm': specified.m_tags |= WT.MALE; break;
-				case 'f': specified.m_tags |= WT.FEMALE; break;
-				case 'n': specified.m_tags |= WT.NEUTRAL; break;
 
-				case 'U': specified.m_tags |= WT.PROPERNAME; break;
-				
-				case 's': specified.m_tags |= WT.SINGLE; break;
-				case '*': specified.m_tags |= WT.PLURAL; break;
-				
+				case 'q': specified.m_tags |= WT.QUESTION; break;
+				case 'm': specified.m_tags |= WT.MODAL; break;
+				case 'u': specified.m_tags |= WT.PROPERNAME; break;
 				case 'i': specified.m_tags |= WT.INFINITIVE; break;
+						
+				case 'g': // gender
+					switch(inbuf.charAt(1))
+					{			
+					case 'm': specified.m_tags |= WT.MALE; break;
+					case 'f': specified.m_tags |= WT.FEMALE; break;
+					case 'n': specified.m_tags |= WT.NEUTRAL; break;
+					default: System.out.println("Unknown gender c" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
 
 				case 'c':
 					switch(inbuf.charAt(1))
@@ -611,6 +614,16 @@ public class PCFGParser
 					case '6': specified.m_tags |= WT.CASUS6; break;
 					case '7': specified.m_tags |= WT.CASUS7; break;
 					default: System.out.println("Unknown casus c" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+					
+				case 'n': // count
+					switch(inbuf.charAt(1))
+					{			
+					case '1': specified.m_tags |= WT.SINGLE; break;
+					case '*': specified.m_tags |= WT.PLURAL; break;
+					default: System.out.println("Unknown count c" + inbuf.charAt(1));
 					}
 					inbuf.deleteCharAt(0);
 					break;
@@ -629,7 +642,9 @@ public class PCFGParser
 					
 				case ' ': break;
 					
-				default: System.out.println("Unknown tag " + inbuf.charAt(0));
+				default:
+					System.out.println("Unknown tag " + inbuf.charAt(0));
+					System.exit(0);
 			}
 			inbuf.deleteCharAt(0);
 			// one-char tokens for attributes now

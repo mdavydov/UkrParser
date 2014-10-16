@@ -1,0 +1,20 @@
+RESULT[UNIFIED and SET attributes] [*] probability ->
+  SYMB1[UNIF1 required1]? SYMB2[UNIF2 required2]? ... SYMB_n[UNIF_n required_n][?!] | <alternatives> | ...
+
+* - optional marker for generating all permutations
+probability - optional weight. default is 1.0
+
+SYMB1[UNIF required]?!
+? - optional
+! - optionally consumable
+!! - non-consumable (required to process but can't consume)
+
+
+Attributes for unification:
+Unified:
+	case 'G': unified.m_tags |= WT.GENDER_MASK; break;
+	case 'C': unified.m_tags |= WT.CASUS_MASK; break;
+	case 'N': unified.m_tags |= WT.COUNT_MASK; break;
+	case 'P': unified.m_tags |= WT.PERSON_MASK; break;
+	case 'T': unified.m_tags |= WT.TIME_MASK; break;
+	case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
