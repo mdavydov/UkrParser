@@ -70,7 +70,7 @@ public class WT {
 
 	public static final long INFINITIVE = (1L << 35);
 	public static final long SENTENCE_END = (1L << 36);
-	public static final long MODAL = (1L << 37);
+
 	public static final long INDICATIVE = (1L << 38);
 	public static final long QUESTION = (1L << 39);
 	public static final long STATE = (1L << 40);
@@ -79,6 +79,13 @@ public class WT {
 	
 	public static final long SELF = (1L << 42); // митися
 
+	public static final long MODAL = (1L << 37);
+	public static final long NON_MODAL = (1L << 43);
+	public static final long MODAL_MASK = MODAL | NON_MODAL;
+	
+	public static final long IMPERATIVE = (1L << 44);
+	
+	
 	public static final long ANY_PUNCT = COMMA | SENTENCE_END;
 	public static final long ANY_NOUN = NOUN | PRONOUN | NUMERAL;
 	public static final long ANY_VERB = VERB | ADVPART | ADJPART;

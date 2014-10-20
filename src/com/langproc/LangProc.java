@@ -418,32 +418,38 @@ public class LangProc
 		m_tag_rules.add(new TagRule("ви|ва.*", ".*", ".*", "", WT.PRONOUN | WT.PLURAL, WT.PERSON2));
 		m_tag_rules.add(new TagRule("ї.*|во.*", ".*", ".*", "", WT.PRONOUN | WT.PLURAL, WT.PERSON3));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "efg", "[ая]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
-		//m_tag_rules.add(new TagRule(".*", ".*", "ef", "[ую]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "[ую]", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "[ое]м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "efg?", "[уі]", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[ая]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "а", WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[ую]", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[ое]м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[уі]", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.MALE));
 		
-		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[ая]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[ую]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[ое]м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[уі]", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[иі]", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.PLURAL | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "ів", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[ая]м", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[ая]ми", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "e.*", "[ая]х", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
+		
+//		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[ая]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[ую]", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[ое]м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ehp?", "[уі]", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.MALE));
+//
+//		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "и", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.MALE | WT.PERSON3));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ів", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "и", WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
+//		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "и", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.MALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ів", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "и", WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "ef.*", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
-
-		m_tag_rules.add(new TagRule(".*", ".*", "b", "и", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.ANY_GENDER | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "b", "[іи]?", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.ANY_GENDER | WT.PERSON3));
 		m_tag_rules.add(new TagRule(".*", ".*", "b", "ей", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", "b", "ів", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", "b", "і?в", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule(".*", ".*", "b", "ь", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", "b", "ям", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", "b", "ь?ми", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", "b", "[яа]м", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", "b", "[ьая]?ми", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule(".*", ".*", "b", "[ая]х", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.ANY_GENDER));
 
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.MALE | WT.FEMALE | WT.PERSON3));
@@ -452,7 +458,7 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "у", WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.MALE | WT.FEMALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "ою", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE | WT.FEMALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "и", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.MALE | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "", WT.NOUN, WT.CASUS2 | WT.CASUS4 | WT.PLURAL | WT.MALE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "ок|", WT.NOUN, WT.CASUS2 | WT.CASUS4 | WT.PLURAL | WT.MALE | WT.FEMALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE | WT.FEMALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE | WT.FEMALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "abd?", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE | WT.FEMALE));
@@ -494,39 +500,63 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
 		m_tag_rules.add(new TagRule(".*", ".*", "adp", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
 
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ку", WT.NOUN, WT.CASUS2 | WT.CASUS6 | WT.CASUS3 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "кові", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ком", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ки", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.PLURAL | WT.MALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ків", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "кам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ками", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*нок", "ab", "ках", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?у", WT.NOUN, WT.CASUS2 | WT.CASUS6 | WT.CASUS3 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?ові", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?ом", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?и", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.PLURAL | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?ів", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "ок", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "оків", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab", "(ьор)?(к)?ках", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[іи]", WT.NOUN, WT.CASUS2 | WT.CASUS3 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[юу]", WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[ео]?ю", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "і", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[іи]", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "ь", WT.NOUN, WT.CASUS2 | WT.CASUS4 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "", WT.NOUN, WT.CASUS2 | WT.CASUS4 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[ая]?м", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[ая]?ми", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "abZ?", "[ая]?х", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "", 	 	  WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ая]",  WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ую]",  WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ую]",  WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ео]м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ії]",  WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.MALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[іи]", 	WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?ей", 	WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ая]м", 	WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));	
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?ей", 		WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?ь?ми",	WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "ab.*", "(он)?[ая]х", 	WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "", 	 	  WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "і",  		  WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "і",  WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "[ео][ую]",  WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "[ая]м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "[і]",  WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.FEMALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "[іи]", 	WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.FEMALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*[^a]", ".*а", "ab.*", "", 	WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "[ая]м", 	WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.FEMALE));	
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "і", 		WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "ми",	WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*а", "ab.*", "я?х", 	WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.FEMALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "", 		 WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[їіи]",  WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[їіи]",  WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[юу]",   WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[єео]?ю",WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[ії]", 	 WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.FEMALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[іи]", 	 WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.FEMALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[ьй]|іт", 	 WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[ая]?м", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.FEMALE));	
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "", 		 WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[ая]?ми",WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "a[^b]*", "[ая]?х", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.FEMALE));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "и", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "і", WT.NOUN, WT.CASUS3 | WT.CASUS6 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "у", WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "ою", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.FEMALE));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "и", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.PLURAL | WT.FEMALE | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "іт", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "ам", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "ами", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", "a", "ах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.FEMALE));
+
 
 		m_tag_rules.add(new TagRule(".*", ".*", "lm", "", WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.NEUTRAL | WT.PERSON3));
 		m_tag_rules.add(new TagRule(".*", ".*", "lm", "т", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.NEUTRAL));
@@ -539,19 +569,33 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", ".*", "lm", "ми", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.NEUTRAL));
 		m_tag_rules.add(new TagRule(".*", ".*", "lm", "тах", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.NEUTRAL));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.NEUTRAL | WT.PERSON3));
-		m_tag_rules.add(new TagRule(".*[аяі]", ".*", "ijZ?", ".*", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "[юу]", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "ами", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "і", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "", 		WT.NOUN, WT.CASUS1 | WT.SINGLE | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "я", 	WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ю|еві",	WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "я",		WT.NOUN, WT.CASUS4 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ем", 	WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "і|еві", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.MALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "і",		WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.MALE | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ів", 	WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ям", 	WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ів", 	WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ями", 	WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", "lmq", "ях", 	WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.MALE));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "", WT.NOUN, WT.CASUS1 | WT.CASUS4 | WT.SINGLE | WT.NEUTRAL | WT.PERSON3));
+		m_tag_rules.add(new TagRule(".*[аяі]", ".*", "i.*", ".*", WT.NOUN, WT.CASUS2 | WT.SINGLE | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "[юу]", WT.NOUN, WT.CASUS3 | WT.SINGLE | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "м", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "ами", WT.NOUN, WT.CASUS5 | WT.SINGLE | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "і", WT.NOUN, WT.CASUS6 | WT.SINGLE | WT.NEUTRAL));
 
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "і", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "ей", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "ям", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "і", WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "ями", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", "ijZ?", "ях", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "і", WT.NOUN, WT.CASUS1 | WT.PLURAL | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "ей", WT.NOUN, WT.CASUS2 | WT.PLURAL | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "ям", WT.NOUN, WT.CASUS3 | WT.PLURAL | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "і", WT.NOUN, WT.CASUS4 | WT.PLURAL | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "ями", WT.NOUN, WT.CASUS5 | WT.PLURAL | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", "i.*", "ях", WT.NOUN, WT.CASUS6 | WT.PLURAL | WT.NEUTRAL));
 
 		m_tag_rules
 				.add(new TagRule("що", ".*", ".*", ".*", WT.PRONOUN, WT.CASUS1 | WT.CASUS4 | WT.CASUS6 | WT.SINGLE | WT.PLURAL | WT.ANY_GENDER | WT.PERSON3));
@@ -586,51 +630,44 @@ public class LangProc
 
 		/* VERBS */
 
-		m_tag_rules.add(new TagRule(".*ти", ".*", ".*", "", WT.VERB, WT.INFINITIVE));
-		m_tag_rules.add(new TagRule(".*тися", ".*", ".*", "", WT.VERB, WT.INFINITIVE));
+		m_tag_rules.add(new TagRule(".+ти", ".*", ".*", "", WT.VERB, WT.INFINITIVE));
+		m_tag_rules.add(new TagRule(".+тися", ".*", ".*", ".*", WT.VERB, WT.INFINITIVE));
+		m_tag_rules.add(new TagRule(".+тись", ".*", ".*", ".*", WT.VERB, WT.INFINITIVE));
+
+		m_tag_rules.add(new TagRule(".+[^т]и", ".*", ".*", "и?", WT.VERB, WT.IMPERATIVE));
+		m_tag_rules.add(new TagRule(".+р", ".*", ".*", "", WT.VERB, WT.IMPERATIVE));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "дь", WT.VERB, WT.IMPERATIVE));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "ж?іть", WT.VERB, WT.IMPERATIVE));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "те", WT.VERB, WT.IMPERATIVE));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "ри", WT.VERB, WT.IMPERATIVE));
 
 		m_tag_rules.add(new TagRule("міг", ".*", ".*", "", WT.VERB, WT.ANY_PERSON | WT.SINGLE | WT.PAST | WT.MALE));
 
-		m_tag_rules.add(new TagRule(".*[юу]сь", ".*", ".*", ".*", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*шся", ".*", ".*", ".*", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*[єе]ться", ".*", ".*", ".*", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*мося", ".*", ".*", ".*", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*теся", ".*", ".*", ".*", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*[юяє]ться", ".*", ".*", ".*", WT.VERB, WT.PERSON3 | WT.PERSONLESS | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжвд']?[ую](с[ья])?", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжвд']?[єе]ш(с[ья])?", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "ї?ш(с[ья])?", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "е?[лчжврд']?[єе](тьс[ья])?", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "(ит)?ь(с[ья])?", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжвд']?[єеи]?мо(с[ья])?", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжвд']?[єеиї]те(с[ья])?", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "е(с[ья])?", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжвд']?[уюя]ть(с[ья])?", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
 
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжв]?[ую]", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжв]?[єе]ш", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжв]?[єе]", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжв]?[єе]мо", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжв]?[єе]те", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[лчжв]?[уюя]ть", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.PRESENT | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[шо]*в(с[ья])?", WT.VERB, WT.ANY_PERSON | WT.SINGLE | WT.PAST | WT.MALE));
+		m_tag_rules.add(new TagRule(".*із", ".*", ".*", ".*(с[ья])?", WT.VERB, WT.ANY_PERSON | WT.SINGLE | WT.PAST | WT.MALE));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[ш]?ла(с[ья])?", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PAST | WT.FEMALE));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[ш]?ло(с[ья])?", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PAST | WT.NEUTRAL));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[ш]?ли(с[ья])?", WT.VERB, WT.ANY_PERSON | WT.PLURAL | WT.PAST));
 
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[шо]*в", WT.VERB, WT.ANY_PERSON | WT.SINGLE | WT.PAST | WT.MALE));
-		m_tag_rules.add(new TagRule(".*із", ".*", ".*", ".*", WT.VERB, WT.ANY_PERSON | WT.SINGLE | WT.PAST | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[ш]?ла", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PAST | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[ш]?ло", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.PAST | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "[ш]?ли", WT.VERB, WT.ANY_PERSON | WT.PLURAL | WT.PAST));
-
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "вся", WT.VERB, WT.ANY_PERSON | WT.SINGLE | WT.PAST | WT.MALE));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "лася", WT.VERB, WT.ANY_PERSON | WT.PERSON1 | WT.SINGLE | WT.PAST | WT.FEMALE));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "лося", WT.VERB, WT.ANY_PERSON | WT.PERSON1 | WT.SINGLE | WT.PAST | WT.NEUTRAL));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "лися", WT.VERB, WT.ANY_PERSON | WT.PLURAL | WT.PAST));
-
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "му", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "меш", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "ме", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "му(с[ья])?", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "меш(с[ья])?", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "ме(тьс[ья])?", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule("о.*", ".*", ".*", "ь", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule("о.*", ".*", ".*", "де", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "емо", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "мете", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "муть", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "емо(с[ья])?", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "мете(с[ья])?", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*", "муть(с[ья])?", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
 
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "мусь", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "имешся", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "иметься", WT.VERB, WT.PERSON3 | WT.SINGLE | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "мемося", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "метеся", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
-		m_tag_rules.add(new TagRule(".*", ".*", ".*", "муться", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.FUTURE | WT.ANY_GENDER));
 
 		m_tag_rules.add(new TagRule(".*", "бути", ".*", "ду", WT.VERB, WT.PERSON1 | WT.SINGLE | WT.FUTURE));
 		m_tag_rules.add(new TagRule(".*", "бути", ".*", "деш", WT.VERB, WT.PERSON2 | WT.SINGLE | WT.FUTURE));
@@ -645,10 +682,15 @@ public class LangProc
 		m_tag_rules.add(new TagRule(".*", "йти", ".*", "демо", WT.VERB, WT.PERSON1 | WT.PLURAL | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule(".*", "йти", ".*", "дете", WT.VERB, WT.PERSON2 | WT.PLURAL | WT.ANY_GENDER));
 		m_tag_rules.add(new TagRule(".*", "йти", ".*", "дуть", WT.VERB, WT.PERSON3 | WT.PLURAL | WT.ANY_GENDER));
+		
+		m_tag_rules.add(new TagRule(".*", ".*", ".*MODAL.*", ".*", WT.VERB, WT.MODAL));
 
 		m_tag_rules.add(new TagRule(".*", ".*", ".*[abcdefghijklmnoqp].*", ".*", 0, WT.NOUN));
-		m_tag_rules.add(new TagRule(".*", ".+ти", ".*", ".*", 0, WT.VERB));
-		m_tag_rules.add(new TagRule(".*", ".*тися", ".*", ".*", 0, WT.VERB | WT.SELF));
+		m_tag_rules.add(new TagRule(".*", ".*", ".*[ABCDEFGH].*", ".*", 0, WT.VERB));
+		//m_tag_rules.add(new TagRule(".*", ".+ти", ".*", ".*", 0, WT.VERB));
+		m_tag_rules.add(new TagRule(".*ся", ".*", ".*", ".*", WT.VERB, WT.SELF));
+		m_tag_rules.add(new TagRule(".*сь", ".*", ".*", ".*", WT.VERB, WT.SELF));
+		
 		m_tag_rules.add(new TagRule(".*", ".*ий", ".*", ".*", 0, WT.ADJ));
 		m_tag_rules.add(new TagRule(".*", ".*ий", ".*", "о", 0, WT.ADV));
 		m_tag_rules.add(new TagRule(".*", ".*оя", ".*", ".*", 0, WT.ADJ));
@@ -679,6 +721,13 @@ public class LangProc
 
 		TaggedWord w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
 		TaggedWord w1 = null;
+		
+		if (sentence_form.equals("діти"))
+		{
+			w.addTags(WT.NOUN | WT.CASUS1 | WT.PLURAL);
+			sw.addHypothesis(w);
+			w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
+		}
 
 		// if (word.equals(word.toUpperCase())) w.addTag("Cap");
 		// if (Character.isUpperCase(word.charAt(0))) w.addTag("StartCap");
@@ -1388,6 +1437,9 @@ public class LangProc
 			final boolean from_file = true; // !LangProcSettings.DEBUG_OUTPUT;
 
 			LangProcOutput.flush();
+			
+			int num_not_parsed = 0;
+			int num_parsed = 0;
 
 			if (from_file)
 			{
@@ -1397,7 +1449,7 @@ public class LangProc
 				java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
 				java.io.OutputStream ops = new java.io.FileOutputStream("out.txt");
 				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "WINDOWS-1251");
-				// LangProcOutput.writer = new java.io.BufferedWriter(opsr);
+				LangProcOutput.writer = new java.io.BufferedWriter(opsr);
 
 				StringBuffer full_text = new StringBuffer();
 				String line = null;
@@ -1425,7 +1477,14 @@ public class LangProc
 
 							LangProcOutput.println("" + sentence_n + ": " + substr);
 
-							lp.checkGrammarAPCFG(substr, false);
+							if (null==lp.checkGrammarAPCFG(substr, false))
+							{
+								++num_not_parsed;
+							}
+							else
+							{
+								++num_parsed;
+							}
 							// lp.checkGrammar(substr, false);
 
 						}
@@ -1437,6 +1496,8 @@ public class LangProc
 				}
 
 				lp.printSentencePersistence();
+				
+				LangProcOutput.println("Parsed " + num_parsed + " from " + (num_parsed + num_not_parsed) );
 
 				LangProcOutput.writer.flush();
 				ops.close();

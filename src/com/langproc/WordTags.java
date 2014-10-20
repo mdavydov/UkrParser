@@ -69,17 +69,24 @@ public class WordTags
 	public boolean hasCommonTagsInAllCategories(long tags, long categories)
 	{
 		long res = ~categories | (m_tags & tags);
+		long all = m_tags | tags;
 		return  (res & WT.COUNT_MASK)!=0 &&
 				(res & WT.PERSON_MASK)!=0 &&
 				(res & WT.GENDER_MASK)!=0 &&
 				(res & WT.CASUS_MASK)!=0 &&
 				(res & WT.PERFECTION_MASK)!=0 &&
-				(res & WT.TIME_MASK)!=0;
+				(res & WT.TIME_MASK)!=0 &&
+				(res & WT.MODAL_MASK)!=0;	
 	}
 	
-	public boolean hasCommonTagsInCategories(WordTags wt)
+	public boolean hasRequiredTags(WordTags wt)
 	{
-		return hasCommonTagsInAllCategories(wt.m_tags, wt.getCategories());
+		long categories = wt.getCategories();
+		long other_tags = wt.m_tags & ~categories;
+		// has common in categories, so that could be unified
+		// +has all required tags (that are not in categories)
+		return hasCommonTagsInAllCategories(wt.m_tags, categories) &&
+			( other_tags & (~m_tags) )==0;
 	}
 	
 	public void limitInCategories(WordTags wt)
@@ -116,6 +123,7 @@ public class WordTags
 		if ((m_tags & WT.CASUS_MASK)!=0) res|=WT.CASUS_MASK;
 		if ((m_tags & WT.PERFECTION_MASK)!=0) res|=WT.PERFECTION_MASK;
 		if ((m_tags & WT.TIME_MASK)!=0) res|=WT.TIME_MASK;
+		if ((m_tags & WT.MODAL_MASK)!=0) res|=WT.MODAL_MASK;
 		return res;
 	}
 
@@ -279,10 +287,12 @@ public class WordTags
 
 		if (hasSomeTags(WT.INFINITIVE)) b.append("INF ");
 		if (hasSomeTags(WT.SENTENCE_END)) b.append("S-END ");
-		if (hasSomeTags(WT.MODAL)) b.append("MOD ");
+		if (hasSomeTags(WT.MODAL)) b.append("MOD+ ");
+		if (hasSomeTags(WT.NON_MODAL)) b.append("MOD- ");
 		if (hasSomeTags(WT.INDICATIVE)) b.append("IND ");
 		if (hasSomeTags(WT.QUESTION)) b.append("QUE ");
 		if (hasSomeTags(WT.STATE)) b.append("STATE ");
+		if (hasSomeTags(WT.IMPERATIVE)) b.append("IMP ");
 		
 		if (hasSomeTags(WT.SELF)) b.append("SELF ");
 

@@ -43,6 +43,17 @@ public class SentenceWord
 	{
 		w.setHypotesisIndex(m_hypotheses.size());
 		m_hypotheses.addElement(w);
+		if (w.hasAllTags(WT.NOUN) && !w.hasSomeTags(WT.CASUS_MASK))
+		{
+			System.out.println("Morphology error " + w.getFullDesc());
+			System.exit(0);
+		}
+		
+		if (w.hasAllTags(WT.VERB) && !w.hasSomeTags(WT.INFINITIVE | WT.PERSON_MASK | WT.IMPERATIVE))
+		{
+			System.out.println("Morphology error " + w.getFullDesc());
+			System.exit(0);
+		}
 	}
 
 	public int numHypotheses()

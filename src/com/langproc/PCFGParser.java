@@ -586,19 +586,30 @@ public class PCFGParser
 				case 'P': unified.m_tags |= WT.PERSON_MASK; break;
 				case 'T': unified.m_tags |= WT.TIME_MASK; break;
 				case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
+				case 'M': unified.m_tags |= WT.MODAL_MASK; break; // finished of not
 
 				case 'q': specified.m_tags |= WT.QUESTION; break;
-				case 'm': specified.m_tags |= WT.MODAL; break;
 				case 'u': specified.m_tags |= WT.PROPERNAME; break;
 				case 'i': specified.m_tags |= WT.INFINITIVE; break;
 						
+				case 'm': // modality
+					switch(inbuf.charAt(1))
+					{			
+					case '+': specified.m_tags |= WT.MODAL; break;
+					case '-': specified.m_tags |= WT.NON_MODAL; break;
+					default: System.out.println("Unknown modality m" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+
+				
 				case 'g': // gender
 					switch(inbuf.charAt(1))
 					{			
 					case 'm': specified.m_tags |= WT.MALE; break;
 					case 'f': specified.m_tags |= WT.FEMALE; break;
 					case 'n': specified.m_tags |= WT.NEUTRAL; break;
-					default: System.out.println("Unknown gender c" + inbuf.charAt(1));
+					default: System.out.println("Unknown gender g" + inbuf.charAt(1));
 					}
 					inbuf.deleteCharAt(0);
 					break;
@@ -623,7 +634,7 @@ public class PCFGParser
 					{			
 					case '1': specified.m_tags |= WT.SINGLE; break;
 					case '*': specified.m_tags |= WT.PLURAL; break;
-					default: System.out.println("Unknown count c" + inbuf.charAt(1));
+					default: System.out.println("Unknown count n" + inbuf.charAt(1));
 					}
 					inbuf.deleteCharAt(0);
 					break;
@@ -986,7 +997,7 @@ public class PCFGParser
 				// for all possible rules
 				for( AssociatedRule ar : token.m_token.m_associated_one_term_rules )
 				{
-					if (token.m_attributes.hasCommonTagsInCategories(ar.m_required_token.m_required_attributes))
+					if (token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes))
 					{
 						 reusable_token.resetWithRule(ar.m_rule);
 						 reusable_token.m_probabilty = ar.m_rule.m_probability;
@@ -1027,7 +1038,7 @@ public class PCFGParser
 			// for all possible rules
 			for( AssociatedRule ar : token.m_token.m_associated_multi_term_rules )
 			{
-				if (token.m_attributes.hasCommonTagsInCategories(ar.m_required_token.m_required_attributes))
+				if (token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes))
 				{
 					 reusable_token.resetWithRule(ar.m_rule);
 					 reusable_token.setSubtoken(ar.m_token_index, token);
