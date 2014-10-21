@@ -511,11 +511,11 @@ public class PCFGParser
 			return result.toString();
 		}
 				
-		if (!Character.isAlphabetic(buf.charAt(0))) return null;
+		if (!Character.isLetter(buf.charAt(0))) return null;
 			
 		StringBuffer result = new StringBuffer(16);
 		
-		while(buf.length()>0 && Character.isAlphabetic(buf.charAt(0)) )
+		while(buf.length()>0 && Character.isLetter(buf.charAt(0)) )
 		{
 			result.append(buf.charAt(0));
 			buf.deleteCharAt(0);
