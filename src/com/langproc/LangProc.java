@@ -1434,7 +1434,7 @@ public class LangProc
 			LangProcOutput.flush();
 
 			// final boolean from_file = false;
-			final boolean from_file = true; // !LangProcSettings.DEBUG_OUTPUT;
+			final boolean from_file = false; // !LangProcSettings.DEBUG_OUTPUT;
 
 			LangProcOutput.flush();
 			
@@ -1505,9 +1505,10 @@ public class LangProc
 			else
 			{
 				lp.checkGrammarAPCFG(
+						"Я вчу школярів математиці."
 				// "У четвертому розділі досліджено мовні моделі з використанням графів."
 				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
-						"Хлопець несе рюкзак зі школи."
+						//"Хлопець несе рюкзак зі школи."
 						// "Жив собі в однім лісі Лис Микита."
 						// "м'яса"
 						// "міг можу може можете могло хотів хочу хоче збирався збиралася намагався намагалась намагатися бажаю провокує зобов'язана зобов'язав"

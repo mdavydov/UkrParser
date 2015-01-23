@@ -563,6 +563,8 @@ public class Sentence
 			parser = new PCFGParser();
 
 			// attributed noun "Лис Микита"
+			parser.addRule("<вчити_навчати>[p1 n1 m-] * 1.1 -> <вчу>");
+			
 			parser.addRule("QS *-> <скільки> PLACE? DNP[c2]");
 
 			parser.addRule("V -> у | в");
@@ -610,6 +612,11 @@ public class Sentence
 			parser.addRule("VP[PNM] *-> VP[PNM] FROM");
 			parser.addRule("VP[PNM] *-> VP[PNM] TARGET");
 			parser.addRule("VP[PNM] *-> VP[PNM] TIME");
+			
+
+			parser.addRule("<вчити_навчати>[PNM] *-> <вчити_навчати>[PNM] OBJECT");
+			parser.addRule("<вчити_навчати>[PNM] *-> <вчити_навчати>[PNM] DNP[c3]");
+			parser.addRule("VP[PNM] -> <вчити_навчати>[PNM]");
 
 			// parser.addRule("IVP -> verb[i] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
 			// parser.addRule("IVP -> verb[i] OBJECT? PLACE? NAME");

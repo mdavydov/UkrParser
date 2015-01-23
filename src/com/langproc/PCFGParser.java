@@ -111,6 +111,10 @@ class ProductionRule
 		m_defined_attributes = def_attr;
 		m_inherited_unified_attributes = inherited_unified_attributes;
 		m_probability = probability;
+		if (m_probability>1)
+		{
+			System.out.println("Pr = " + m_probability);
+		}
 		m_subtokens = subtokens;
 		
 		addToIndex();
@@ -679,6 +683,10 @@ public class PCFGParser
 		try
 		{
 			attr_sp.m_probability = Float.valueOf(inbuf.toString());
+			if (attr_sp.m_probability > 1)
+			{
+				System.out.println("Pr = " + attr_sp.m_probability);
+			}
 		}
 		catch(NumberFormatException e) {}
 	}
@@ -734,6 +742,10 @@ public class PCFGParser
 			
 			if (subtokens.size()>0)
 			{
+				if (sp_attr.m_probability>1)
+				{
+					System.out.println("Pr2 = " + sp_attr.m_probability);
+				}
 				// the rule is added to index in each token that can be produced by this rule
 				new ProductionRule(result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
 				
