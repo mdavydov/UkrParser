@@ -563,7 +563,6 @@ public class Sentence
 			parser = new PCFGParser();
 
 			// attributed noun "Лис Микита"
-			parser.addRule("<вчити_навчати>[p1 n1 m-] * 1.1 -> <вчу>");
 			
 			parser.addRule("QS *-> <скільки> PLACE? DNP[c2]");
 
@@ -613,10 +612,20 @@ public class Sentence
 			parser.addRule("VP[PNM] *-> VP[PNM] TARGET");
 			parser.addRule("VP[PNM] *-> VP[PNM] TIME");
 			
+			parser.addRule("<вчити-навчати>[p1 n1 m-] * 1.0 -> <вчу>");
+			
+			parser.addRule("<школяр>[c4 c2 n* gm gf gn] -> <школярів>");
+			parser.addRule("<людина>[NCG] -> <школяр>[NCG]");
+			parser.addRule("<може-вчитись>[NCG] -> <людина>[NCG]");
 
-			parser.addRule("<вчити_навчати>[PNM] *-> <вчити_навчати>[PNM] OBJECT");
-			parser.addRule("<вчити_навчати>[PNM] *-> <вчити_навчати>[PNM] DNP[c3]");
-			parser.addRule("VP[PNM] -> <вчити_навчати>[PNM]");
+			parser.addRule("<математика>[c3 n1 gf] -> <математиці>");
+			parser.addRule("<наука>[NCG] -> <математика>[NCG]");
+			parser.addRule("<містить-знання>[NCG] -> <наука>[NCG]");
+			
+			
+			parser.addRule("<вчити-навчати>[PNM] * 1.1-> <вчити-навчати>[PNM] <може-вчитись>[c4]");
+			parser.addRule("<вчити-навчати>[PNM] * 1.1-> <вчити-навчати>[PNM] <містить-знання>[c3]");
+			parser.addRule("VP[PNM] -> <вчити-навчати>[PNM]");
 
 			// parser.addRule("IVP -> verb[i] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
 			// parser.addRule("IVP -> verb[i] OBJECT? PLACE? NAME");
@@ -677,8 +686,9 @@ public class Sentence
 			parser.addRule("QS -> pronoun[q] S");
 
 			// parser.addRule("QS -> <скільки> DNP[c2] PLACE?");
-
-			parser.addRule("FULLS -> START S <.>");
+			
+			parser.addRule("END -> <.>");
+			parser.addRule("FULLS -> START S END");
 			parser.addRule("SHORTS -> START NP <.>");
 			parser.addRule("FULLQ -> START NP <?>");
 			parser.addRule("FULLQ -> START VP <?>");

@@ -374,7 +374,7 @@ class ParsedToken
 		int child_num=0;
 		for( ParsedToken pt : m_subtokens ) if (pt!=null) ++child_num;
 		
-		if (child_num==1 && num_parent_children==1)
+/*		if (child_num==1 && num_parent_children==1)
 		{
 			int rule_ind1 = 0;
 			for( ParsedToken pt : m_subtokens )
@@ -386,7 +386,7 @@ class ParsedToken
 				}
 				++rule_ind1;
 			}
-		}
+		}*/
 		
 		WordTags wt;
 		if (req_tokens!=null)
@@ -400,17 +400,20 @@ class ParsedToken
 			wt = m_attributes;
 		}
 
-		
-		res.append("[.\\pbox[b]{1cm}{");
-		res.append(m_token.m_name);
-		if (show_attr)
+		boolean add_attributes = show_attr || m_token_text==null || !m_token.m_name.equals(m_token_text);
+		if (add_attributes)
 		{
-			res.append(" (");
-			res.append(wt.toString());
-			res.append(") ");
-			res.append(m_probabilty);
+			res.append("[.{\\pbox[b]{1cm}");
+			if (m_token_text==null || !m_token.m_name.equals(m_token_text)) res.append(m_token.m_name);
+			if (show_attr)
+			{
+				res.append(" (");
+				res.append(wt.toString());
+				res.append(") ");
+				res.append(m_probabilty);
+			}
+			res.append("} ");
 		}
-		res.append("} ");
 		if (m_subtokens.size()>=1)
 		{
 			int rule_ind = 0;
@@ -439,9 +442,9 @@ class ParsedToken
 				//res.append("<" + m_token_text + ">");
 				res.append(m_token_text);
 			}
-			res.append("}");
+			res.append("} ");
 		}
-		res.append(" ]");
+		if (add_attributes) res.append(" ]");
 		return res.toString();
 	}
 	
