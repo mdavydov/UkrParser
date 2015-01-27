@@ -8,7 +8,7 @@
  * http://www.gnu.org/licenses/gpl-3.0.txt
  ******************************************************************************/
 
-// Attributive probabilistic context free grammar parser
+// Affix probabilistic context free grammar parser
 
 package com.langproc;
 
@@ -461,7 +461,7 @@ class ParsedToken
 }
 
 // Probabilistic context free grammar (PCFG) parser
-public class PCFGParser
+public class APCFGParser
 {
 	int m_total_height;
 	java.util.List<ParsedToken> m_parse_piramide[][];

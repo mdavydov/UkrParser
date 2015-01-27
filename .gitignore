@@ -1,4 +1,8 @@
 *.class
+Texts
+old
+out*
+results.txt
 
 # Package Files #
 *.jar

@@ -1010,13 +1010,15 @@ public class LangProc
 	private String checkGrammar(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = parseSentence(txt);
-		return ss.processSentenceWithDependencyGrammar(this, use_word_weighting);
+		DependencyGrammar dg = new DependencyGrammar();
+		return dg.processSentenceWithDependencyGrammar(this, ss, use_word_weighting);
 	}
 
 	private String checkGrammarAPCFG(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = parseSentence(txt);
-		return ss.processSentenceWithAPCFG(this, use_word_weighting);
+		APCFGUkrainian apcfg = new APCFGUkrainian();
+		return apcfg.processSentenceWithAPCFG(this, ss, use_word_weighting);
 	}
 
 	private String tryFixRandom(String txt, boolean use_word_weighting)
@@ -1505,7 +1507,7 @@ public class LangProc
 			else
 			{
 				lp.checkGrammarAPCFG(
-						"Я вчу школярів математиці."
+						"Я вчу учнів математиці."
 				// "У четвертому розділі досліджено мовні моделі з використанням графів."
 				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
 						//"Хлопець несе рюкзак зі школи."
