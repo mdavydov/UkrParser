@@ -106,7 +106,6 @@ public class APCFGUkrainian
 		parser.addRule("<людина>[NCG] -> <школяр>[NCG]");
 		parser.addRule("<може-вчитись>[NCG] -> <людина>[NCG]");
 
-		parser.addRule("<математика>[c3 n1 gf] -> <математиці>");
 		parser.addRule("<наука>[NCG] -> <математика>[NCG]");
 		parser.addRule("<містить-знання>[NCG] -> <наука>[NCG]");
 		
@@ -237,6 +236,17 @@ public class APCFGUkrainian
 					System.out.println("Add token " + pt1);
 				}
 				ptl.add(pt1);
+				
+				if (!tw.m_base_word.equals(tw.m_word))
+				{
+					Token bybaseform_token = parser.getTokenByName(tw.m_base_word);
+					ParsedToken pt2 = new ParsedToken(bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);
+					if (LangProcSettings.DEBUG_OUTPUT)
+					{
+						System.out.println("Add token " + pt2);
+					}
+					ptl.add(pt2);
+				}
 			}
 			tokens.add(ptl);
 		}
