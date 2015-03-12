@@ -293,6 +293,7 @@ public class WordTags
 		if (hasSomeTags(WT.QUESTION)) b.append("QUE ");
 		if (hasSomeTags(WT.STATE)) b.append("STATE ");
 		if (hasSomeTags(WT.IMPERATIVE)) b.append("IMP ");
+		if (hasSomeTags(WT.RAW)) b.append("RAW ");
 		
 		if (hasSomeTags(WT.SELF)) b.append("SELF ");
 

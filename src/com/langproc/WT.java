@@ -85,6 +85,7 @@ public class WT {
 	
 	public static final long IMPERATIVE = (1L << 44);
 	
+	public static final long RAW = (1L << 45); // word as written in the sentence
 	
 	public static final long ANY_PUNCT = COMMA | SENTENCE_END;
 	public static final long ANY_NOUN = NOUN | PRONOUN | NUMERAL;

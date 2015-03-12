@@ -100,7 +100,23 @@ public class APCFGUkrainian
 		parser.addRule("VP[PNM] *-> VP[PNM] TARGET");
 		parser.addRule("VP[PNM] *-> VP[PNM] TIME");
 		
-		parser.addRule("<вчити-навчати>[p1 n1 m-] * 1.0 -> <вчу>");
+		parser.addRule("noun[c3 n*] -> <дітям>[r]");
+		parser.addRule("<дитина>[c3 n*] -> <дітям>[r]");
+		parser.addRule("<дитина>[c1 n1] -> <дитина>[r]");
+		
+		
+		parser.addRule("<людина>[NCG] -> <дитина>[NCG]");
+		parser.addRule("<слухач>[NCG] -> <людина>[NCG]");
+		
+		
+		parser.addRule("<історія-розповідь>[NCG] -> <казка>[NCG]");
+		parser.addRule("<історія-розповідь>[NCG] -> <оповідання>[NCG]");
+		parser.addRule("<історія-розповідь>[NCG] -> <пригода>[NCG]");
+		
+		parser.addRule("<розповідати-синсет>[PNM] * 1.1-> <розповідати>[PNM] <історія-розповідь>[c4] <слухач>[c3]?");
+		parser.addRule("verb[PNM] -> <розповідати-синсет>[PNM]");
+		
+		parser.addRule("<вчити-навчати>[p1 n1 m-] -> <вчу>");
 		
 		parser.addRule("<школяр>[c4 c2 n* gm gf gn] -> <школярів>");
 		parser.addRule("<людина>[NCG] -> <школяр>[NCG]");
@@ -230,7 +246,9 @@ public class APCFGUkrainian
 				}
 
 				Token byname_token = parser.getTokenByName(tw.m_word);
-				ParsedToken pt1 = new ParsedToken(byname_token, token_sp, 1.0f, tw.m_word_as_was_written);
+				WordTags token_raw = new WordTags(token_sp);
+				token_raw.setTags(WT.RAW);
+				ParsedToken pt1 = new ParsedToken(byname_token, token_raw, 1.0f, tw.m_word_as_was_written);
 				if (LangProcSettings.DEBUG_OUTPUT)
 				{
 					System.out.println("Add token " + pt1);

@@ -658,6 +658,8 @@ public class APCFGParser
 					inbuf.deleteCharAt(0);
 					break;
 					
+				case 'r': specified.m_tags |= WT.RAW; break;
+					
 				case ' ': break;
 					
 				default:
