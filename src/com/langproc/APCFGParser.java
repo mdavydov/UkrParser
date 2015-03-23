@@ -111,10 +111,10 @@ class ProductionRule
 		m_defined_attributes = def_attr;
 		m_inherited_unified_attributes = inherited_unified_attributes;
 		m_probability = probability;
-		if (m_probability>1)
-		{
-			System.out.println("Pr = " + m_probability);
-		}
+//		if (m_probability>1)
+//		{
+//			System.out.println("Pr = " + m_probability);
+//		}
 		m_subtokens = subtokens;
 		
 		addToIndex();
@@ -562,115 +562,7 @@ public class APCFGParser
 
 	
 	
-	void readAttributeString(StringBuffer inbuf, WordTags specified, WordTags unified)
-	{
-		specified.m_tags = 0;
-		unified.m_tags = 0;
-		// read one token from the string and advance string pointer p
-		while(inbuf.length()>0 && Character.isWhitespace(inbuf.charAt(0)))
-		{
-			inbuf.deleteCharAt(0);
-		}
-		if (inbuf.length()==0) return;
-		
-		// if not "[...someTags...]" return
-		if (inbuf.charAt(0)!='[') return;
-		inbuf.deleteCharAt(0);
-		
-		while(inbuf.length()>0)
-		{
-			if (inbuf.charAt(0)==']')
-			{
-				// attribute string is closed
-				inbuf.deleteCharAt(0);
-				return; 
-			}
-			switch(inbuf.charAt(0))
-			{
-				case 'G': unified.m_tags |= WT.GENDER_MASK; break;
-				case 'C': unified.m_tags |= WT.CASUS_MASK; break;
-				case 'N': unified.m_tags |= WT.COUNT_MASK; break;
-				case 'P': unified.m_tags |= WT.PERSON_MASK; break;
-				case 'T': unified.m_tags |= WT.TIME_MASK; break;
-				case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
-				case 'M': unified.m_tags |= WT.MODAL_MASK; break; // finished of not
 
-				case 'q': specified.m_tags |= WT.QUESTION; break;
-				case 'u': specified.m_tags |= WT.PROPERNAME; break;
-				case 'i': specified.m_tags |= WT.INFINITIVE; break;
-						
-				case 'm': // modality
-					switch(inbuf.charAt(1))
-					{			
-					case '+': specified.m_tags |= WT.MODAL; break;
-					case '-': specified.m_tags |= WT.NON_MODAL; break;
-					default: System.out.println("Unknown modality m" + inbuf.charAt(1));
-					}
-					inbuf.deleteCharAt(0);
-					break;
-
-				
-				case 'g': // gender
-					switch(inbuf.charAt(1))
-					{			
-					case 'm': specified.m_tags |= WT.MALE; break;
-					case 'f': specified.m_tags |= WT.FEMALE; break;
-					case 'n': specified.m_tags |= WT.NEUTRAL; break;
-					default: System.out.println("Unknown gender g" + inbuf.charAt(1));
-					}
-					inbuf.deleteCharAt(0);
-					break;
-
-				case 'c':
-					switch(inbuf.charAt(1))
-					{			
-					case '1': specified.m_tags |= WT.CASUS1; break;
-					case '2': specified.m_tags |= WT.CASUS2; break;
-					case '3': specified.m_tags |= WT.CASUS3; break;
-					case '4': specified.m_tags |= WT.CASUS4; break;
-					case '5': specified.m_tags |= WT.CASUS5; break;
-					case '6': specified.m_tags |= WT.CASUS6; break;
-					case '7': specified.m_tags |= WT.CASUS7; break;
-					default: System.out.println("Unknown casus c" + inbuf.charAt(1));
-					}
-					inbuf.deleteCharAt(0);
-					break;
-					
-				case 'n': // count
-					switch(inbuf.charAt(1))
-					{			
-					case '1': specified.m_tags |= WT.SINGLE; break;
-					case '*': specified.m_tags |= WT.PLURAL; break;
-					default: System.out.println("Unknown count n" + inbuf.charAt(1));
-					}
-					inbuf.deleteCharAt(0);
-					break;
-					
-				case 'p':
-					switch(inbuf.charAt(1))
-					{			
-					case '1': specified.m_tags |= WT.PERSON1; break;
-					case '2': specified.m_tags |= WT.PERSON2; break;
-					case '3': specified.m_tags |= WT.PERSON3; break;
-					case '-': specified.m_tags |= WT.PERSONLESS; break;
-					default: System.out.println("Unknown person p" + inbuf.charAt(1));
-					}
-					inbuf.deleteCharAt(0);
-					break;
-					
-				case 'r': specified.m_tags |= WT.RAW; break;
-					
-				case ' ': break;
-					
-				default:
-					System.out.println("Unknown tag " + inbuf.charAt(0));
-					System.exit(0);
-			}
-			inbuf.deleteCharAt(0);
-			// one-char tokens for attributes now
-		}
-		return;
-	}
 	
 	void readAttributeSpecials(StringBuffer inbuf, AttributeSpecials attr_sp)
 	{
@@ -688,10 +580,10 @@ public class APCFGParser
 		try
 		{
 			attr_sp.m_probability = Float.valueOf(inbuf.toString());
-			if (attr_sp.m_probability > 1)
-			{
-				System.out.println("Pr = " + attr_sp.m_probability);
-			}
+//			if (attr_sp.m_probability > 1)
+//			{
+//				System.out.println("Pr = " + attr_sp.m_probability);
+//			}
 		}
 		catch(NumberFormatException e) {}
 	}
@@ -714,7 +606,7 @@ public class APCFGParser
 		//System.out.println("Left part: " + leftTokenS);
 		WordTags left_sp = new WordTags();
 		WordTags left_un = new WordTags();
-		readAttributeString(leftPart, left_sp, left_un);
+		WordTags.readAttributeString(leftPart, left_sp, left_un);
 		
 		AttributeSpecials sp_attr = new AttributeSpecials();
 		readAttributeSpecials(leftPart, sp_attr);
@@ -734,7 +626,7 @@ public class APCFGParser
 				
 				WordTags token_sp = new WordTags();
 				WordTags token_un = new WordTags();
-				readAttributeString(rightPart, token_sp, token_un);
+				WordTags.readAttributeString(rightPart, token_sp, token_un);
 
 				TokenSpecials ts = readTokenSpecials(rightPart);
 				
@@ -747,10 +639,10 @@ public class APCFGParser
 			
 			if (subtokens.size()>0)
 			{
-				if (sp_attr.m_probability>1)
-				{
-					System.out.println("Pr2 = " + sp_attr.m_probability);
-				}
+//				if (sp_attr.m_probability>1)
+//				{
+//					System.out.println("Pr2 = " + sp_attr.m_probability);
+//				}
 				// the rule is added to index in each token that can be produced by this rule
 				new ProductionRule(result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
 				
@@ -760,7 +652,6 @@ public class APCFGParser
 			if (!readORSign(rightPart)) break;
 		}
 	}
-
 
 	boolean addPossibleTokenCopy(int pos_left, int pos_after_right, ParsedToken partially_parsed_token, boolean only_multiterm)
 	{
@@ -1122,7 +1013,7 @@ public class APCFGParser
 			
 			WordTags token_sp = new WordTags();
 			WordTags token_un = new WordTags();
-			readAttributeString(readS, token_sp, token_un);
+			WordTags.readAttributeString(readS, token_sp, token_un);
 			
 			//System.out.println("Parse string part: " + tokenS);
 			Token req_token = getTokenByName(tokenS);

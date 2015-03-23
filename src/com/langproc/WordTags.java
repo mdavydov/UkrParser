@@ -245,15 +245,15 @@ public class WordTags
 	public String toString()
 	{
 		StringBuffer b = new StringBuffer(200);
-		if (hasSomeTags(WT.PLURAL)) b.append("PL ");
-		if (hasSomeTags(WT.SINGLE)) b.append("SG ");
+		if (hasSomeTags(WT.PLURAL)) b.append("PL(n*) ");
+		if (hasSomeTags(WT.SINGLE)) b.append("SG(n1) ");
 		if (hasSomeTags(WT.PERSON1)) b.append("p1 ");
 		if (hasSomeTags(WT.PERSON2)) b.append("p2 ");
 		if (hasSomeTags(WT.PERSON3)) b.append("p3 ");
 		if (hasSomeTags(WT.PERSONLESS)) b.append("p- ");
-		if (hasSomeTags(WT.MALE)) b.append("m ");
-		if (hasSomeTags(WT.FEMALE)) b.append("f ");
-		if (hasSomeTags(WT.NEUTRAL)) b.append("n ");
+		if (hasSomeTags(WT.MALE)) b.append("gm ");
+		if (hasSomeTags(WT.FEMALE)) b.append("gf ");
+		if (hasSomeTags(WT.NEUTRAL)) b.append("gn ");
 		if (hasSomeTags(WT.CASUS1)) b.append("c1 ");
 		if (hasSomeTags(WT.CASUS2)) b.append("c2 ");
 		if (hasSomeTags(WT.CASUS3)) b.append("c3 ");
@@ -290,13 +290,123 @@ public class WordTags
 		if (hasSomeTags(WT.MODAL)) b.append("MOD+ ");
 		if (hasSomeTags(WT.NON_MODAL)) b.append("MOD- ");
 		if (hasSomeTags(WT.INDICATIVE)) b.append("IND ");
-		if (hasSomeTags(WT.QUESTION)) b.append("QUE ");
+		if (hasSomeTags(WT.QUESTION)) b.append("QUE(q) ");
 		if (hasSomeTags(WT.STATE)) b.append("STATE ");
 		if (hasSomeTags(WT.IMPERATIVE)) b.append("IMP ");
-		if (hasSomeTags(WT.RAW)) b.append("RAW ");
+		if (hasSomeTags(WT.RAW)) b.append("RAW(r) ");
 		
 		if (hasSomeTags(WT.SELF)) b.append("SELF ");
 
 		return b.toString();
+	}
+	
+	static void readAttributeString(StringBuffer inbuf, WordTags specified, WordTags unified)
+	{
+		specified.m_tags = 0;
+		unified.m_tags = 0;
+		// read one token from the string and advance string pointer p
+		while(inbuf.length()>0 && Character.isWhitespace(inbuf.charAt(0)))
+		{
+			inbuf.deleteCharAt(0);
+		}
+		if (inbuf.length()==0) return;
+		
+		// if not "[...someTags...]" return
+		if (inbuf.charAt(0)!='[') return;
+		inbuf.deleteCharAt(0);
+		
+		while(inbuf.length()>0)
+		{
+			if (inbuf.charAt(0)==']')
+			{
+				// attribute string is closed
+				inbuf.deleteCharAt(0);
+				return; 
+			}
+			switch(inbuf.charAt(0))
+			{
+				case 'G': unified.m_tags |= WT.GENDER_MASK; break;
+				case 'C': unified.m_tags |= WT.CASUS_MASK; break;
+				case 'N': unified.m_tags |= WT.COUNT_MASK; break;
+				case 'P': unified.m_tags |= WT.PERSON_MASK; break;
+				case 'T': unified.m_tags |= WT.TIME_MASK; break;
+				case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
+				case 'M': unified.m_tags |= WT.MODAL_MASK; break; // finished of not
+
+				case 'q': specified.m_tags |= WT.QUESTION; break;
+				case 'u': specified.m_tags |= WT.PROPERNAME; break;
+				case 'i': specified.m_tags |= WT.INFINITIVE; break;
+						
+				case 'm': // modality
+					switch(inbuf.charAt(1))
+					{			
+					case '+': specified.m_tags |= WT.MODAL; break;
+					case '-': specified.m_tags |= WT.NON_MODAL; break;
+					default: System.out.println("Unknown modality m" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+
+				
+				case 'g': // gender
+					switch(inbuf.charAt(1))
+					{			
+					case 'm': specified.m_tags |= WT.MALE; break;
+					case 'f': specified.m_tags |= WT.FEMALE; break;
+					case 'n': specified.m_tags |= WT.NEUTRAL; break;
+					default: System.out.println("Unknown gender g" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+
+				case 'c':
+					switch(inbuf.charAt(1))
+					{			
+					case '1': specified.m_tags |= WT.CASUS1; break;
+					case '2': specified.m_tags |= WT.CASUS2; break;
+					case '3': specified.m_tags |= WT.CASUS3; break;
+					case '4': specified.m_tags |= WT.CASUS4; break;
+					case '5': specified.m_tags |= WT.CASUS5; break;
+					case '6': specified.m_tags |= WT.CASUS6; break;
+					case '7': specified.m_tags |= WT.CASUS7; break;
+					default: System.out.println("Unknown casus c" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+					
+				case 'n': // count
+					switch(inbuf.charAt(1))
+					{			
+					case '1': specified.m_tags |= WT.SINGLE; break;
+					case '*': specified.m_tags |= WT.PLURAL; break;
+					default: System.out.println("Unknown count n" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+					
+				case 'p':
+					switch(inbuf.charAt(1))
+					{			
+					case '1': specified.m_tags |= WT.PERSON1; break;
+					case '2': specified.m_tags |= WT.PERSON2; break;
+					case '3': specified.m_tags |= WT.PERSON3; break;
+					case '-': specified.m_tags |= WT.PERSONLESS; break;
+					default: System.out.println("Unknown person p" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+					
+				case 'r': specified.m_tags |= WT.RAW; break;
+					
+				case ' ': break;
+					
+				default:
+					System.out.println("Unknown tag " + inbuf.charAt(0));
+					System.exit(0);
+			}
+			inbuf.deleteCharAt(0);
+			// one-char tokens for attributes now
+		}
+		return;
 	}
 }

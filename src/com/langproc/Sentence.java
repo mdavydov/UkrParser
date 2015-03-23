@@ -126,12 +126,14 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 		// System.out.println("Total = " + total);
 		return total;
 	}
+	
+	static private Random randomGen;
 
-	public String tryFixUsingRandom(LangProc langproc, boolean use_word_weighting)
+	public String tryFixUsingRandom(Morphology morphology, boolean use_word_weighting)
 	{
 		int vertex_choices[] = new int[numWords()];
 
-		Random randomGen = langproc.m_randomGen;
+		if (randomGen !=null) randomGen = new Random();
 
 		int i = 0;
 		for (SentenceWord sw : m_words)
@@ -148,7 +150,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 				{
 					TaggedWord tw = sw.getHypothesis(j);
 
-					int weight = langproc.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
+					int weight = morphology.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
 
 					// if (num_base_use!=null &&
 					// num_base_use.getMeanInterval()>200) weight=0;

@@ -13,6 +13,7 @@ package com.langproc;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.dts.spell.dictionary.OpenOfficeSpellDictionary;
 import org.dts.spell.dictionary.myspell.HEntry;
 import org.dts.spell.finder.CharSequenceWordFinder;
 import org.dts.spell.finder.Word;
@@ -163,17 +164,17 @@ class IntervalCounter
 
 public class WordStatisticsCounter
 {
-	LangProc m_langproc=null;
 	
 	java.util.HashMap<String, WordStat> m_word_form_stat = new java.util.HashMap<String, WordStat>();
 	java.util.HashMap<String, WordStat> m_word_base_stat = new java.util.HashMap<String, WordStat>();
 	int m_word_counter = 0;
+	OpenOfficeSpellDictionary m_dict;
 	
 	java.util.Vector<IntervalCounter> m_interval_counters = new java.util.Vector<IntervalCounter>();
 	
-	WordStatisticsCounter(LangProc langproc)
+	WordStatisticsCounter(OpenOfficeSpellDictionary dict)
 	{
-		m_langproc = langproc;
+		m_dict = dict;
 	}
 	
 
@@ -196,12 +197,12 @@ public class WordStatisticsCounter
 				ic.nextWord(word);
 			}
 
-			List<HEntry> list = m_langproc.m_dict.checkList(word);
+			List<HEntry> list = UkrainianISpellMorphology.singleton().m_dict.checkList(word);
 
 			if (list.size() == 0) {
 				// try upper case if it was the first word and it can't be found
 				word = word.toLowerCase();
-				list = m_langproc.m_dict.checkList(word);
+				list = UkrainianISpellMorphology.singleton().m_dict.checkList(word);
 			}
 
 			if (list.size() == 0)

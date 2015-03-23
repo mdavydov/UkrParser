@@ -87,7 +87,7 @@ public class APCFGUkrainian
 
 		// parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
 		parser.addRule("VP[PNM] -> verb[PNM]");
-		parser.addRule("VP[PN] -> verb[PNm+] IVP");
+		parser.addRule("VP[PN m-] 1.1-> verb[PNm+] IVP");
 		parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
 		parser.addRule("VP[PNM] -> <не> VP[PNM]");
 		
@@ -103,11 +103,10 @@ public class APCFGUkrainian
 		parser.addRule("noun[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c1 n1] -> <дитина>[r]");
-		
+		parser.addRule("noun[c2 c4 gm n1] -> <коня>[r]");
 		
 		parser.addRule("<людина>[NCG] -> <дитина>[NCG]");
 		parser.addRule("<слухач>[NCG] -> <людина>[NCG]");
-		
 		
 		parser.addRule("<історія-розповідь>[NCG] -> <казка>[NCG]");
 		parser.addRule("<історія-розповідь>[NCG] -> <оповідання>[NCG]");
@@ -198,7 +197,7 @@ public class APCFGUkrainian
 		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS <.>");
 	}
 
-	public String processSentenceWithAPCFG(LangProc langproc, Sentence s, boolean use_word_weighting)
+	public String processSentenceWithAPCFG(Morphology morphology, Sentence s, boolean use_word_weighting)
 	{
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 
@@ -221,7 +220,7 @@ public class APCFGUkrainian
 				float w = 0.5f; // base weight for the word
 				if (use_word_weighting)
 				{
-					int weight = langproc.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
+					int weight = morphology.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
 					w += weight * 0.1f;
 				}
 

@@ -82,7 +82,7 @@ public class DependencyGrammar
 		return 0.0;
 	}
 
-	void addPossibleRelation(ChoiceGraph cg, LangProc langproc, Sentence s, TaggedWord w1, TaggedWord w2)
+	void addPossibleRelation(ChoiceGraph cg, Sentence s, TaggedWord w1, TaggedWord w2)
 	{
 		WordTags t1 = w1.getTags();
 		WordTags t2 = w2.getTags();
@@ -219,7 +219,7 @@ public class DependencyGrammar
 		if (t1.hasTag(WT.NUMERAL) && t2.hasTag(WT.NOUN))
 		{ // verb-to-verb
 			// relations
-			if (t1.hasTag(WT.CASUS1) && langproc.m_countable_req_nom.containsKey(w1.m_word))
+			if (t1.hasTag(WT.CASUS1) && UkrainianISpellMorphology.singleton().m_countable_req_nom.containsKey(w1.m_word))
 			{
 				if (t2.hasAllTags(WT.CASUS1 | WT.PLURAL))
 				{
@@ -328,7 +328,7 @@ public class DependencyGrammar
 
 		if (t1.hasTag(WT.PREPOS) && t2.hasSomeTags(WT.ANY_NOUN))
 		{
-			WordTags req_tags = langproc.m_prepositions.get(w1.m_base_word);
+			WordTags req_tags = UkrainianISpellMorphology.singleton().m_prepositions.get(w1.m_base_word);
 
 			if (t2.hasSomeTags(req_tags) && !s.hasWordsWithSomeTagsBetween(sp1, sp2, WT.ANY_NOUN, req_tags.m_tags))
 			{
@@ -360,7 +360,7 @@ public class DependencyGrammar
 		}
 	}
 
-	public String processSentenceWithDependencyGrammar(LangProc langproc, Sentence s, boolean use_word_weighting)
+	public String processSentenceWithDependencyGrammar(Morphology morphology, Sentence s, boolean use_word_weighting)
 	{
 		ChoiceGraph cg = new ChoiceGraph(s.numWords(), s.numHypotheses());
 
@@ -378,7 +378,7 @@ public class DependencyGrammar
 
 				if (use_word_weighting)
 				{
-					int weight = langproc.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
+					int weight = morphology.getWordStatisticalWeight(tw.m_word, tw.m_base_word);
 
 					// if (num_base_use!=null &&
 					// num_base_use.getMeanInterval()>200) weight=0;
@@ -404,7 +404,7 @@ public class DependencyGrammar
 		for (TaggedWord w1 : all_words)
 			for (TaggedWord w2 : all_words)
 			{
-				addPossibleRelation(cg, langproc, s, w1, w2);
+				addPossibleRelation(cg, s, w1, w2);
 			}
 		// LangProcOutput.println(";");
 		// cg.print();
