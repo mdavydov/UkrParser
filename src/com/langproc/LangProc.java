@@ -447,14 +447,18 @@ class LangProc
 		}
 	}
 
-	public static void main0(String[] args)
+	public static void main(String[] args)
 	{
+		UkrainianGrammarlyMorphology ugm = new UkrainianGrammarlyMorphology();
 		// PCFGParser.main(args);
 		return;
 	}
+	
 
-	public static void main(String[] args)
+	public static void main00(String[] args)
 	{
+		
+		
 		try
 		{
 			LangProc lp = new LangProc();
