@@ -69,6 +69,13 @@ class LangProc
 		APCFGUkrainian apcfg = new APCFGUkrainian();
 		return apcfg.processSentenceWithAPCFG(m_morphology, ss, use_word_weighting);
 	}
+	
+	private String checkGrammarAPCFG_SL(String txt, boolean use_word_weighting)
+	{
+		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
+		APCFGUkrSL apcfg = new APCFGUkrSL();
+		return apcfg.processSentenceWithAPCFG(m_morphology, ss, use_word_weighting);
+	}
 
 	private String tryFixRandom(String txt, boolean use_word_weighting)
 	{
@@ -447,15 +454,35 @@ class LangProc
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main00(String[] args)
 	{
 		UkrainianGrammarlyMorphology ugm = new UkrainianGrammarlyMorphology();
 		// PCFGParser.main(args);
 		return;
 	}
 	
+	
+	public static void main(String[] args)
+	{
+		try
+		{
+			LangProc lp = new LangProc();
+			LangProcOutput.flush();
+			
+			lp.checkGrammarAPCFG_SL(
+						"Я розповідати діти казка."
+						, false);
 
-	public static void main00(String[] args)
+			LangProcOutput.writer.flush();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return;
+	}
+
+	public static void main01(String[] args)
 	{
 		
 		

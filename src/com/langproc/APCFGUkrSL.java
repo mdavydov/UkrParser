@@ -1,22 +1,10 @@
-/*******************************************************************************
- * UkrParser
- * Copyright (c) 2013-2014 Maksym Davydov
- * 
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl-3.0.txt
- ******************************************************************************/
-
-// Affix probabilistic context free grammar for Ukrainian language
-
 package com.langproc;
 
-public class APCFGUkrainian
+public class APCFGUkrSL
 {
 	APCFGParser parser = null;
 	
-	public APCFGUkrainian()
+	public APCFGUkrSL()
 	{
 		initParser();
 	}
@@ -44,10 +32,6 @@ public class APCFGUkrainian
 	public void initParser()
 	{	
 		parser = new APCFGParser();
-		// attributed noun "Лис Микита"
-		
-//		parser.addRule("IVP -> <не>? verb[i]");
-//		return;
 		
 		parser.addRule("QS *-> <скільки> PLACE? DNP[c2]");
 
@@ -55,47 +39,41 @@ public class APCFGUkrainian
 		parser.addRule("Z -> з | із | зі");
 		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
 
-		parser.addRule("AN[NCG] -> noun[NCG] noun[NCGu]?");
+		parser.addRule("AN -> noun noun[u]?");
 		// noun group (adjectives, etc)
-		parser.addRule("COMMEDADJG[NCG] -> <,> adj[NCG] GENCOMMA!");
-		parser.addRule("COMMEDADJG[NCG] -> COMMEDADJG[NCG] <,> adj[NCG] GENCOMMA!");
-		parser.addRule("ADJG[NCG] -> adj[NCG]");
-		parser.addRule("ADJQ[NCG] -> adj[NCGq]"); // якою? котрою? ... question with adjective attributes
-		parser.addRule("ADJG[NCG] -> COMMEDADJG[NCG]");
+		parser.addRule("ADJG -> adj");
+		parser.addRule("ADJQ -> adj[q]"); // якою? котрою? ... question with adjective attributes
+		parser.addRule("ADJG -> ADJG adj");
 
-		parser.addRule("NG[NCG] -> adj[NCG]? AN[NCG] NG[c2]? ADJG[NCG]?");
-		parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] ADJG[NCG]?");
-		parser.addRule("NG[C n*] -> NG[C] conj NG[C]");
+		parser.addRule("NG -> AN ADJG?");
+		//parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] ADJG[NCG]?");
+		parser.addRule("NG[n*] -> NG NG");
+		parser.addRule("DNP -> NG");
+		parser.addRule("NP -> NG");
+		parser.addRule("NP -> pronoun");
+		//parser.addRule("NP[NCGP] -> NP <чи> NP[NCGP]");
 
-		parser.addRule("NG[NCG] -> adj[NCG] NG[NCG]");
-		parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
-		parser.addRule("NP[NCG p3] -> NG[NCG c1]");
-		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
-		parser.addRule("NP[NCGP] -> NP <чи> NP[NCGP]");
-
-		parser.addRule("TARGET -> V DNP[c4] | <до> DNP[c2] | <додому> | <туди> | <сюди>");
-		parser.addRule("NAME -> noun[NCGu]");
-		parser.addRule("ADDRESS -> DNP[c3]");
-		parser.addRule("PLACE -> V DNP[c6] | <тут> | <там>");
-		parser.addRule("ADDITIONAL -> Z DNP[c5]");
+		parser.addRule("TARGET -> V DNP | <до> DNP | <додому> | <туди> | <сюди>");
+		parser.addRule("NAME -> noun[u]");
+		parser.addRule("ADDRESS -> DNP");
+		parser.addRule("PLACE -> V DNP | <тут> | <там>");
+		parser.addRule("ADDITIONAL -> Z DNP");
 		parser.addRule("TIME -> <зараз> | <потім>");
-		parser.addRule("FROM -> Z DNP[c2]");
-		parser.addRule("OBJECT -> DNP[c4]");
+		parser.addRule("FROM -> Z DNP");
+		parser.addRule("OBJECT -> DNP");
 
-		// parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
-		parser.addRule("VP[PNM] -> verb[PNM]");
-		parser.addRule("VP[PN m-] 1.1-> verb[PNm+] IVP");
-		parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
-		parser.addRule("VP[PNM] -> <не> VP[PNM]");
+		parser.addRule("VP -> verb[i]");
+		parser.addRule("VP 1.1-> verb[m+] VP");
+		//parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
+		parser.addRule("VP -> <не> VP");
 		
-		parser.addRule("VP[PNM] *-> VP[PNM] ADDRESS");
-		parser.addRule("VP[PNM] *-> VP[PNM] PLACE");
-		parser.addRule("VP[PNM] -> PLACE VP[PNM]");
-		parser.addRule("VP[PNM] *-> VP[PNM] ADDITIONAL");
-		parser.addRule("VP[PNM] *-> VP[PNM] OBJECT");
-		parser.addRule("VP[PNM] *-> VP[PNM] FROM");
-		parser.addRule("VP[PNM] *-> VP[PNM] TARGET");
-		parser.addRule("VP[PNM] *-> VP[PNM] TIME");
+		parser.addRule("VP *-> VP ADDRESS");
+		parser.addRule("VP *-> VP PLACE");
+		parser.addRule("VP *-> VP ADDITIONAL");
+		parser.addRule("VP *-> VP OBJECT");
+		parser.addRule("VP *-> VP FROM");
+		parser.addRule("VP *-> VP TARGET");
+		parser.addRule("VP *-> VP TIME");
 		
 		parser.addRule("noun[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c3 n*] -> <дітям>[r]");
@@ -104,13 +82,14 @@ public class APCFGUkrainian
 		
 		parser.addRule("<людина>[NCG] -> <дитина>[NCG]");
 		parser.addRule("<слухач>[NCG] -> <людина>[NCG]");
+		parser.addRule("<слухач>[NCG] -> <діти>[NCG]");
 		
 		parser.addRule("<історія-розповідь>[NCG] -> <казка>[NCG]");
 		parser.addRule("<історія-розповідь>[NCG] -> <оповідання>[NCG]");
 		parser.addRule("<історія-розповідь>[NCG] -> <пригода>[NCG]");
 		
-		parser.addRule("<розповідати-синсет>[PNM] * 1.1-> <розповідати>[PNM] <історія-розповідь>[c4] <слухач>[c3]?");
-		parser.addRule("verb[PNM] -> <розповідати-синсет>[PNM]");
+		parser.addRule("<розповідати-синсет>[PNM] * 1.1-> <розповідати>[PNM] <історія-розповідь> <слухач>?");
+		parser.addRule("VP[PNM] -> <розповідати-синсет>[PNM]");
 		
 		parser.addRule("<вчити-навчати>[p1 n1 m-] -> <вчу>");
 		
@@ -126,22 +105,6 @@ public class APCFGUkrainian
 		parser.addRule("<вчити-навчати>[PNM] * 1.1-> <вчити-навчати>[PNM] <містить-знання>[c3]");
 		parser.addRule("VP[PNM] -> <вчити-навчати>[PNM]");
 
-		// parser.addRule("IVP -> verb[i] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
-		// parser.addRule("IVP -> verb[i] OBJECT? PLACE? NAME");
-		parser.addRule("IVP -> <не>? verb[i]");
-		parser.addRule("IVP *-> IVP ADDRESS");
-		parser.addRule("IVP *-> IVP PLACE");
-		parser.addRule("IVP *-> IVP ADDITIONAL");
-		parser.addRule("IVP *-> IVP OBJECT");
-		parser.addRule("IVP *-> IVP FROM");
-		parser.addRule("IVP *-> IVP TARGET");
-		parser.addRule("IVP *-> IVP TIME");
-		parser.addRule("IVP *-> IVP NAME");
-
-
-		// parser.addRule("S *0.8 -> verb[PN] NP[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET?");
-		// parser.addRule("IS *-> verb[i] NP[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM?  TARGET?");
-
 		parser.addRule("VP[p1p2p3 N] -> <є> adj[N c4c5]"); // TARGET?
 		parser.addRule("VP[p1p2p3 N] -> <є> DNP[N c4c5]"); // TARGET?
 
@@ -150,7 +113,7 @@ public class APCFGUkrainian
 		// TARGET?
 		// parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
 		// parser.addRule("S *-> NP[NP] VP[NP]");
-		parser.addRule("S *-> VP[NP] NP[NP]"); // Я зробив завдання
+		parser.addRule("S *->VP NP"); // Я зробив завдання
 		parser.addRule("S -> VP[p-]"); // Зроблено завдання
 		parser.addRule("S -> IVP"); // Робити завдання
 		parser.addRule("S -> verb[NPm+] NP[NP] IVP");
@@ -173,8 +136,8 @@ public class APCFGUkrainian
 //		parser.addRule("QS -> <якого> DNP[n1 c2] DNP? S?");
 //		parser.addRule("QS -> <яких> DNP[n* c2] DNP? S?");
 //		parser.addRule("QS -> <якою> DNP[n* gf c2] DNP? S?");
-		parser.addRule("QS -> pronoun[NGC] DNP[NGC] DNP? S?");
-		parser.addRule("QS -> ADJQ[NGC] DNP[NGC] DNP? S?");
+		parser.addRule("QS -> pronoun DNP DNP? S?");
+		parser.addRule("QS -> ADJQ DNP DNP? S?");
 		
 		parser.addRule("QS -> <чи> QS");
 		parser.addRule("QS *-> adv S");
