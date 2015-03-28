@@ -255,7 +255,7 @@ public class DependencyGrammar
 			}
 		}
 
-		if (t1.hasTag(WT.VERB) && t2.hasSomeTags(WT.PREPOS))
+		if (t1.hasTag(WT.VERB) && t2.hasSomeTags(WT.PREPOSITION))
 		{ // verb-to-verb
 			// relations
 			cg.addEdge("ADV|OBJ", linkPrefSeq(sp1, sp2), w1, w2);
@@ -326,7 +326,7 @@ public class DependencyGrammar
 			}
 		}
 
-		if (t1.hasTag(WT.PREPOS) && t2.hasSomeTags(WT.ANY_NOUN))
+		if (t1.hasTag(WT.PREPOSITION) && t2.hasSomeTags(WT.ANY_NOUN))
 		{
 			WordTags req_tags = UkrainianISpellMorphology.singleton().m_prepositions.get(w1.m_base_word);
 

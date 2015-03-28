@@ -22,7 +22,7 @@ public class APCFGUkrSL
 		if (tw.m_tags.hasSomeTags(WT.NUMERAL)) return parser.getTokenByName("num");
 		if (tw.m_tags.hasSomeTags(WT.PARTICLE)) return parser.getTokenByName("particle");
 		if (tw.m_tags.hasSomeTags(WT.ADVPART)) return parser.getTokenByName("advp");
-		if (tw.m_tags.hasSomeTags(WT.PREPOS)) return parser.getTokenByName(tw.m_word);
+		if (tw.m_tags.hasSomeTags(WT.PREPOSITION)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.SENTENCE_END)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.HELPWORD)) return parser.getTokenByName("help");
 		return null; // no grammar name can be found

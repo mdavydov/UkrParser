@@ -668,8 +668,8 @@ public class UkrainianISpellMorphology implements Morphology
 		m_tag_rules.add(new TagRule(".*", ".*", ".*[abcdefghijklmnoqp].*", ".*", 0, WT.NOUN));
 		m_tag_rules.add(new TagRule(".*", ".*", ".*[ABCDEFGH].*", ".*", 0, WT.VERB));
 		//m_tag_rules.add(new TagRule(".*", ".+ти", ".*", ".*", 0, WT.VERB));
-		m_tag_rules.add(new TagRule(".*ся", ".*", ".*", ".*", WT.VERB, WT.SELF));
-		m_tag_rules.add(new TagRule(".*сь", ".*", ".*", ".*", WT.VERB, WT.SELF));
+		m_tag_rules.add(new TagRule(".*ся", ".*", ".*", ".*", WT.VERB, WT.REVERSE));
+		m_tag_rules.add(new TagRule(".*сь", ".*", ".*", ".*", WT.VERB, WT.REVERSE));
 		
 		m_tag_rules.add(new TagRule(".*", ".*ий", ".*", ".*", 0, WT.ADJ));
 		m_tag_rules.add(new TagRule(".*", ".*ий", ".*", "о", 0, WT.ADV));
@@ -790,7 +790,7 @@ public class UkrainianISpellMorphology implements Morphology
 			w = w1;
 		}
 
-		if (m_prepositions.containsKey(dictionary_form.word)) w.addTags(WT.PREPOS);
+		if (m_prepositions.containsKey(dictionary_form.word)) w.addTags(WT.PREPOSITION);
 		if (m_parenthesis_words.contains(dictionary_form.word)) w.addTags(WT.ADV);
 		if (m_particles.contains(dictionary_form.word)) w.addTags(WT.PARTICLE);
 		if (m_negations.contains(dictionary_form.word)) w.addTags(WT.NEGATION);

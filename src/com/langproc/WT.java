@@ -41,6 +41,7 @@ public class WT {
 
 	public static final long CASUS_MASK = CASUS1 | CASUS2 | CASUS3 | CASUS4
 	| CASUS5 | CASUS6 | CASUS7;
+	public static final long ANY_CASUS = CASUS_MASK;
 
 	public static final long NOUN = (1L << 15);
 	public static final long VERB = (1L << 16);
@@ -54,16 +55,16 @@ public class WT {
 	public static final long PARTICLE = (1L << 24);
 	public static final long ADVPART = (1L << 25); // Adverbial participle
 	public static final long ADJPART = (1L << 26); // Adjective participle
-	public static final long PREPOS = (1L << 27); // preposition
+	public static final long PREPOSITION = (1L << 27); // preposition
 	public static final long HELPWORD = (1L << 28); // parenthesis words
 
 	public static final long PART_OF_SPEECH_MASK = NOUN | VERB | ADV | ADJ
 	| PRONOUN | NEGATION | COMMA | CONJ | NUMERAL | PARTICLE | ADVPART
-	| ADJPART | PREPOS | HELPWORD;
+	| ADJPART | PREPOSITION | HELPWORD;
 
 	public static final long PERFECT = (1L << 29);
-	public static final long SIMPLE = (1L << 30);
-	public static final long PERFECTION_MASK = PERFECT | SIMPLE;
+	public static final long IMPERFECT = (1L << 30);
+	public static final long PERFECTION_MASK = PERFECT | IMPERFECT;
 
 	public static final long PAST = (1L << 31);
 	public static final long PRESENT = (1L << 32);
@@ -78,7 +79,7 @@ public class WT {
 	
 	public static final long PROPERNAME = (1L << 41);
 	
-	public static final long SELF = (1L << 42); // митися
+	public static final long REVERSE = (1L << 42); // митися
 
 	public static final long MODAL = (1L << 37);
 	public static final long NON_MODAL = (1L << 43);
@@ -87,6 +88,27 @@ public class WT {
 	public static final long IMPERATIVE = (1L << 44);
 	
 	public static final long RAW = (1L << 45); // word as written in the sentence
+	
+	public static final long ALIVE = (1L << 46); // alive entity
+	
+	public static final long PASSIVE = (1L << 48);
+	public static final long ACTIVE = (1L << 49);
+	
+	public static final long EXCLAMATION = (1L << 50);
+	
+	public static final long ABBREVIATED = (1L << 51);
+	public static final long COMPARE = (1L << 52);
+	public static final long COMPARESUPER = (1L << 53);
+	
+	public static final long SUBORD_CONJ = (1L << 54);
+	public static final long COORD_CONJ = (1L << 55);
+	
+	public static final long ADJ_PRON = (1L << 56);
+	public static final long PERS_PRON = (1L << 57);
+	public static final long PREDICATIVE_WORD = (1L << 58);
+	
+	
+
 	
 	public static final long ANY_PUNCT = COMMA | SENTENCE_END;
 	public static final long ANY_NOUN = NOUN | PRONOUN | NUMERAL;

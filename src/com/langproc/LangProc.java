@@ -454,7 +454,7 @@ class LangProc
 		}
 	}
 
-	public static void main00(String[] args)
+	public static void main(String[] args)
 	{
 		UkrainianGrammarlyMorphology ugm = new UkrainianGrammarlyMorphology();
 		// PCFGParser.main(args);
@@ -462,7 +462,7 @@ class LangProc
 	}
 	
 	
-	public static void main(String[] args)
+	public static void main00(String[] args)
 	{
 		try
 		{

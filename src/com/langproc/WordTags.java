@@ -274,11 +274,11 @@ public class WordTags
 		if (hasSomeTags(WT.PARTICLE)) b.append("PARTICLE ");
 		if (hasSomeTags(WT.ADVPART)) b.append("ADVPART ");
 		if (hasSomeTags(WT.ADJPART)) b.append("ADJPART ");
-		if (hasSomeTags(WT.PREPOS)) b.append("PREPOS ");
+		if (hasSomeTags(WT.PREPOSITION)) b.append("PREPOS ");
 		if (hasSomeTags(WT.HELPWORD)) b.append("HELPWORD ");
 
 		if (hasSomeTags(WT.PERFECT)) b.append("PERFECT ");
-		if (hasSomeTags(WT.SIMPLE)) b.append("SIMPLE ");
+		if (hasSomeTags(WT.IMPERFECT)) b.append("IMPERFECT ");
 		if (hasSomeTags(WT.PAST)) b.append("PAST ");
 		if (hasSomeTags(WT.PRESENT)) b.append("PRESENT ");
 		if (hasSomeTags(WT.FUTURE)) b.append("FUTURE ");
@@ -294,8 +294,24 @@ public class WordTags
 		if (hasSomeTags(WT.STATE)) b.append("STATE ");
 		if (hasSomeTags(WT.IMPERATIVE)) b.append("IMP ");
 		if (hasSomeTags(WT.RAW)) b.append("RAW(r) ");
+		if (hasSomeTags(WT.ALIVE)) b.append("ALIVE ");
+		if (hasSomeTags(WT.PASSIVE)) b.append("PASSIVE ");
+		if (hasSomeTags(WT.ACTIVE)) b.append("ACTIVE ");
 		
-		if (hasSomeTags(WT.SELF)) b.append("SELF ");
+		if (hasSomeTags(WT.EXCLAMATION)) b.append("EXCLAMATION ");
+		if (hasSomeTags(WT.ABBREVIATED)) b.append("ABBREVIATED ");
+		if (hasSomeTags(WT.COMPARE)) b.append("COMPARE ");	
+		if (hasSomeTags(WT.COMPARESUPER)) b.append("COMPARESUPER ");
+		
+		
+		if (hasSomeTags(WT.REVERSE)) b.append("REVERSE ");
+		if (hasSomeTags(WT.SUBORD_CONJ)) b.append("SUBORD_CONJ ");
+		if (hasSomeTags(WT.COORD_CONJ)) b.append("COORD_CONJ ");
+		if (hasSomeTags(WT.ADJ_PRON)) b.append("ADJ_PRON ");
+		if (hasSomeTags(WT.PERS_PRON)) b.append("PERS_PRON ");
+		
+		if (hasSomeTags(WT.PREDICATIVE_WORD)) b.append("PREDICATIVE_WORD ");
+
 
 		return b.toString();
 	}
