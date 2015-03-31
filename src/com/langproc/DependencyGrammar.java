@@ -366,7 +366,7 @@ public class DependencyGrammar
 
 		Vector<TaggedWord> all_words = new Vector<TaggedWord>();
 
-		for (SentenceWord sw : s)
+		for (WordHypotheses sw : s)
 		{
 			int n = sw.numHypotheses();
 			for (int i = 0; i < n; ++i)

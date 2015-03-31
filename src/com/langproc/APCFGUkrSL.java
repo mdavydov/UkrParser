@@ -170,7 +170,7 @@ public class APCFGUkrSL
 		ptl_start.add(pt_start);
 		tokens.add(ptl_start);
 
-		for (SentenceWord sw : s)
+		for (WordHypotheses sw : s)
 		{
 			java.util.List<ParsedToken> ptl = new java.util.ArrayList<ParsedToken>();
 			int n = sw.numHypotheses();
@@ -213,8 +213,11 @@ public class APCFGUkrSL
 					System.out.println("Add token " + pt1);
 				}
 				ptl.add(pt1);
-				
-				if (!tw.m_base_word.equals(tw.m_word))
+				if (tw.m_base_word==null || tw.m_word==null)
+				{
+					System.out.println("Error!!!");
+				}
+				if (!tw.m_base_word.equals(tw.m_word)) 
 				{
 					Token bybaseform_token = parser.getTokenByName(tw.m_base_word);
 					ParsedToken pt2 = new ParsedToken(bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);

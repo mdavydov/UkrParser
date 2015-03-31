@@ -49,6 +49,7 @@ class LangProc
 		{
 			m_dict = new OpenOfficeSpellDictionary("uk_UA");
 			m_morphology = new UkrainianISpellMorphology(m_dict);
+			//m_morphology = new UkrainianGrammarlyMorphology();
 		}
 		catch(IOException e)
 		{
@@ -454,7 +455,7 @@ class LangProc
 		}
 	}
 
-	public static void main(String[] args)
+	public static void main00(String[] args)
 	{
 		UkrainianGrammarlyMorphology ugm = new UkrainianGrammarlyMorphology();
 		// PCFGParser.main(args);
@@ -462,7 +463,7 @@ class LangProc
 	}
 	
 	
-	public static void main00(String[] args)
+	public static void main01(String[] args)
 	{
 		try
 		{
@@ -482,7 +483,7 @@ class LangProc
 		return;
 	}
 
-	public static void main01(String[] args)
+	public static void main(String[] args)
 	{
 		
 		

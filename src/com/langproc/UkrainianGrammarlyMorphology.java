@@ -1,6 +1,6 @@
 package com.langproc;
 
-public class UkrainianGrammarlyMorphology
+public class UkrainianGrammarlyMorphology extends UkrainianMorphologyCommons
 {
 	java.util.HashMap<String, String> m_hash_map;
 	
@@ -98,8 +98,8 @@ public class UkrainianGrammarlyMorphology
 		{
 			if (m_unknown_set.contains(desc)) return true;
 			//m_unknown_set.add(desc);
-			System.out.println("Unknown " + desc);
-			return false;
+			System.out.println("Unknown tag " + desc);
+			return true;
 		}
 		return true;
 	}
@@ -138,6 +138,26 @@ public class UkrainianGrammarlyMorphology
 		}
 	}
 	
+	void addWordVariants(WordHypotheses wh, String word_as_written, String word_to_search, String res)
+	{
+		String base;
+		int index = res.indexOf(" ");
+		if (index<0) index = res.length();
+		base = res.substring(0, index);
+		//System.out.print("Base=(" + base + ") ");
+		WordTags wt = getTags(res.substring(index+1));
+		if (wt==null)
+		{
+			System.out.println("Unknown tags in " + word_as_written +"->"+ res);
+			//wh.addHypothesis( new TaggedWord(word_as_written, base, wt) );
+		}
+		else
+		{
+			System.out.println(word_as_written + "->" + wt);
+			wh.addHypothesis( new TaggedWord(word_as_written, base, wt) );
+		}
+	}
+	
 	void dump_word(String s)
 	{
 		String res = m_hash_map.get(s);
@@ -159,6 +179,35 @@ public class UkrainianGrammarlyMorphology
 		}
 	}
 	
+	public boolean isInDictionary(String word, boolean correct_errors)
+	{
+		String res = m_hash_map.get(word);
+		return res!=null;
+	}
+	
+	public void addWordFormsFromDictionary(WordHypotheses wh, String word_as_written, String word_to_search, boolean correct_errors)
+	{
+		String res = m_hash_map.get(word_to_search);
+		if (res==null)
+		{
+			System.out.println("Word "+word_to_search+" was not found");
+		}
+		else
+		{
+			System.out.println(word_to_search +"->"+ res);
+			int index = 0;
+			while(index<res.length())
+			{
+				int index_next = res.indexOf('|', index);
+				if (index_next<0) index_next = res.length();
+				addWordVariants(wh, word_as_written, word_to_search, res.substring(index, index_next));
+				index = index_next+1;
+			}
+		}
+
+	}
+
+	
 	UkrainianGrammarlyMorphology()
 	{
 		try
@@ -168,11 +217,7 @@ public class UkrainianGrammarlyMorphology
 			java.io.InputStreamReader ipsr = new java.io.InputStreamReader(ips, "UTF-8");
 			java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
 
-			StringBuffer full_text = new StringBuffer();
 			String line = null;
-
-			int sentence_n = 0;
-			int num_all = 0;
 			
 			m_hash_map = new java.util.HashMap<String, String>(2000000);
 			
@@ -194,8 +239,6 @@ public class UkrainianGrammarlyMorphology
 						m_hash_map.put( word, old_val + "|" + desc );
 					}
 				}
-				//if (num_all<10) System.out.println("(" + line.substring(0, space_ind) + ")->(" + line.substring(space_ind+1) + ")");
-				++num_all;
 			}
 			System.out.println("Read complete!!! NumWords = " + m_hash_map.size());
 			ips.close();
@@ -214,5 +257,18 @@ public class UkrainianGrammarlyMorphology
 		{
 			e.printStackTrace();
 		}
+	}
+
+	
+	@Override
+	public void setWordStatisticsCounter(WordStatisticsCounter wsc)
+	{
+		// ignore
+	}
+
+	@Override
+	public int getWordStatisticalWeight(String word, String base_form)
+	{
+		return 1; // no statistics
 	}
 }

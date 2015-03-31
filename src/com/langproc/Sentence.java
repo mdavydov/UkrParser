@@ -13,11 +13,11 @@ package com.langproc;
 import java.util.Random;
 import java.util.Vector;
 
-public class Sentence implements java.lang.Iterable<SentenceWord>
+public class Sentence implements java.lang.Iterable<WordHypotheses>
 {
-	private Vector<SentenceWord> m_words = new Vector<SentenceWord>();
+	private Vector<WordHypotheses> m_words = new Vector<WordHypotheses>();
 
-	public java.util.Iterator<SentenceWord> iterator()
+	public java.util.Iterator<WordHypotheses> iterator()
 	{
 		return m_words.iterator();
 	}
@@ -25,19 +25,19 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 	{
 		return m_words.size();
 	}
-	public SentenceWord wordAt(int index) { return m_words.elementAt(index); }
+	public WordHypotheses wordAt(int index) { return m_words.elementAt(index); }
 
 	public int numHypotheses()
 	{
 		int num = 0;
-		for (SentenceWord w : m_words)
+		for (WordHypotheses w : m_words)
 		{
 			num += w.numHypotheses();
 		}
 		return num;
 	}
 
-	public void addWord(SentenceWord w)
+	public void addWord(WordHypotheses w)
 	{
 		m_words.addElement(w);
 	}
@@ -56,7 +56,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 
 		for (int i = index_from + dir; i != index_to - dir; i += dir)
 		{
-			SentenceWord sw = m_words.elementAt(i);
+			WordHypotheses sw = m_words.elementAt(i);
 			if (sw.hasHypothesisWithAllTags(tags)) return true;
 		}
 		return false;
@@ -76,7 +76,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 
 		for (int i = index_from + dir; i != index_to - dir; i += dir)
 		{
-			SentenceWord sw = m_words.elementAt(i);
+			WordHypotheses sw = m_words.elementAt(i);
 			if (sw.hasHypothesisWithSomeTags(tags)) return true;
 		}
 		return false;
@@ -96,7 +96,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 
 		for (int i = index_from + dir; i != index_to - dir; i += dir)
 		{
-			SentenceWord sw = m_words.elementAt(i);
+			WordHypotheses sw = m_words.elementAt(i);
 			if (sw.hasHypothesisWithSomeTags(tags_group1, tags_group2)) return true;
 		}
 		return false;
@@ -106,7 +106,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 	{
 		int total = 1;
 
-		for (SentenceWord sw : m_words)
+		for (WordHypotheses sw : m_words)
 		{
 			int n = sw.numHypotheses();
 
@@ -136,7 +136,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 		if (randomGen !=null) randomGen = new Random();
 
 		int i = 0;
-		for (SentenceWord sw : m_words)
+		for (WordHypotheses sw : m_words)
 		{
 			int n = sw.numHypotheses();
 			// TODO: reevaluate word weight. Now all are 1.0f :-)
@@ -186,7 +186,7 @@ public class Sentence implements java.lang.Iterable<SentenceWord>
 
 	public void print()
 	{
-		for (SentenceWord w : m_words)
+		for (WordHypotheses w : m_words)
 		{
 			w.print();
 			LangProcOutput.println();

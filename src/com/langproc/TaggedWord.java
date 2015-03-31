@@ -12,33 +12,64 @@ package com.langproc;
 
 public class TaggedWord
 {
-	int m_sentence_pos;
+	private int m_sentence_pos;
 	int m_hypo_index;
 	String m_word_as_was_written;
 	String m_word;
 	String m_base_word;
-	String m_dict_tags; // tags from SpellChecker dictionary
+	String m_ispell_dict_tags; // tags from SpellChecker dictionary
 	WordTags m_tags = new WordTags();
 
-	public TaggedWord(int sentence_pos, String sentence_word, String base_word,
-			String dict_tags)
+	public TaggedWord(String word_as_was_written, String base_word,
+			String ispell_dict_tags)
 	{
-		m_sentence_pos = sentence_pos;
-		m_word_as_was_written = sentence_word;
+		if (base_word==null || word_as_was_written==null)
+		{
+			throw new java.lang.NullPointerException();
+		}
+		
+		m_sentence_pos = -1;
+		m_word_as_was_written = word_as_was_written;
 		
 		if (Character.isLowerCase(base_word.charAt(0)))
 		{
-			m_word = sentence_word.toLowerCase();
+			m_word = word_as_was_written.toLowerCase();
 		}
 		else
 		{
-			m_word = sentence_word;
+			m_word = word_as_was_written;
 		}
-		
+
 		m_base_word = base_word;
-		m_dict_tags = dict_tags;
+		m_ispell_dict_tags = ispell_dict_tags;
 	}
 
+	public TaggedWord(String word_as_was_written, String base_word, WordTags tags)
+	{
+		if (base_word==null || word_as_was_written==null || tags==null)
+		{
+			throw new java.lang.NullPointerException();
+		}
+		m_sentence_pos = -1;
+		m_word_as_was_written = word_as_was_written;
+		m_base_word = base_word;
+		m_ispell_dict_tags = null;
+		if (Character.isLowerCase(base_word.charAt(0)))
+		{
+			m_word = word_as_was_written.toLowerCase();
+		}
+		else
+		{
+			m_word = word_as_was_written;
+		}
+		m_tags = tags;
+	}
+
+	void setSentencePos(int sentence_pos)
+	{
+		m_sentence_pos = sentence_pos;
+	}
+	
 	int getSentencePos()
 	{
 		return m_sentence_pos;
@@ -99,7 +130,7 @@ public class TaggedWord
 		b.append(" (");
 		b.append(m_base_word);
 		b.append(") ");
-		b.append(m_dict_tags);
+		b.append(m_ispell_dict_tags);
 		b.append(" ");
 		b.append(m_tags);
 		return b.toString();

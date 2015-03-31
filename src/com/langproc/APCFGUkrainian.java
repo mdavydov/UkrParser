@@ -207,7 +207,7 @@ public class APCFGUkrainian
 		ptl_start.add(pt_start);
 		tokens.add(ptl_start);
 
-		for (SentenceWord sw : s)
+		for (WordHypotheses sw : s)
 		{
 			java.util.List<ParsedToken> ptl = new java.util.ArrayList<ParsedToken>();
 			int n = sw.numHypotheses();

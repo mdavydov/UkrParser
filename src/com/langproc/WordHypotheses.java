@@ -18,29 +18,27 @@ import java.util.Vector;
  *         sentence with all it's possible grammar meanings (hypotheses)
  */
 
-public class SentenceWord
+public class WordHypotheses
 {
-	public int m_index;
+	private int m_sentence_position;
 	public Vector<TaggedWord> m_hypotheses = new Vector<TaggedWord>();
 
 	// public java.util.TreeMap<String, SentenceWord> m_dependencies = new
 	// java.util.TreeMap<String, SentenceWord>();
 	// public TaggedWord m_word=null;
 
-	public SentenceWord(int index)
+	public WordHypotheses(int sentence_pos)
 	{
-		m_index = index; /* m_word = null; */
+		m_sentence_position = sentence_pos; /* m_word = null; */
 	}
-
-	// public void setClosed(TaggedWord meaning) { m_word = meaning; }
-	// public void setOpen() { m_word = null; m_dependencies.clear(); }
-	// public void addChild(String role, SentenceWord w)
-	// {
-	// m_dependencies.put(role, w);
-	// }
 
 	public void addHypothesis(TaggedWord w)
 	{
+		if (w==null)
+		{
+			throw new java.lang.NullPointerException();
+		}
+		w.setSentencePos(m_sentence_position);
 		w.setHypotesisIndex(m_hypotheses.size());
 		m_hypotheses.addElement(w);
 		if (w.hasAllTags(WT.NOUN) && !w.hasSomeTags(WT.CASUS_MASK))
@@ -56,6 +54,7 @@ public class SentenceWord
 		}
 	}
 
+	public int getSentencePos() { return m_sentence_position; }
 	public int numHypotheses()
 	{
 		return m_hypotheses.size();
@@ -95,7 +94,7 @@ public class SentenceWord
 
 	public void print()
 	{
-		LangProcOutput.print(m_index);
+		LangProcOutput.print(m_sentence_position);
 		LangProcOutput.print(" ");
 		// if (m_word!=null)
 		// {

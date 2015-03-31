@@ -84,7 +84,7 @@ public class TagRule
 
 		if (m_word_pattern.matcher(w.m_word).matches()
 				&& m_base_pattern.matcher(w.m_base_word).matches()
-				&& m_dict_pattern.matcher(w.m_dict_tags).matches()
+				&& m_dict_pattern.matcher(w.m_ispell_dict_tags).matches()
 				&& m_diff_pattern.matcher(diff).matches())
 		{
 			w.addTags(m_put_tags);

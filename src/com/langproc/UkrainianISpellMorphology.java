@@ -10,9 +10,8 @@ import org.dts.spell.dictionary.myspell.HEntry;
 import org.dts.spell.finder.CharSequenceWordFinder;
 import org.dts.spell.finder.Word;
 
-public class UkrainianISpellMorphology implements Morphology
+public class UkrainianISpellMorphology extends UkrainianMorphologyCommons
 {
-	final String m_word_pattern = "[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё'’-]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(|«[^»]*»|\"[^\"]*\"";
 
 	OpenOfficeSpellDictionary m_dict;
 	java.util.HashSet<String> m_pronoun_S_C1 = new java.util.HashSet<String>();
@@ -689,7 +688,7 @@ public class UkrainianISpellMorphology implements Morphology
 		return Pattern.compile(regexp, flags).matcher(text);
 	}
 
-	private void addWordHypotheses(SentenceWord sw, int index, String sentence_form, HEntry dictionary_form)
+	private void addWordHypotheses(WordHypotheses wh, String sentence_form, HEntry dictionary_form)
 	{
 		// if (LangProcSettings.DEBUG_OUTPUT)
 		// {
@@ -699,14 +698,14 @@ public class UkrainianISpellMorphology implements Morphology
 
 		boolean starts_uppercase = Character.isUpperCase(sentence_form.charAt(0));
 
-		TaggedWord w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
+		TaggedWord w = new TaggedWord( sentence_form, dictionary_form.word, dictionary_form.astr);
 		TaggedWord w1 = null;
 		
 		if (sentence_form.equals("діти"))
 		{
 			w.addTags(WT.NOUN | WT.CASUS1 | WT.PLURAL);
-			sw.addHypothesis(w);
-			w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
+			wh.addHypothesis(w);
+			w = new TaggedWord( sentence_form, dictionary_form.word, dictionary_form.astr);
 		}
 
 		// if (word.equals(word.toUpperCase())) w.addTag("Cap");
@@ -754,7 +753,7 @@ public class UkrainianISpellMorphology implements Morphology
 		if (w.hasSomeTags(WT.PRONOUN))
 		{
 			w1 = w;
-			w = new TaggedWord(index, sentence_form, dictionary_form.word, dictionary_form.astr);
+			w = new TaggedWord( sentence_form, dictionary_form.word, dictionary_form.astr);
 		}
 
 		if (m_pronoun_ADJ_S_C1.contains(dictionary_form.word)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS1);
@@ -782,7 +781,7 @@ public class UkrainianISpellMorphology implements Morphology
 			if (w1 != null)
 			{
 				ApplyRules(w1);
-				sw.addHypothesis(w1);
+				wh.addHypothesis(w1);
 			}
 		}
 		else if (w1 != null)
@@ -830,10 +829,10 @@ public class UkrainianISpellMorphology implements Morphology
 		{
 			w.addTags(WT.PROPERNAME);
 			// if upper-case in the middle of the sentence -> can't be adjective
-			if (index > 0) w.m_tags.removeTags(WT.ADJ);
+			if (wh.getSentencePos() > 0) w.m_tags.removeTags(WT.ADJ);
 		}
 
-		sw.addHypothesis(w);
+		wh.addHypothesis(w);
 
 		// LangProcOutput.print("|" + w);
 	}
@@ -848,108 +847,26 @@ public class UkrainianISpellMorphology implements Morphology
 	{
 		m_word_stat_counter = wsc;
 	}
-
-	private void addWordForms(Sentence ss, String word)
+	
+	public boolean isInDictionary(String word_to_search, boolean correct_errors)
 	{
-		// LangProcOutput.println("addWordForms " + word);
-		int index = ss.numWords();
-		SentenceWord sw = new SentenceWord(index);
-
-		List<HEntry> list = m_dict.checkList(word);
-
-		if (list.size() == 0)
+		List<HEntry> list = m_dict.checkList(word_to_search);
+		if ( list !=null && list.size()>0 ) return true;
+		
+		if (correct_errors)
 		{
-			// try upper case if it was the first word and it can't be found
-			list = m_dict.checkList(word.toLowerCase());
+			@SuppressWarnings("rawtypes")
+			List su_list = m_dict.getSuggestions(word_to_search);
+			return su_list.size() != 0;
 		}
-
-		if (word.charAt(0) == '\"' || word.charAt(0) == '«')
-		{
-			TaggedWord w = new TaggedWord(index, word, word, "");
-			w.addTags(WT.NOUN | WT.PROPERNAME | WT.ANY_GENDER | WT.ANY_COUNT | WT.CASUS1 | WT.CASUS4);
-			sw.addHypothesis(w);
-		}
-		else if (list.size() == 0)
-		{
-			int hyphen_ind = word.indexOf('-');
-			if (hyphen_ind != -1)
-			{
-				String part1 = word.substring(0, hyphen_ind);
-				String part2 = word.substring(hyphen_ind + 1);
-				if (part2.startsWith("пре") && part1.equals(part2.substring(3)))
-				{
-					list = m_dict.checkList(part1);
-					java.util.HashSet<String> proc = new java.util.HashSet<String>();
-					for (HEntry s : list)
-					{
-						s.word = s.word + "-пре" + s.word;
-						String def = s.word + "(" + s.astr + ")";
-						if (!proc.contains(def))
-						{
-							addWordHypotheses(sw, index, word, s);
-							proc.add(def);
-						}
-					}
-				}
-
-			}
-
-			if (LangProcSettings.GENERATE_SUGGESTIONS)
-			{
-				List su_list = m_dict.getSuggestions(word);
-
-				if (su_list.size() == 0)
-				{
-					TaggedWord w = new TaggedWord(index, word, word, "");
-					if (word.equals(".") || word.equals("?") || word.equals("!") || word.equals(";"))
-					{
-						w.addTags(WT.SENTENCE_END);
-					}
-					else
-					{
-						w.addTags(WT.COMMA);
-					}
-					sw.addHypothesis(w);
-				}
-				else
-				{
-					for (Object o : su_list)
-					{
-						// LangProcOutput.print(o.toString() + " ");
-
-						List<HEntry> alt_list = m_dict.checkList(o.toString().toLowerCase());
-						for (HEntry alt_s : alt_list)
-						{
-							addWordHypotheses(sw, index, o.toString().toLowerCase(), alt_s);
-						}
-					}
-					// LangProcOutput.println("");
-				}
-			}
-			else
-			{
-				if (Character.isUpperCase(word.charAt(0)))
-				{
-					TaggedWord w = new TaggedWord(index, word, word, "");
-					w.addTags(WT.NOUN);
-					sw.addHypothesis(w);
-				}
-				else
-				{
-					TaggedWord w = new TaggedWord(index, word, word, "");
-					if (word.equals(".") || word.equals("?") || word.equals("!") || word.equals(";"))
-					{
-						w.addTags(WT.SENTENCE_END);
-					}
-					else
-					{
-						w.addTags(WT.COMMA);
-					}
-					sw.addHypothesis(w);
-				}
-			}
-		}
-		else
+		
+		return false;
+	}
+	public void addWordFormsFromDictionary(WordHypotheses wh, String word_as_written, String word_to_search, boolean correct_errors)
+	{
+		System.out.println("Search for <" + word_as_written + ">");
+		List<HEntry> list = m_dict.checkList(word_to_search);
+		if ( list !=null && list.size()>0 )
 		{
 			java.util.HashSet<String> proc = new java.util.HashSet<String>();
 			for (HEntry s : list)
@@ -957,14 +874,151 @@ public class UkrainianISpellMorphology implements Morphology
 				String def = s.word + "(" + s.astr + ")";
 				if (!proc.contains(def))
 				{
-					addWordHypotheses(sw, index, word, s);
+					addWordHypotheses(wh, word_as_written, s);
 					proc.add(def);
 				}
 
 			}
+			return;
 		}
-		ss.addWord(sw);
+		
+		if (correct_errors)
+		{
+			@SuppressWarnings("rawtypes")
+			List su_list = m_dict.getSuggestions(word_as_written);
+			if (su_list.size() != 0)
+			{
+				for (Object o : su_list)
+				{
+					// LangProcOutput.print(o.toString() + " ");
+
+					List<HEntry> alt_list = m_dict.checkList(o.toString().toLowerCase());
+					for (HEntry alt_s : alt_list)
+					{
+						addWordHypotheses(wh, o.toString().toLowerCase(), alt_s);
+					}
+				}
+			}
+		}
+		
 	}
+
+
+//	private void addWordForms(Sentence ss, String word)
+//	{
+//		// LangProcOutput.println("addWordForms " + word);
+//		int index = ss.numWords();
+//		WordHypotheses sw = new WordHypotheses(index);
+//
+//		List<HEntry> list = m_dict.checkList(word);
+//
+//		if (list.size() == 0)
+//		{
+//			// try upper case if it was the first word and it can't be found
+//			list = m_dict.checkList(word.toLowerCase());
+//		}
+//
+//		if (word.charAt(0) == '\"' || word.charAt(0) == '«')
+//		{
+//			TaggedWord w = new TaggedWord(word, word, "");
+//			w.addTags(WT.NOUN | WT.PROPERNAME | WT.ANY_GENDER | WT.ANY_COUNT | WT.CASUS1 | WT.CASUS4);
+//			sw.addHypothesis(w);
+//		}
+//		else if (list.size() == 0)
+//		{
+//			int hyphen_ind = word.indexOf('-');
+//			if (hyphen_ind != -1)
+//			{
+//				String part1 = word.substring(0, hyphen_ind);
+//				String part2 = word.substring(hyphen_ind + 1);
+//				if (part2.startsWith("пре") && part1.equals(part2.substring(3)))
+//				{
+//					list = m_dict.checkList(part1);
+//					java.util.HashSet<String> proc = new java.util.HashSet<String>();
+//					for (HEntry s : list)
+//					{
+//						s.word = s.word + "-пре" + s.word;
+//						String def = s.word + "(" + s.astr + ")";
+//						if (!proc.contains(def))
+//						{
+//							addWordHypotheses(sw, index, word, s);
+//							proc.add(def);
+//						}
+//					}
+//				}
+//			}
+//
+//			if (LangProcSettings.GENERATE_SUGGESTIONS)
+//			{
+//				List su_list = m_dict.getSuggestions(word);
+//
+//				if (su_list.size() == 0)
+//				{
+//					TaggedWord w = new TaggedWord(index, word, word, "");
+//					if (word.equals(".") || word.equals("?") || word.equals("!") || word.equals(";"))
+//					{
+//						w.addTags(WT.SENTENCE_END);
+//					}
+//					else
+//					{
+//						w.addTags(WT.COMMA);
+//					}
+//					sw.addHypothesis(w);
+//				}
+//				else
+//				{
+//					for (Object o : su_list)
+//					{
+//						// LangProcOutput.print(o.toString() + " ");
+//
+//						List<HEntry> alt_list = m_dict.checkList(o.toString().toLowerCase());
+//						for (HEntry alt_s : alt_list)
+//						{
+//							addWordHypotheses(sw, o.toString().toLowerCase(), alt_s);
+//						}
+//					}
+//					// LangProcOutput.println("");
+//				}
+//			}
+//			else
+//			{
+//				if (Character.isUpperCase(word.charAt(0)))
+//				{
+//					TaggedWord w = new TaggedWord(word, word, "");
+//					w.addTags(WT.NOUN);
+//					sw.addHypothesis(w);
+//				}
+//				else
+//				{
+//					TaggedWord w = new TaggedWord(word, word, "");
+//					if (word.equals(".") || word.equals("?") || word.equals("!") || word.equals(";"))
+//					{
+//						w.addTags(WT.SENTENCE_END);
+//					}
+//					else
+//					{
+//						w.addTags(WT.COMMA);
+//					}
+//					sw.addHypothesis(w);
+//				}
+//			}
+//		}
+//		else
+//		{
+//			java.util.HashSet<String> proc = new java.util.HashSet<String>();
+//			for (HEntry s : list)
+//			{
+//				String def = s.word + "(" + s.astr + ")";
+//				if (!proc.contains(def))
+//				{
+//					addWordHypotheses(sw, word, s);
+//					proc.add(def);
+//				}
+//
+//			}
+//		}
+//		ss.addWord(sw);
+//	}
 	
 	private void test(SpellChecker checker, String txt)
 	{
@@ -982,31 +1036,4 @@ public class UkrainianISpellMorphology implements Morphology
 			}
 		}
 	}
-
-	public Sentence parseSentenceMorphemes(String txt)
-	{
-		CharSequenceWordFinder wf = new CharSequenceWordFinder(Pattern.compile(m_word_pattern).matcher(txt));
-		Sentence ss = new Sentence();
-		// SentenceProcessor sp = new SentenceProcessor();
-		while (wf.hasNext())
-		{
-			Word w = wf.next();
-			// LangProcOutput.print(w.toString() + " ");
-			//System.out.println("Next word " + w.toString());
-			// LangProcOutput.print(w.toString());
-			// int s = w.toString().length();
-			// for(int i= 20; i>s; --i) LangProcOutput.print(" ");
-			addWordForms(ss, w.toString());
-			// LangProcOutput.print(w.toString() + " ");
-			// LangProcOutput.println();
-		}
-		if (LangProcSettings.SENTENCE_OUTPUT)
-		{
-			LangProcOutput.println("\n");
-			ss.print();
-			LangProcOutput.print("\n\\hspace{1em}\n\n");
-		}
-		return ss;
-	}
-
 }
