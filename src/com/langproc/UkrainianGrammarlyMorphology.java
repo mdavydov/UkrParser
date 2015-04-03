@@ -153,7 +153,7 @@ public class UkrainianGrammarlyMorphology extends UkrainianMorphologyCommons
 		}
 		else
 		{
-			System.out.println(word_as_written + "->" + wt);
+			//System.out.println(word_as_written + "->" + wt);
 			wh.addHypothesis( new TaggedWord(word_as_written, base, wt) );
 		}
 	}
@@ -194,7 +194,7 @@ public class UkrainianGrammarlyMorphology extends UkrainianMorphologyCommons
 		}
 		else
 		{
-			System.out.println(word_to_search +"->"+ res);
+			LangProcOutput.println(word_to_search +"->"+ res);
 			int index = 0;
 			while(index<res.length())
 			{
@@ -212,7 +212,7 @@ public class UkrainianGrammarlyMorphology extends UkrainianMorphologyCommons
 	{
 		try
 		{
-			LangProcOutput.println("Reading file");
+			//LangProcOutput.println("Reading file");
 			java.io.InputStream ips = new java.io.FileInputStream("tagged.main.txt");
 			java.io.InputStreamReader ipsr = new java.io.InputStreamReader(ips, "UTF-8");
 			java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
@@ -240,13 +240,13 @@ public class UkrainianGrammarlyMorphology extends UkrainianMorphologyCommons
 					}
 				}
 			}
-			System.out.println("Read complete!!! NumWords = " + m_hash_map.size());
+			//System.out.println("Read complete!!! NumWords = " + m_hash_map.size());
 			ips.close();
 			
-			dump_word("дитині");
-			dump_word("коліні");
-			dump_word("загортати");
-			dump_word("загорнув");
+			//dump_word("дитині");
+			//dump_word("коліні");
+			//dump_word("загортати");
+			//dump_word("загорнув");
 			
 			for(String s : m_unknown_set)
 			{

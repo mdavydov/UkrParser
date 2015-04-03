@@ -53,7 +53,7 @@ public class TaggedWord
 		m_sentence_pos = -1;
 		m_word_as_was_written = word_as_was_written;
 		m_base_word = base_word;
-		m_ispell_dict_tags = null;
+		m_ispell_dict_tags = "";
 		if (Character.isLowerCase(base_word.charAt(0)))
 		{
 			m_word = word_as_was_written.toLowerCase();

@@ -1,6 +1,6 @@
 package com.langproc;
 
-public class APCFGUkrSL
+public class APCFGUkrSL implements Grammar
 {
 	APCFGParser parser = null;
 	
@@ -157,7 +157,11 @@ public class APCFGUkrSL
 		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS <.>");
 	}
 
-	public String processSentenceWithAPCFG(Morphology morphology, Sentence s, boolean use_word_weighting)
+	/* (non-Javadoc)
+	 * @see com.langproc.Grammar#processSentence(com.langproc.Morphology, com.langproc.Sentence, boolean)
+	 */
+	@Override
+	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)
 	{
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 

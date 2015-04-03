@@ -12,6 +12,7 @@ package com.langproc;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -61,21 +62,66 @@ class LangProc
 	{
 		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
 		DependencyGrammar dg = new DependencyGrammar();
-		return dg.processSentenceWithDependencyGrammar(m_morphology, ss, use_word_weighting);
+		return dg.processSentence(m_morphology, ss, use_word_weighting);
 	}
 
 	private String checkGrammarAPCFG(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
 		APCFGUkrainian apcfg = new APCFGUkrainian();
-		return apcfg.processSentenceWithAPCFG(m_morphology, ss, use_word_weighting);
+		return apcfg.processSentence(m_morphology, ss, use_word_weighting);
 	}
 	
 	private String checkGrammarAPCFG_SL(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
-		APCFGUkrSL apcfg = new APCFGUkrSL();
-		return apcfg.processSentenceWithAPCFG(m_morphology, ss, use_word_weighting);
+		Grammar apcfg = new APCFGUkrSL();
+		return apcfg.processSentence(m_morphology, ss, use_word_weighting);
+	}
+	
+	private static void processFileWithGrammar(String filename, String encoding,
+			Grammar g, Morphology m, boolean use_word_weighting)
+	{
+		int num_not_parsed = 0;
+		int num_parsed = 0;
+
+		//LangProcOutput.println("Reading file");
+		SentenceFileReader sfr;
+		try
+		{
+			sfr = new SentenceFileReader(filename, encoding);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
+		String sentence = null;
+		int sentence_n=0;
+		try {
+			while ((sentence = sfr.readSentence()) != null && num_not_parsed+num_parsed < 2000)
+			{
+				++sentence_n;
+				LangProcOutput.println("" + sentence_n + ": " + sentence);
+				
+				Sentence ss = m.parseSentenceMorphemes(sentence);
+				if (null==g.processSentence(m, ss, use_word_weighting))
+				{
+					++num_not_parsed;
+					break;
+				}
+				else
+				{
+					++num_parsed;
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			LangProcOutput.flush();
+			e.printStackTrace();
+		}
+		LangProcOutput.println("Parsed " + num_parsed + " from " + (num_parsed + num_not_parsed) );
+		LangProcOutput.flush();
 	}
 
 	private String tryFixRandom(String txt, boolean use_word_weighting)
@@ -180,6 +226,8 @@ class LangProc
 				+ 100.0f * num_pos2 / num_all + "% rand=" + 100.0f * num_pos3 / num_all + "% rand_stat=" + 100.0f * num_pos4 / num_all + "%");
 
 		System.out.println("t1=" + t1 + " t2=" + t2 + " t3=" + t3 + " t4=" + t4);
+		
+		System.out.flush();
 	}
 
 	void checkSentencePersistence(String s)
@@ -327,7 +375,7 @@ class LangProc
 
 			if (from_file)
 			{
-				LangProcOutput.println("Reading file");
+				//LangProcOutput.println("Reading file");
 				java.io.InputStream ips = new java.io.FileInputStream("Texts/Proza/Fata_morgana_1375700832.txt");
 				// java.io.InputStream ips = new
 				// java.io.FileInputStream("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt");
@@ -485,8 +533,6 @@ class LangProc
 
 	public static void main(String[] args)
 	{
-		
-		
 		try
 		{
 			LangProc lp = new LangProc();
@@ -502,63 +548,17 @@ class LangProc
 
 			if (from_file)
 			{
-				LangProcOutput.println("Reading file");
-				java.io.InputStream ips = new java.io.FileInputStream("test_sent.txt");
-				java.io.InputStreamReader ipsr = new java.io.InputStreamReader(ips, "WINDOWS-1251");
-				java.io.BufferedReader reader = new java.io.BufferedReader(ipsr);
-				java.io.OutputStream ops = new java.io.FileOutputStream("out.txt");
-				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "WINDOWS-1251");
-				LangProcOutput.writer = new java.io.BufferedWriter(opsr);
-
-				StringBuffer full_text = new StringBuffer();
-				String line = null;
-
-				int sentence_n = 0;
-				while ((line = reader.readLine()) != null && lp.num_all < 2000)
-				{
-					// LangProcOutput.println("Read line " + line);
-					full_text.append(line).append(" ");
-
-					int i = 0;
-					while (i < full_text.length())
-					{
-						char c = full_text.charAt(i);
-						if ((int) c == 8217) full_text.setCharAt(i, '\'');
-						if ((int) c == '’') full_text.setCharAt(i, '\'');
-
-						if (c == '.' || c == '!' || c == '?' || c == ';')
-						{
-							String substr = full_text.substring(0, i + 1);
-							full_text.delete(0, i + 1);
-							i = 0;
-							++sentence_n;
-							LangProcOutput.println();
-
-							LangProcOutput.println("" + sentence_n + ": " + substr);
-
-							if (null==lp.checkGrammarAPCFG(substr, false))
-							{
-								++num_not_parsed;
-							}
-							else
-							{
-								++num_parsed;
-							}
-							// lp.checkGrammar(substr, false);
-
-						}
-						else
-						{
-							++i;
-						}
-					}
-				}
-
-				lp.printSentencePersistence();
+				//LangProcOutput.println("Reading file");
 				
-				LangProcOutput.println("Parsed " + num_parsed + " from " + (num_parsed + num_not_parsed) );
-
-				LangProcOutput.writer.flush();
+				java.io.OutputStream ops = new java.io.FileOutputStream("out.txt");
+				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "UTF-8");
+				
+				Morphology morf = new UkrainianGrammarlyMorphology();
+				
+				//processFileWithGrammar("test_sent.txt", "WINDOWS-1251", new APCFGUkrainian(), morf, false);
+				
+				processFileWithGrammar("USLTest.txt", "UTF-8", new APCFGUkrSL(), morf, false);				
+				
 				ops.close();
 			}
 			else

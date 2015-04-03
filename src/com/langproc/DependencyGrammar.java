@@ -13,7 +13,7 @@ package com.langproc;
 import java.util.Random;
 import java.util.Vector;
 
-public class DependencyGrammar
+public class DependencyGrammar implements Grammar
 {
 	double linkPrefClose(int sp1, int sp2)
 	{
@@ -360,7 +360,7 @@ public class DependencyGrammar
 		}
 	}
 
-	public String processSentenceWithDependencyGrammar(Morphology morphology, Sentence s, boolean use_word_weighting)
+	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)
 	{
 		ChoiceGraph cg = new ChoiceGraph(s.numWords(), s.numHypotheses());
 

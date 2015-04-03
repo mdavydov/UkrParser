@@ -12,7 +12,7 @@
 
 package com.langproc;
 
-public class APCFGUkrainian
+public class APCFGUkrainian  implements Grammar
 {
 	APCFGParser parser = null;
 	
@@ -174,6 +174,7 @@ public class APCFGUkrainian
 //		parser.addRule("QS -> <яких> DNP[n* c2] DNP? S?");
 //		parser.addRule("QS -> <якою> DNP[n* gf c2] DNP? S?");
 		parser.addRule("QS -> pronoun[NGC] DNP[NGC] DNP? S?");
+		parser.addRule("QS -> adj[NGCq] DNP[NGC] DNP? S?");
 		parser.addRule("QS -> ADJQ[NGC] DNP[NGC] DNP? S?");
 		
 		parser.addRule("QS -> <чи> QS");
@@ -194,7 +195,7 @@ public class APCFGUkrainian
 		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS <.>");
 	}
 
-	public String processSentenceWithAPCFG(Morphology morphology, Sentence s, boolean use_word_weighting)
+	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)
 	{
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 
