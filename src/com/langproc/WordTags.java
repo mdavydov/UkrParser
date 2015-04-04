@@ -303,7 +303,6 @@ public class WordTags
 		if (hasSomeTags(WT.COMPARE)) b.append("COMPARE ");	
 		if (hasSomeTags(WT.COMPARESUPER)) b.append("COMPARESUPER ");
 		
-		
 		if (hasSomeTags(WT.REVERSE)) b.append("REVERSE ");
 		if (hasSomeTags(WT.SUBORD_CONJ)) b.append("SUBORD_CONJ ");
 		if (hasSomeTags(WT.COORD_CONJ)) b.append("COORD_CONJ ");
@@ -311,7 +310,7 @@ public class WordTags
 		if (hasSomeTags(WT.PERS_PRON)) b.append("PERS_PRON ");
 		
 		if (hasSomeTags(WT.PREDICATIVE_WORD)) b.append("PREDICATIVE_WORD ");
-
+		if (hasSomeTags(WT.DACTYL)) b.append("DACTYL ");
 
 		return b.toString();
 	}

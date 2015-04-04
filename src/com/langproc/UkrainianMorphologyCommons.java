@@ -308,6 +308,33 @@ public abstract class UkrainianMorphologyCommons implements Morphology
 		if (w.hasAllTags(WT.PLURAL)) w.addTags(WT.ANY_GENDER);
 
 	}
+	
+	private static boolean isDactylated(String s)
+	{
+		if (s.length()<=2) return false;
+		
+		for(int i=1;i<s.length();i+=2)
+		{
+			if (s.charAt(i)!='-') return false; 
+		}
+		
+		return true;
+	}
+	
+	private static String dactyToWord(String s)
+	{
+		if (s.length()<=2) return null;
+		
+		StringBuffer sb = new StringBuffer(s.length()/2 + 1 );
+		
+		for(int i=0;i<s.length();i+=2)
+		{
+			sb.append(s.charAt(i));
+		}
+		
+		return sb.toString();
+	}
+	
 
 	private void addWordForms(WordHypotheses wh, String word_as_written, boolean try_error_corrections)
 	{
@@ -330,8 +357,23 @@ public abstract class UkrainianMorphologyCommons implements Morphology
 		else if ( Character.isDigit( word_as_written.charAt(0) ) )
 		{
 			// TODO: add better number parser
+			int len = word_as_written.length();
+			boolean is_1 = word_as_written.equals('1');
+			
 			wh.addHypothesis( new TaggedWord(word_as_written, word_as_written,
-					new WordTags(WT.NUMERAL | WT.ANY_CASUS | WT.PLURAL | WT.ANY_GENDER)) );			
+					new WordTags(WT.NUMERAL | WT.ANY_CASUS |
+							(is_1 ? WT.SINGLE:WT.PLURAL) | WT.ANY_GENDER)) );
+		}
+		else if ( isDactylated(word_as_written) )
+		{
+			int start_i = wh.numHypotheses();
+			addWordForms(wh, dactyToWord(word_as_written), try_error_corrections);
+			int end_i = wh.numHypotheses();
+			
+			for(int i=start_i; i< end_i; ++i)
+			{
+				wh.getHypothesis(i).addTags(WT.DACTYL);
+			}
 		}
 		else if (lower_word.equals(upper_word))
 		{

@@ -107,8 +107,7 @@ public class WT {
 	public static final long PERS_PRON = (1L << 57);
 	public static final long PREDICATIVE_WORD = (1L << 58);
 	
-	
-
+	public static final long DACTYL = (1L << 59);
 	
 	public static final long ANY_PUNCT = COMMA | SENTENCE_END;
 	public static final long ANY_NOUN = NOUN | PRONOUN | NUMERAL;

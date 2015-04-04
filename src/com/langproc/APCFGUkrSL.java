@@ -12,10 +12,11 @@ public class APCFGUkrSL implements Grammar
 	Token getTokenByGrammar(APCFGParser parser, TaggedWord tw)
 	{
 		if (tw.m_tags.hasSomeTags(WT.NOUN)) return parser.getTokenByName("noun");
+		if (tw.m_tags.hasAllTags(WT.PRONOUN | WT.ADJ)) return parser.getTokenByName("pronadj");
+		if (tw.m_tags.hasAllTags(WT.PRONOUN)) return parser.getTokenByName("pronoun");
 		if (tw.m_tags.hasSomeTags(WT.VERB)) return parser.getTokenByName("verb");
 		if (tw.m_tags.hasSomeTags(WT.ADV)) return parser.getTokenByName("adv");
 		if (tw.m_tags.hasSomeTags(WT.ADJ)) return parser.getTokenByName("adj");
-		if (tw.m_tags.hasSomeTags(WT.PRONOUN)) return parser.getTokenByName("pronoun");
 		if (tw.m_tags.hasSomeTags(WT.NEGATION)) return parser.getTokenByName("neg");
 		if (tw.m_tags.hasSomeTags(WT.COMMA)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.CONJ)) return parser.getTokenByName("conj");
@@ -39,13 +40,32 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("Z -> з | із | зі");
 		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
 
+		 // annotated noun "хлопець Петро"
 		parser.addRule("AN -> noun noun[u]?");
-		// noun group (adjectives, etc)
+		// щоб не робити категорію для всіх слів
+		parser.addRule("AN -> <жест> noun");
+		parser.addRule("AN -> <жест> verb");
+		parser.addRule("AN -> <жест> adj");
+		
+		
+		
+		// одне або декілька означень
 		parser.addRule("ADJG -> adj");
-		parser.addRule("ADJQ -> adj[q]"); // якою? котрою? ... question with adjective attributes
 		parser.addRule("ADJG -> ADJG adj");
 
-		parser.addRule("NG -> AN ADJG?");
+		// питальний займенник
+		parser.addRule("ADJQ -> adj[q]"); // якою? котрою? ... question with adjective attributes
+
+		// група іменника "мій двір зелений"
+		
+		parser.addRule("NG -> AN");
+		parser.addRule("NG -> NG ADJG");
+		// означення рідко вживається до іменника
+		parser.addRule("NG 0.5-> ADJG NG");
+		// мій, твій навпаки частіше вживаються до іменника
+		parser.addRule("NG -> pronadj NG");
+		parser.addRule("NG 0.5 -> NG pronadj");
+		
 		//parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] ADJG[NCG]?");
 		parser.addRule("NG[n*] -> NG NG");
 		parser.addRule("DNP -> NG");
