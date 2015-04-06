@@ -556,7 +556,7 @@ public class UkrainianISpellMorphology extends UkrainianMorphologyCommons
 	}
 	public void addWordFormsFromDictionary(WordHypotheses wh, String word_as_written, String word_to_search, boolean correct_errors)
 	{
-		System.out.println("Search for <" + word_as_written + ">");
+		//System.out.println("Search for <" + word_as_written + ">");
 		List<HEntry> list = m_dict.checkList(word_to_search);
 		if ( list !=null && list.size()>0 )
 		{

@@ -104,7 +104,12 @@ class LangProc
 				++sentence_n;
 				LangProcOutput.println("" + sentence_n + ": " + sentence);
 				
+				LangProcOutput.println("\\begin{comment}");
 				Sentence ss = m.parseSentenceMorphemes(sentence);
+				LangProcOutput.println("\\end{comment}");
+				
+				//LangProcOutput.println(sentence);
+				
 				if (null==g.processSentence(m, ss, use_word_weighting))
 				{
 					++num_not_parsed;
@@ -553,11 +558,11 @@ class LangProc
 				java.io.OutputStream ops = new java.io.FileOutputStream("out.txt");
 				java.io.OutputStreamWriter opsr = new java.io.OutputStreamWriter(ops, "UTF-8");
 				
-				Morphology morf = new UkrainianGrammarlyMorphology();
+				//Morphology morf = new UkrainianGrammarlyMorphology();
 				
 				//processFileWithGrammar("test_sent.txt", "WINDOWS-1251", new APCFGUkrainian(), morf, false);
 				
-				processFileWithGrammar("USLTest.txt", "UTF-8", new APCFGUkrSL(), morf, false);				
+				processFileWithGrammar("USLTest.txt", "UTF-8", new APCFGUkrSL(), lp.m_morphology, false);				
 				
 				ops.close();
 			}

@@ -40,6 +40,14 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("Z -> з | із | зі");
 		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
 
+		parser.addRule("ADVQ -> де | як | коли | скільки | звідки");
+		parser.addRule("QS -> S ADVQ");
+		parser.addRule("QS -> S pronoun");
+		parser.addRule("S -> ADJG");
+
+		
+
+		
 		 // annotated noun "хлопець Петро"
 		parser.addRule("AN -> noun noun[u]?");
 		// щоб не робити категорію для всіх слів
@@ -167,14 +175,16 @@ public class APCFGUkrSL implements Grammar
 
 		// parser.addRule("QS -> <скільки> DNP[c2] PLACE?");
 		
-		parser.addRule("END -> <.>");
+		parser.addRule("SENDQ -> <?>");	
+		parser.addRule("ENDD -> <.>"); // declarative
+		
 		parser.addRule("FULLS -> START S END");
-		parser.addRule("SHORTS -> START NP <.>");
-		parser.addRule("FULLQ -> START NP <?>");
-		parser.addRule("FULLQ -> START VP <?>");
-		parser.addRule("FULLQ -> START QS <?>");
-		parser.addRule("FULLQ -> START AKSTOSAY QS <?>");
-		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS <.>");
+		parser.addRule("SHORTS -> START NP ENDD");
+		parser.addRule("FULLQ -> START NP SENDQ");
+		parser.addRule("FULLQ -> START VP SENDQ");
+		parser.addRule("FULLQ -> START QS SENDQ");
+		parser.addRule("FULLQ -> START AKSTOSAY QS SENDQ");
+		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS ENDD");
 	}
 
 	/* (non-Javadoc)
@@ -183,6 +193,8 @@ public class APCFGUkrSL implements Grammar
 	@Override
 	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)
 	{
+		LangProcOutput.println("\\begin{comment}");
+		
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 
 		java.util.List<ParsedToken> ptl_start = new java.util.ArrayList<ParsedToken>();
@@ -257,6 +269,8 @@ public class APCFGUkrSL implements Grammar
 		System.out.println();
 
 		java.util.List<ParsedToken> res = parser.parse(tokens);
+		
+		LangProcOutput.println("\\end{comment}");
 
 		if (res == null || res.size() == 0)
 		{
@@ -266,6 +280,7 @@ public class APCFGUkrSL implements Grammar
 		}
 		else
 		{
+			
 			for (ParsedToken root : res)
 			{
 				LangProcOutput.println();
