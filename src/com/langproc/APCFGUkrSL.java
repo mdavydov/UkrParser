@@ -41,8 +41,12 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
 
 		parser.addRule("ADVQ -> де | як | коли | скільки | звідки");
-		parser.addRule("QS -> S ADVQ");
+		parser.addRule("PARTP -> це | ось | оце | он | ген | осьде | то | ото");
+		
+		parser.addRule("QS *-> S ADVQ");
 		parser.addRule("QS -> S pronoun");
+		parser.addRule("QS -> PARTP S");
+		
 		parser.addRule("S -> ADJG");
 
 		
@@ -79,6 +83,7 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("DNP -> NG");
 		parser.addRule("NP -> NG");
 		parser.addRule("NP -> pronoun");
+		parser.addRule("DNP -> pronoun");
 		//parser.addRule("NP[NCGP] -> NP <чи> NP[NCGP]");
 
 		parser.addRule("TARGET -> V DNP | <до> DNP | <додому> | <туди> | <сюди>");
@@ -90,7 +95,7 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("FROM -> Z DNP");
 		parser.addRule("OBJECT -> DNP");
 
-		parser.addRule("VP -> verb[i]");
+		parser.addRule("VP -> verb");
 		parser.addRule("VP 1.1-> verb[m+] VP");
 		//parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
 		parser.addRule("VP -> <не> VP");
@@ -142,6 +147,7 @@ public class APCFGUkrSL implements Grammar
 		// parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
 		// parser.addRule("S *-> NP[NP] VP[NP]");
 		parser.addRule("S *->VP NP"); // Я зробив завдання
+		parser.addRule("S -> NP");
 		parser.addRule("S -> VP[p-]"); // Зроблено завдання
 		parser.addRule("S -> IVP"); // Робити завдання
 		parser.addRule("S -> verb[NPm+] NP[NP] IVP");
