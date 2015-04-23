@@ -2,6 +2,7 @@ package com.langproc;
 
 import java.util.regex.Pattern;
 
+import org.dts.spell.dictionary.myspell.HEntry;
 import org.dts.spell.finder.CharSequenceWordFinder;
 import org.dts.spell.finder.Word;
 
@@ -412,11 +413,14 @@ public abstract class UkrainianMorphologyCommons implements Morphology
 				// if it is a known word (lower case) also add it
 				addWordFormsFromDictionary(wh, word_as_written, word_as_written, try_error_corrections);
 				addWordFormsFromDictionary(wh, word_as_written, lower_word, try_error_corrections);
+				addWordFormsInternal(wh,word_as_written, lower_word);
+				
 			}
 			else
 			{
 				// words in the middle of sentence are added "as is"  
-				addWordFormsFromDictionary(wh, word_as_written, word_as_written, try_error_corrections);				
+				addWordFormsFromDictionary(wh, word_as_written, word_as_written, try_error_corrections);
+				addWordFormsInternal(wh,word_as_written, word_as_written);
 			}
 			 // try unknown proper name if no ideas
 			if (wh.numHypotheses() == 0)
@@ -457,6 +461,139 @@ public abstract class UkrainianMorphologyCommons implements Morphology
 		for( TaggedWord tw : wh.m_hypotheses) addMissingTags(tw);
 	}
 
+	private void addWordFormsInternal(WordHypotheses wh, String word_as_written, String word_to_search)
+	{
+		// if (LangProcSettings.DEBUG_OUTPUT)
+		// {
+		// LangProcOutput.println("Add hypo " + index + " " + base_form + " " +
+		// s.word + " " + s.astr);
+		// }
+
+
+		TaggedWord w = new TaggedWord( word_as_written, word_as_written, new WordTags(0));
+		TaggedWord w1=null;
+
+		if (m_pronoun_S_C1.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS1);
+		if (m_pronoun_S_C2.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS2);
+		if (m_pronoun_S_C3.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS3);
+		if (m_pronoun_S_C4.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS4);
+		if (m_pronoun_S_C5.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS5);
+		if (m_pronoun_S_C6.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.SINGLE | WT.CASUS6);
+
+		if (m_pronoun_M_C1.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS1);
+		if (m_pronoun_M_C2.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS2);
+		if (m_pronoun_M_C3.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS3);
+		if (m_pronoun_M_C4.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS4);
+		if (m_pronoun_M_C5.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS5);
+		if (m_pronoun_M_C6.contains(word_to_search)) w.addTags(WT.PRONOUN | WT.PLURAL | WT.CASUS6);
+
+		if (m_pronoun_male.contains(word_to_search)) w.addTags(WT.MALE);
+		if (m_pronoun_female.contains(word_to_search)) w.addTags(WT.FEMALE);
+		if (m_pronoun_neutral.contains(word_to_search)) w.addTags(WT.NEUTRAL);
+
+		if (m_special_pronouns.containsKey(word_to_search))
+		{
+			w.addTags(WT.PRONOUN);
+			w.m_base_word = m_special_pronouns.get(word_to_search);
+		}
+
+		if (m_indacative_pronous.contains(w.m_base_word))
+		{
+			w.addTags(WT.PRONOUN | WT.INDICATIVE);
+		}
+
+		if (w.hasAllTags(WT.PRONOUN) && !w.hasSomeTags(WT.ANY_GENDER)) w.addTags(WT.ANY_GENDER);
+
+		if (w.hasSomeTags(WT.PRONOUN))
+		{
+			w1 = w;
+			w = new TaggedWord( word_as_written, word_to_search, new WordTags(0));
+		}
+
+		if (m_pronoun_ADJ_S_C1.contains(word_to_search)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS1);
+		if (m_pronoun_ADJ_S_C2.contains(word_to_search)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS2);
+		if (m_pronoun_ADJ_S_C3.contains(word_to_search)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS3);
+		if (m_pronoun_ADJ_S_C4.contains(word_to_search)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS4);
+		if (m_pronoun_ADJ_S_C5.contains(word_to_search)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS5);
+		if (m_pronoun_ADJ_S_C6.contains(word_to_search)) w.addTags(WT.ADJ | WT.SINGLE | WT.CASUS6);
+
+		if (m_pronoun_ADJ_M_C1.contains(word_to_search)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS1);
+		if (m_pronoun_ADJ_M_C2.contains(word_to_search)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS2);
+		if (m_pronoun_ADJ_M_C3.contains(word_to_search)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS3);
+		if (m_pronoun_ADJ_M_C4.contains(word_to_search)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS4);
+		if (m_pronoun_ADJ_M_C5.contains(word_to_search)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS5);
+		if (m_pronoun_ADJ_M_C6.contains(word_to_search)) w.addTags(WT.ADJ | WT.PLURAL | WT.CASUS6);
+
+		if (m_pronoun_ADJ_male.contains(word_to_search)) w.addTags(WT.MALE);
+		if (m_pronoun_ADJ_female.contains(word_to_search)) w.addTags(WT.FEMALE);
+		if (m_pronoun_ADJ_neutral.contains(word_to_search)) w.addTags(WT.NEUTRAL);
+
+		if (w.hasAllTags(WT.ADJ) && !w.hasSomeTags(WT.ANY_GENDER)) w.addTags(WT.ANY_GENDER);
+
+		if (w.hasSomeTags(WT.ADJ))
+		{
+			w.addTags(WT.PRONOUN); // it is an adjective pronoun
+			if (w1 != null)
+			{
+				//ApplyRules(w1);
+				wh.addHypothesis(w1);
+			}
+		}
+		else if (w1 != null)
+		{
+			w = w1;
+		}
+
+		if (m_prepositions.containsKey(word_to_search)) w.addTags(WT.PREPOSITION);
+		if (m_parenthesis_words.contains(word_to_search)) w.addTags(WT.ADV);
+		if (m_particles.contains(word_to_search)) w.addTags(WT.PARTICLE);
+		if (m_negations.contains(word_to_search)) w.addTags(WT.NEGATION);
+		if (m_conjunction.contains(word_to_search)) w.addTags(WT.CONJ);
+		if (m_question_adv.contains(word_to_search)) w.addTags(WT.ADV);
+		if (m_adverbs.contains(word_to_search)) w.addTags(WT.ADV);
+
+		if (m_special_verbs.containsKey(word_to_search))
+		{
+			w.addTags(WT.VERB);
+			w.m_base_word = m_special_verbs.get(word_to_search);
+		}
+		if (m_modal_verbs.contains(w.m_base_word)) w.addTags(WT.MODAL);
+		if (m_state_words.contains(w.m_base_word)) w.addTags(WT.STATE);
+
+		if (m_special_nouns.containsKey(word_to_search))
+		{
+			w.addTags(WT.NOUN);
+			w.m_base_word = m_special_nouns.get(word_to_search);
+		}
+
+		if (m_countable.containsKey(w.m_base_word))
+		{
+			w.addTags(WT.NUMERAL | m_countable.get(w.m_base_word).m_tags);
+		}
+		if (m_countable_req_nom.containsKey(w.m_base_word))
+		{
+			w.addTags(WT.NUMERAL | m_countable_req_nom.get(w.m_base_word).m_tags);
+		}
+
+		// if (s.word.equals("Микита")) w.addTags(WT.NOUN);
+
+//		ApplyRules(w);
+
+//		if (w.hasSomeTags(WT.NOUN | WT.ADJ) && starts_uppercase)
+//		{
+//			w.addTags(WT.PROPERNAME);
+//			// if upper-case in the middle of the sentence -> can't be adjective
+//			if (wh.getSentencePos() > 0) w.m_tags.removeTags(WT.ADJ);
+//		}
+
+		if (w.hasSomeTags(~0))
+		{
+			wh.addHypothesis(w);
+		}
+
+		// LangProcOutput.print("|" + w);
+	}
+	
 	@Override
 	public void setWordStatisticsCounter(WordStatisticsCounter wsc) {
 		// TODO Auto-generated method stub

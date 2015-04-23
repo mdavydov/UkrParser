@@ -410,6 +410,18 @@ public class WordTags
 					}
 					inbuf.deleteCharAt(0);
 					break;
+
+				case 't':
+					switch(inbuf.charAt(1))
+					{			
+					case 'p': specified.m_tags |= WT.PAST; break;    // past
+					case 'n': specified.m_tags |= WT.PRESENT; break; // now
+					case 'f': specified.m_tags |= WT.FUTURE; break;  // future
+					default: System.out.println("Unknown person p" + inbuf.charAt(1));
+					}
+					inbuf.deleteCharAt(0);
+					break;
+					
 					
 				case 'r': specified.m_tags |= WT.RAW; break;
 					

@@ -17,6 +17,7 @@ public class APCFGUkrSL implements Grammar
 		if (tw.m_tags.hasSomeTags(WT.VERB)) return parser.getTokenByName("verb");
 		if (tw.m_tags.hasSomeTags(WT.ADV)) return parser.getTokenByName("adv");
 		if (tw.m_tags.hasSomeTags(WT.ADJ)) return parser.getTokenByName("adj");
+		if (tw.m_tags.hasSomeTags(WT.ADJPART)) return parser.getTokenByName("adjpart");		
 		if (tw.m_tags.hasSomeTags(WT.NEGATION)) return parser.getTokenByName("neg");
 		if (tw.m_tags.hasSomeTags(WT.COMMA)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.CONJ)) return parser.getTokenByName("conj");
@@ -80,6 +81,7 @@ public class APCFGUkrSL implements Grammar
 		
 		//parser.addRule("NG[NCG] -> adj[NCG]? pronoun[NCG] ADJG[NCG]?");
 		parser.addRule("NG[n*] -> NG NG");
+		parser.addRule("NG[n*] -> num NG");
 		parser.addRule("DNP -> NG");
 		parser.addRule("NP -> NG");
 		parser.addRule("NP -> pronoun");
@@ -95,10 +97,10 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("FROM -> Z DNP");
 		parser.addRule("OBJECT -> DNP");
 
-		parser.addRule("VP -> verb");
-		parser.addRule("VP 1.1-> verb[m+] VP");
+		parser.addRule("VP -> verb | adjpart");
+		parser.addRule("VP * 1.1 -> verb[m+] VP");
 		//parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
-		parser.addRule("VP -> <не> VP");
+		parser.addRule("VP *-> VP <не>");
 		
 		parser.addRule("VP *-> VP ADDRESS");
 		parser.addRule("VP *-> VP PLACE");
@@ -107,10 +109,22 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("VP *-> VP FROM");
 		parser.addRule("VP *-> VP TARGET");
 		parser.addRule("VP *-> VP TIME");
+		parser.addRule("VP -> VP adv");
 		
 		parser.addRule("noun[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c1 n1] -> <дитина>[r]");
+		parser.addRule("noun[c1 n1] -> <нечуючий>[r]");
+		parser.addRule("noun[c1 n1] -> <папір>[r]");
+		parser.addRule("adj[c1 c4 n1] -> <кожен>[r]");
+		parser.addRule("verb[p3 n1 tp gf m+] -> <закінчила>[r]");
+		parser.addRule("verb[p1 n1 m+] -> <можу>[r]");
+		parser.addRule("adj[c1 n1 gf] -> <слабочуюча>[r]");
+		
+		parser.addRule("attitude -> <радий>[r] | <пробачте>[r] | <будь>[r] <ласка>[r]");
+		
+		
+		
 		parser.addRule("noun[c2 c4 gm n1] -> <коня>[r]");
 		
 		parser.addRule("<людина>[NCG] -> <дитина>[NCG]");
@@ -146,11 +160,15 @@ public class APCFGUkrSL implements Grammar
 		// TARGET?
 		// parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
 		// parser.addRule("S *-> NP[NP] VP[NP]");
-		parser.addRule("S *->VP NP"); // Я зробив завдання
+		//parser.addRule("S -> VP NP"); // Я зробив завдання
+		parser.addRule("S *-> NP VP"); // Я зробив завдання
 		parser.addRule("S -> NP");
-		parser.addRule("S -> VP[p-]"); // Зроблено завдання
+		parser.addRule("S -> VP"); // Зроблено завдання
 		parser.addRule("S -> IVP"); // Робити завдання
-		parser.addRule("S -> verb[NPm+] NP[NP] IVP");
+		//parser.addRule("S -> verb[NPm+] NP[NP] IVP");
+		parser.addRule("S *-> attitude S");
+		parser.addRule("S -> adv S");
+		parser.addRule("S -> NP S");
 
 		parser.addRule("S *-> S ADDRESS");
 		parser.addRule("S *-> S PLACE");
@@ -176,15 +194,15 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("QS -> <чи> QS");
 		parser.addRule("QS *-> adv S");
 		parser.addRule("QS *-> adv IVP");
-		parser.addRule("QS *-> pronoun[q] NP");
-		parser.addRule("QS -> pronoun[q] S");
+		parser.addRule("QS *-> pronoun[q] S");
+		parser.addRule("QS *-> pronadj[q] S");
 
 		// parser.addRule("QS -> <скільки> DNP[c2] PLACE?");
 		
 		parser.addRule("SENDQ -> <?>");	
 		parser.addRule("ENDD -> <.>"); // declarative
 		
-		parser.addRule("FULLS -> START S END");
+		parser.addRule("FULLS -> START S ENDD");
 		parser.addRule("SHORTS -> START NP ENDD");
 		parser.addRule("FULLQ -> START NP SENDQ");
 		parser.addRule("FULLQ -> START VP SENDQ");

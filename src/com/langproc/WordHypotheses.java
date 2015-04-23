@@ -38,20 +38,20 @@ public class WordHypotheses
 		{
 			throw new java.lang.NullPointerException();
 		}
-		w.setSentencePos(m_sentence_position);
-		w.setHypotesisIndex(m_hypotheses.size());
-		m_hypotheses.addElement(w);
 		if (w.hasAllTags(WT.NOUN) && !w.hasSomeTags(WT.CASUS_MASK))
 		{
-			System.out.println("Morphology error " + w.getFullDesc());
-			System.exit(0);
+			System.out.println("Morphology error: noun has no casus " + w.getFullDesc());
+			return;
 		}
 		
 		if (w.hasAllTags(WT.VERB) && !w.hasSomeTags(WT.INFINITIVE | WT.PERSON_MASK | WT.IMPERATIVE))
 		{
-			System.out.println("Morphology error " + w.getFullDesc());
-			System.exit(0);
+			System.out.println("Morphology error: verb is not infinitive|person|imperative " + w.getFullDesc());
+			return;
 		}
+		w.setSentencePos(m_sentence_position);
+		w.setHypotesisIndex(m_hypotheses.size());
+		m_hypotheses.addElement(w);
 	}
 
 	public int getSentencePos() { return m_sentence_position; }

@@ -49,8 +49,8 @@ class LangProc
 		try
 		{
 			m_dict = new OpenOfficeSpellDictionary("uk_UA");
-			m_morphology = new UkrainianISpellMorphology(m_dict);
-			//m_morphology = new UkrainianGrammarlyMorphology();
+			//m_morphology = new UkrainianISpellMorphology(m_dict);
+			m_morphology = new UkrainianGrammarlyMorphology();
 		}
 		catch(IOException e)
 		{
