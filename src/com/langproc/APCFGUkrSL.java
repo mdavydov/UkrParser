@@ -119,6 +119,7 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("adj[c1 c4 n1] -> <кожен>[r]");
 		parser.addRule("verb[p3 n1 tp gf m+] -> <закінчила>[r]");
 		parser.addRule("verb[p1 n1 m+] -> <можу>[r]");
+		parser.addRule("verb[p1 n1 m+] -> <хочу>[r]");
 		parser.addRule("adj[c1 n1 gf] -> <слабочуюча>[r]");
 		
 		parser.addRule("attitude -> <радий>[r] | <пробачте>[r] | <будь>[r] <ласка>[r]");
@@ -170,6 +171,7 @@ public class APCFGUkrSL implements Grammar
 		parser.addRule("S -> adv S");
 		parser.addRule("S -> NP S");
 
+		parser.addRule("S *-> S adv");
 		parser.addRule("S *-> S ADDRESS");
 		parser.addRule("S *-> S PLACE");
 		parser.addRule("S *-> S ADDITIONAL");

@@ -8,7 +8,9 @@ import org.dts.spell.finder.Word;
 
 public abstract class UkrainianMorphologyCommons implements Morphology
 {
-	final String m_word_pattern = "[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё0123456789'’-]+|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(|«[^»]*»|\"[^\"]*\"";
+	final String m_word_pattern = "[АБВГҐДЕЄЖЗІЙИЇКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзійиїклмнопрстуфхцчшщьюяЫЪЭЁыъэё0123456789'’-]+"+
+					"|,|\\.|\\?|!|\"|\'|;|:|\\)|\\(|«[^»]*»|\"[^\"]*\""+
+					"|[A-Za-z'’-]+";
 
 	java.util.HashSet<String> m_pronoun_S_C1 = new java.util.HashSet<String>();
 	java.util.HashSet<String> m_pronoun_S_C2 = new java.util.HashSet<String>();

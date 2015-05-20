@@ -367,6 +367,18 @@ class ParsedToken
 		"\\end{tikzpicture}\n}\n";
 	}
 	
+	String toTeXString(String s)
+	{
+		StringBuffer sb = new StringBuffer();
+		for(int i=0;i<s.length();++i)
+		{
+			char c = s.charAt(i);
+			if (c=='_') sb.append("\\_");
+			else sb.append(c);
+		}
+		return sb.toString();
+	}
+	
 	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr, int num_parent_children)
 	{
 		StringBuffer res = new StringBuffer();
@@ -404,7 +416,7 @@ class ParsedToken
 		if (add_attributes)
 		{
 			res.append("[.{\\pbox[b]{1cm}");
-			if (m_token_text==null || !m_token.m_name.equals(m_token_text)) res.append(m_token.m_name);
+			if (m_token_text==null || !m_token.m_name.equals(m_token_text)) res.append(toTeXString(m_token.m_name));
 			if (show_attr)
 			{
 				res.append(" (");
@@ -440,7 +452,7 @@ class ParsedToken
 			if (m_token_text!=null)
 			{
 				//res.append("<" + m_token_text + ">");
-				res.append(m_token_text);
+				res.append(toTeXString(m_token_text));
 			}
 			res.append("} ");
 		}
@@ -522,7 +534,7 @@ public class APCFGParser
 			
 		StringBuffer result = new StringBuffer(16);
 		
-		while(buf.length()>0 && Character.isLetter(buf.charAt(0)) )
+		while(buf.length()>0 && ( Character.isLetter(buf.charAt(0)) || buf.charAt(0)=='_') )
 		{
 			result.append(buf.charAt(0));
 			buf.deleteCharAt(0);

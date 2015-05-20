@@ -72,6 +72,13 @@ class LangProc
 		return apcfg.processSentence(m_morphology, ss, use_word_weighting);
 	}
 	
+	private String checkGrammarAPCFGEnglish(String txt, boolean use_word_weighting)
+	{
+		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
+		APCFGEnglish apcfg = new APCFGEnglish();
+		return apcfg.processSentence(m_morphology, ss, use_word_weighting);
+	}
+	
 	private String checkGrammarAPCFG_SL(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
@@ -543,8 +550,8 @@ class LangProc
 			LangProc lp = new LangProc();
 			LangProcOutput.flush();
 
-			// final boolean from_file = false;
-			final boolean from_file = true; // !LangProcSettings.DEBUG_OUTPUT;
+			final boolean from_file = false;
+			//final boolean from_file = true; // !LangProcSettings.DEBUG_OUTPUT;
 
 			LangProcOutput.flush();
 			
@@ -568,13 +575,14 @@ class LangProc
 			}
 			else
 			{
-				lp.checkGrammarAPCFG(
+				lp.checkGrammarAPCFGEnglish(
+						"Professor teaches math to students."
 						//"Я вчу дітей математиці."
 						//"Я розповідаю дітям казку."
 						//"Я розповідаю дитина казку."
-						"Я розповідаю столу казку."
-				// "У четвертому розділі досліджено мовні моделі з використанням графів."
-				// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
+						//"Я розповідаю столу казку."
+						// "У четвертому розділі досліджено мовні моделі з використанням графів."
+						// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
 						//"Хлопець несе рюкзак зі школи."
 						// "Жив собі в однім лісі Лис Микита."
 						// "м'яса"
@@ -623,6 +631,8 @@ class LangProc
 						// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
 						// ""
 						, false);
+				
+				lp.checkGrammarAPCFGEnglish( "Professor teaches math to the car.", false);
 
 			}
 			LangProcOutput.writer.flush();
