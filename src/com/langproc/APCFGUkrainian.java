@@ -81,12 +81,15 @@ public class APCFGUkrainian  implements Grammar
 		parser.addRule("TIME -> <зараз> | <потім>");
 		parser.addRule("FROM -> Z DNP[c2]");
 		parser.addRule("OBJECT -> DNP[c4]");
+		
+		parser.addRule("ADV -> adv");
 
 		// parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
 		parser.addRule("VP[PNM] -> verb[PNM]");
 		parser.addRule("VP[PN m-] 1.1-> verb[PNm+] IVP");
 		parser.addRule("VP[p1p2p3p-N] -> ADJG[N]");
 		parser.addRule("VP[PNM] -> <не> VP[PNM]");
+		parser.addRule("VP[PNM] *-> ADV VP[PNM]");
 		
 		parser.addRule("VP[PNM] *-> VP[PNM] ADDRESS");
 		parser.addRule("VP[PNM] *-> VP[PNM] PLACE");
@@ -101,6 +104,19 @@ public class APCFGUkrainian  implements Grammar
 		parser.addRule("<дитина>[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c1 n1] -> <дитина>[r]");
 		parser.addRule("noun[c2 c4 gm n1] -> <коня>[r]");
+		
+		parser.addRule("noun[NCG] -> <серце>[NCG]");
+		parser.addRule("<серце>[c1c4 n1 gn] -> <серце>[r]");
+		
+		parser.addRule("<б'ється >[p3 n1] -> <б'ється>[r]");
+		
+		parser.addRule("adj[c1c4 n1 gn] -> <моє>[r]");
+		
+		parser.addRule("verb[p2 n1 m+] -> <хочеш>[r]");
+		
+		parser.addRule("<серце_б’ється>[p- NC] 1.1-> <серце>[NC] <б'ється >[p3 N]");
+		
+		parser.addRule("VP[PN] -> <серце_б’ється>[PN]");
 		
 		parser.addRule("<людина>[NCG] -> <дитина>[NCG]");
 		parser.addRule("<слухач>[NCG] -> <людина>[NCG]");
@@ -130,6 +146,7 @@ public class APCFGUkrainian  implements Grammar
 		// parser.addRule("IVP -> verb[i] OBJECT? PLACE? NAME");
 		parser.addRule("IVP -> <не>? verb[i]");
 		parser.addRule("IVP *-> IVP ADDRESS");
+		parser.addRule("IVP *-> IVP ADV");
 		parser.addRule("IVP *-> IVP PLACE");
 		parser.addRule("IVP *-> IVP ADDITIONAL");
 		parser.addRule("IVP *-> IVP OBJECT");
@@ -186,13 +203,14 @@ public class APCFGUkrainian  implements Grammar
 		// parser.addRule("QS -> <скільки> DNP[c2] PLACE?");
 		
 		parser.addRule("END -> <.>");
+		parser.addRule("QEND -> <?>");
 		parser.addRule("FULLS -> START S END");
 		parser.addRule("SHORTS -> START NP <.>");
-		parser.addRule("FULLQ -> START NP <?>");
-		parser.addRule("FULLQ -> START VP <?>");
-		parser.addRule("FULLQ -> START QS <?>");
-		parser.addRule("FULLQ -> START AKSTOSAY QS <?>");
-		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS <.>");
+		parser.addRule("FULLQ -> START NP QEND");
+		parser.addRule("FULLQ -> START VP QEND");
+		parser.addRule("FULLQ -> START QS QEND");
+		parser.addRule("FULLQ -> START AKSTOSAY QS QEND");
+		parser.addRule("FULLQ -> START AKSTOSAY DNP[c3]? <,>? QS QEND");
 	}
 
 	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)

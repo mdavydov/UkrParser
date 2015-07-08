@@ -39,27 +39,53 @@ public class APCFGEnglish implements Grammar {
 		
 		parser.addRule("teach[p3n1] -> <teaches>[r]");
 		parser.addRule("VP[PN] -> teach[PN]");
-		parser.addRule("noun[PN] -> professor[PN] | math[PN] | student[PN] | car[PN]");
+		parser.addRule("noun[PN] -> professor[PN] | math[PN] | student[PN] | car[PN] | book[PN] | sonata[PN]");
 		parser.addRule("NP[PN] -> noun[PN]");
-		parser.addRule("NP[PN] -> def_art noun[PN]");
+		parser.addRule("NP[PN] -> art noun[PN]");
 		
 		parser.addRule("S -> NP[PN] VP[PN]");
 		parser.addRule("FULLS -> START S END");
 		parser.addRule("VP[PN] -> VP[PN] DNP");
 		parser.addRule("VP[PN] -> VP[PN] NP");
 		parser.addRule("OBJECT[PN] -> NP[PN]");
-		parser.addRule("DNP[PN] -> prep NP[PN]");
+		parser.addRule("DNP[PN] -> prep? NP[PN]");
+		
 		parser.addRule("professor[p3n1] -> <Professor>[r]");
-		parser.addRule("math[p3 n1 n*] -> <math>[r]");		
-		parser.addRule("prep -> <to>[r]");
+		parser.addRule("math[p3 n1 n*] -> <math>[r]");	
+		parser.addRule("book[p3 n1] -> book[r]");
+		
+		parser.addRule("prep -> prep_to | prep_on");
+		
+		parser.addRule("prep_to -> <to>[r]");
+		parser.addRule("prep_on -> <on>[r]");
 		parser.addRule("student[p3n*] -> <students>[r]");
+		parser.addRule("art -> def_art | undef_art");
 		parser.addRule("def_art -> <the>[r]");
+		parser.addRule("undef_art -> <a>[r]");
 		parser.addRule("car[p3n1] -> <car>[r]");
 		
-		parser.addRule("to_prep -> to[r]");
+		parser.addRule("play[p3n1] -> plays[r]");
+		parser.addRule("play[p1p2n1] -> play[r]");
+		parser.addRule("play[p1p2p3n*] -> play[r]");
+		
+		parser.addRule("play_perform[PN] 1.1 -> play[PN] musical_composition prep_on musical_instrument");
+		parser.addRule("VP[PN] -> play_perform[PN]");
+		parser.addRule("VP[PN] -> play[PN]");
 		
 		
-		parser.addRule("VP[PN] 1.1 -> teach[PN] <knowledge_domain> to_prep <can_learn>");
+		
+		parser.addRule("musical_instrument[PN] -> piano[PN]");
+		parser.addRule("musical_instrument[PN] -> piano[PN]");
+		
+		parser.addRule("piano[p3n1] -> the piano[r]");
+		parser.addRule("piano[p3n*] -> pianos[r]");		
+		
+		parser.addRule("musical_composition[PN] -> sonata[PN]");
+		parser.addRule("sonata[p3n1] -> sonata[r]");
+		
+		parser.addRule("NP[p3n1] -> The? boy[r]");
+			
+		parser.addRule("VP[PN] 1.1 -> teach[PN] <knowledge_domain> prep_to <can_learn>");
 		
 		parser.addRule("<knowledge_domain>[PN] -> <discipline_subject>[PN]");
 		parser.addRule("<discipline_subject>[PN] -> science[PN]");

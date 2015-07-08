@@ -65,7 +65,7 @@ class LangProc
 		return dg.processSentence(m_morphology, ss, use_word_weighting);
 	}
 
-	private String checkGrammarAPCFG(String txt, boolean use_word_weighting)
+	private String checkGrammarAPCFGUkrainian(String txt, boolean use_word_weighting)
 	{
 		Sentence ss = m_morphology.parseSentenceMorphemes(txt);
 		APCFGUkrainian apcfg = new APCFGUkrainian();
@@ -575,8 +575,12 @@ class LangProc
 			}
 			else
 			{
-				lp.checkGrammarAPCFGEnglish(
-						"Professor teaches math to students."
+				//lp.checkGrammarAPCFGEnglish(
+				lp.checkGrammarAPCFGUkrainian(
+						"Моє серце б'ється швидко."
+						//"Ти хочеш мати коня?"
+						//"The boy plays sonata on the piano."
+						//"Professor teaches math to students."
 						//"Я вчу дітей математиці."
 						//"Я розповідаю дітям казку."
 						//"Я розповідаю дитина казку."
@@ -632,7 +636,8 @@ class LangProc
 						// ""
 						, false);
 				
-				lp.checkGrammarAPCFGEnglish( "Professor teaches math to the car.", false);
+				//lp.checkGrammarAPCFGEnglish( "The boy plays sonata on a book.", false);
+				//lp.checkGrammarAPCFGEnglish( "Professor teaches math to the car.", false);
 
 			}
 			LangProcOutput.writer.flush();
