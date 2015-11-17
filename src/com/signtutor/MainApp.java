@@ -57,9 +57,11 @@ public class MainApp extends Application {
 
 				while((line = br.readLine()) != null)
 				{
+					
 					String[] trwords = line.split("[ \t]+");
 
-					if(trwords.length >=3 && (word.equals(trwords[0]) || word.equals(trwords[1]))) {
+					if( trwords.length >=3 && word.equalsIgnoreCase(trwords[0]) )
+					{
 						result.append(trwords[1] + " ");
 						String video_path = "resources/video/" + trwords[2].trim();
 						videos.add(video_path);
@@ -74,8 +76,13 @@ public class MainApp extends Application {
 				{
 					result.append(word + " ");
 					System.out.println("Word "+word + " was not found in the dictionary");
+					for(int i=0;i<word.length();++i)
+					{
+						String video_path = "resources/video/" + java.lang.Character.toUpperCase(word.charAt(i)) + ".mp4";
+						videos.add(video_path);
+						System.out.println(video_path + " was added for playback");
+					}
 				}
-
 			}
 
 		}
