@@ -16,7 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-public class MainApp extends Application {
+public class MainApp extends Application
+{
 
 	private String path;
 	private Stage primaryStage;
@@ -25,7 +26,8 @@ public class MainApp extends Application {
 	private ArrayList<String> videos;
 
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage)
+	{
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Sign Translator");
 		initRootLayout();
@@ -43,52 +45,59 @@ public class MainApp extends Application {
 		String line;
 		boolean found;
 
-
-		try{
+		try
+		{
 			FileReader fr;
 			BufferedReader br;
 
-			for(String word : words)
+			for (String word : words)
 			{
 				fr = new FileReader("resources/data/words.txt");
 				br = new BufferedReader(fr);
 
 				found = false;
 
-				while((line = br.readLine()) != null)
+				while ((line = br.readLine()) != null)
 				{
-					
+
 					String[] trwords = line.split("[ \t]+");
 
-					if( trwords.length >=3 && word.equalsIgnoreCase(trwords[0]) )
+					if (trwords.length >= 3
+							&& word.equalsIgnoreCase(trwords[0]))
 					{
 						result.append(trwords[1] + " ");
-						String video_path = "resources/video/" + trwords[2].trim();
+						String video_path = "resources/video/"
+								+ trwords[2].trim();
 						videos.add(video_path);
-						System.out.println(video_path + " was added for playback");
+						System.out.println(video_path
+								+ " was added for playback");
 						found = true;
 					}
 				}
 				br.close();
 				fr.close();
 
-				if(!found)
+				if (!found)
 				{
-					
-					System.out.println("Word "+word + " was not found in the dictionary");
-					for(int i=0;i<word.length();++i)
+
+					System.out.println("Word " + word
+							+ " was not found in the dictionary");
+					for (int i = 0; i < word.length(); ++i)
 					{
-						String video_path = "resources/video/" + java.lang.Character.toUpperCase(word.charAt(i)) + ".mp4";
+						String video_path = "resources/video/"
+								+ java.lang.Character.toUpperCase(word
+										.charAt(i)) + ".mp4";
 						result.append(word.charAt(i));
-						result.append(i+1==word.length()?' ':'-');
+						result.append(i + 1 == word.length() ? ' ' : '-');
 						videos.add(video_path);
-						System.out.println(video_path + " was added for playback");
+						System.out.println(video_path
+								+ " was added for playback");
 					}
 				}
 			}
 
 		}
-		catch(IOException ioe)
+		catch (IOException ioe)
 		{
 			System.err.println("Error reading words.txt" + ioe);
 		}
@@ -100,45 +109,49 @@ public class MainApp extends Application {
 	{
 		return videos;
 	}
+
 	public String senTranslate(String text)
 	{
 		StringBuilder result = new StringBuilder();
-		//String[] words = text.split(" ");
+		// String[] words = text.split(" ");
 		String trword;
 		String line;
 		boolean found;
 
 		videos = new ArrayList<>();
 
-		try{
+		try
+		{
 			FileReader fr;
 			BufferedReader br;
 
+			fr = new FileReader("resources/data/Sentences.txt");
+			br = new BufferedReader(fr);
 
-				fr = new FileReader("resources/data/Sentences.txt");
-				br = new BufferedReader(fr);
+			found = false;
 
-				found = false;
+			while ((line = br.readLine()) != null)
+			{
+				String[] trwords = line.split("-");
 
-				while((line = br.readLine()) != null)
+				if (text.equals(trwords[0]) || text.equals(trwords[1]))
 				{
-					String[] trwords = line.split("-");
+					result.append(trwords[1]);
 
-					if(text.equals(trwords[0]) || text.equals(trwords[1])) {
-						result.append(trwords[1]);
-
-						found = true;
-					}
+					found = true;
 				}
-				br.close();
+			}
+			br.close();
 
-				//if(!found) result.append(text + " ");
+			// if(!found) result.append(text + " ");
 
-				String[] words = result.toString().split(" ");
-				for(String word : words)
-					videos.add(findVideoForWord(word));
+			String[] words = result.toString().split(" ");
+			for (String word : words)
+				videos.add(findVideoForWord(word));
 
-		} catch(IOException ioe){
+		}
+		catch (IOException ioe)
+		{
 			System.err.println("Reading words.txt" + ioe);
 		}
 
@@ -152,35 +165,39 @@ public class MainApp extends Application {
 		String line;
 		boolean found;
 
-
-		try{
+		try
+		{
 			FileReader fr;
 			BufferedReader br;
 
-				fr = new FileReader("resources/data/VideoPath.txt");
-				br = new BufferedReader(fr);
+			fr = new FileReader("resources/data/VideoPath.txt");
+			br = new BufferedReader(fr);
 
-				found = false;
+			found = false;
 
-				while((line = br.readLine()) != null)
+			while ((line = br.readLine()) != null)
+			{
+				String[] trwords = line.split(" ");
+
+				if (word.equals(trwords[0]))
 				{
-					String[] trwords = line.split(" ");
-
-					if(word.equals(trwords[0])) {
-						result = trwords[1];
-						found = true;
-					}
+					result = trwords[1];
+					found = true;
 				}
-				br.close();
+			}
+			br.close();
 
-			} catch(IOException ioe){
+		}
+		catch (IOException ioe)
+		{
 			System.err.println("Reading words.txt" + ioe);
 		}
 
 		return result;
 
 	}
- 	public String buildTree(String text)
+
+	public String buildTree(String text)
 	{
 		return null;
 	}
@@ -199,9 +216,8 @@ public class MainApp extends Application {
 
 			Controller controller = loader.getController();
 			controller.setMaindApp(this);
-
 		}
-		catch(IOException ioe)
+		catch (IOException ioe)
 		{
 			System.err.println(ioe);
 		}
