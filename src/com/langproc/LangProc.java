@@ -49,8 +49,8 @@ class LangProc
 		try
 		{
 			m_dict = new OpenOfficeSpellDictionary("uk_UA");
-			//m_morphology = new UkrainianISpellMorphology(m_dict);
-			m_morphology = new UkrainianGrammarlyMorphology();
+			m_morphology = new UkrainianISpellMorphology(m_dict);
+			//m_morphology = new UkrainianGrammarlyMorphology();
 		}
 		catch(IOException e)
 		{
@@ -577,7 +577,8 @@ class LangProc
 			{
 				//lp.checkGrammarAPCFGEnglish(
 				lp.checkGrammarAPCFGUkrainian(
-						"Моє серце б'ється швидко."
+						"Сьогодні студенти прийшли на пару."
+						//"Моє серце б'ється швидко."
 						//"Ти хочеш мати коня?"
 						//"The boy plays sonata on the piano."
 						//"Professor teaches math to students."
