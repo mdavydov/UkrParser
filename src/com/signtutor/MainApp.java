@@ -74,11 +74,13 @@ public class MainApp extends Application {
 
 				if(!found)
 				{
-					result.append(word + " ");
+					
 					System.out.println("Word "+word + " was not found in the dictionary");
 					for(int i=0;i<word.length();++i)
 					{
 						String video_path = "resources/video/" + java.lang.Character.toUpperCase(word.charAt(i)) + ".mp4";
+						result.append(word.charAt(i));
+						result.append(i+1==word.length()?' ':'-');
 						videos.add(video_path);
 						System.out.println(video_path + " was added for playback");
 					}
@@ -183,8 +185,10 @@ public class MainApp extends Application {
 		return null;
 	}
 
-	public void initRootLayout() {
-		try{
+	public void initRootLayout()
+	{
+		try
+		{
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("TestOverview.fxml"));
 			rootLayout = (AnchorPane) loader.load();
@@ -196,18 +200,20 @@ public class MainApp extends Application {
 			Controller controller = loader.getController();
 			controller.setMaindApp(this);
 
-		}catch(IOException ioe) {
+		}
+		catch(IOException ioe)
+		{
 			System.err.println(ioe);
 		}
-
-
 	}
 
-	public Stage getPrimaryStage() {
+	public Stage getPrimaryStage()
+	{
 		return primaryStage;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		launch(args);
 	}
 }
