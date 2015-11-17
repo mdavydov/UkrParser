@@ -1,0 +1,7 @@
+Я src/video/I.mp4
+ДИВИТИСЯ src/video/Dyvytys.mp4
+ФІЛЬМ src/video/Film.mp4
+ЦІКАВИТИ src/video/Zikavyty.mp4
+ЗАКІНЧУВАТИ src/video/Zakinchuvaty.mp4
+ЧИТАТИ src/video/Chytaty.mp4
+КНИГА src/video/Knyha.mp4
