@@ -43,6 +43,12 @@ public class TaggedWord
 		m_base_word = base_word;
 		m_ispell_dict_tags = ispell_dict_tags;
 	}
+	
+	public String getWord() { return m_word; }
+	public String getWordAsWritten() { return m_word_as_was_written; }
+	public String getBaseBaseForm() { return m_base_word; }
+	
+	
 
 	public TaggedWord(String word_as_was_written, String base_word, WordTags tags)
 	{

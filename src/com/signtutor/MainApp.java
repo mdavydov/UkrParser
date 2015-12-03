@@ -8,13 +8,26 @@ package com.signtutor;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
+import org.dts.spell.dictionary.OpenOfficeSpellDictionary;
+
+import com.langproc.Morphology;
+import com.langproc.Sentence;
+import com.langproc.UkrainianISpellMorphology;
+import com.langproc.WordHypotheses;
+
 
 public class MainApp extends Application
 {
@@ -35,6 +48,9 @@ public class MainApp extends Application
 		videos = new ArrayList<>();
 	}
 
+	static Morphology m_morphology;
+	static OpenOfficeSpellDictionary m_dict;
+	
 	public String translate(String text)
 	{
 		videos.clear();
@@ -44,17 +60,23 @@ public class MainApp extends Application
 		String trword;
 		String line;
 		boolean found;
-
+		
+		
 		try
 		{
-			FileReader fr;
+			Sentence ss = m_morphology.parseSentenceMorphemes(text);
+
 			BufferedReader br;
 
-			for (String word : words)
+			for (WordHypotheses word : ss)
 			{
-				fr = new FileReader("resources/data/words.txt");
-				br = new BufferedReader(fr);
+				FileInputStream fis = new FileInputStream("resources/data/words.txt");
+				br = new BufferedReader(
+						   new InputStreamReader(
+				                      fis, "UTF8"));
 
+				String to_search = word.getHypothesis(0).getBaseBaseForm();
+				
 				found = false;
 
 				while ((line = br.readLine()) != null)
@@ -63,7 +85,7 @@ public class MainApp extends Application
 					String[] trwords = line.split("[ \t]+");
 
 					if (trwords.length >= 3
-							&& word.equalsIgnoreCase(trwords[0]))
+							&& to_search.equalsIgnoreCase(trwords[0]))
 					{
 						result.append(trwords[1] + " ");
 						String video_path = "resources/video/"
@@ -75,20 +97,21 @@ public class MainApp extends Application
 					}
 				}
 				br.close();
-				fr.close();
+				fis.close();
 
 				if (!found)
 				{
+					String word_wr = word.getHypothesis(0).getWordAsWritten();
 
-					System.out.println("Word " + word
+					System.out.println("Word " + word_wr
 							+ " was not found in the dictionary");
-					for (int i = 0; i < word.length(); ++i)
+					for (int i = 0; i < word_wr.length(); ++i)
 					{
 						String video_path = "resources/video/"
-								+ java.lang.Character.toUpperCase(word
+								+ java.lang.Character.toUpperCase(word_wr
 										.charAt(i)) + ".mp4";
-						result.append(word.charAt(i));
-						result.append(i + 1 == word.length() ? ' ' : '-');
+						result.append(word_wr.charAt(i));
+						result.append(i + 1 == word_wr.length() ? ' ' : '-');
 						videos.add(video_path);
 						System.out.println(video_path
 								+ " was added for playback");
@@ -230,6 +253,14 @@ public class MainApp extends Application
 
 	public static void main(String[] args)
 	{
+		
+		try
+		{
+			m_dict = new OpenOfficeSpellDictionary("uk_UA");
+			m_morphology = new UkrainianISpellMorphology(m_dict);
+		}
+		catch(java.lang.Exception e) {}
+
 		launch(args);
 	}
 }

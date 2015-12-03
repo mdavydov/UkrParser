@@ -35,7 +35,7 @@ public class UkrainianISpellMorphology extends UkrainianMorphologyCommons
 	
 	static UkrainianISpellMorphology singleton() { return m_singleton; }
 	
-	UkrainianISpellMorphology(OpenOfficeSpellDictionary dict)
+	public UkrainianISpellMorphology(OpenOfficeSpellDictionary dict)
 	{
 		m_singleton = this;
 		
