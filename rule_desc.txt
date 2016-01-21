@@ -18,3 +18,21 @@ Unified:
 	case 'P': unified.m_tags |= WT.PERSON_MASK; break;
 	case 'T': unified.m_tags |= WT.TIME_MASK; break;
 	case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
+
+Modality:
+m+ m-
+
+Casus:
+c1 c2 c3 c4 c5 c6 c7
+
+Gender:
+gm gn gf	
+
+Time:
+PAST(tp) PRESENT_SIMPLE (tn) FUTURE(tf)
+
+Person:
+p1 p2 p3 p- (personless)
+
+Count:
+SINGLE(n1) PLURAL (n*)  

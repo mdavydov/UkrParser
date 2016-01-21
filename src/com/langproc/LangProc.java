@@ -575,9 +575,10 @@ class LangProc
 			}
 			else
 			{
-				//lp.checkGrammarAPCFGEnglish(
-				lp.checkGrammarAPCFGUkrainian(
-						"Сьогодні студенти прийшли на пару."
+				lp.checkGrammarAPCFGEnglish(
+				//lp.checkGrammarAPCFGUkrainian(
+						"My father bought several candies at the shop."
+						//"Сьогодні студенти прийшли на пару."
 						//"Моє серце б'ється швидко."
 						//"Ти хочеш мати коня?"
 						//"The boy plays sonata on the piano."
@@ -649,5 +650,4 @@ class LangProc
 		}
 		return;
 	}
-
 }

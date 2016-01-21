@@ -43,10 +43,11 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("NP[PN] -> noun[PN]");
 		parser.addRule("NP[PN] -> art noun[PN]");
 		
-		parser.addRule("S -> NP[PN] VP[PN]");
-		parser.addRule("FULLS -> START S END");
-		parser.addRule("VP[PN] -> VP[PN] DNP");
-		parser.addRule("VP[PN] -> VP[PN] NP");
+		parser.addRule("DS -> NP[PN] VP[PN]");
+		parser.addRule("S -> START DS END");
+		parser.addRule("VP[PNT] -> VP[PNT] DNP");
+		parser.addRule("VP[PNT] -> VP[PNT] NP");
+		parser.addRule("VP[PNT] -> verb[PNT]");
 		parser.addRule("OBJECT[PN] -> NP[PN]");
 		parser.addRule("DNP[PN] -> prep? NP[PN]");
 		
@@ -69,10 +70,8 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("play[p1p2p3n*] -> play[r]");
 		
 		parser.addRule("play_perform[PN] 1.1 -> play[PN] musical_composition prep_on musical_instrument");
-		parser.addRule("VP[PN] -> play_perform[PN]");
-		parser.addRule("VP[PN] -> play[PN]");
-		
-		
+		parser.addRule("verb[PNT] -> play_perform[PNT]");
+		parser.addRule("verb[PNT] -> play[PNT]");
 		
 		parser.addRule("musical_instrument[PN] -> piano[PN]");
 		parser.addRule("musical_instrument[PN] -> piano[PN]");
@@ -94,6 +93,31 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("<can_learn>[PN] -> <person_individual>[PN]");
 		parser.addRule("<person_individual>[PN] -> enrollee[PN]");
 		parser.addRule("enrollee[PN] -> student[PN]");
+		
+		parser.addRule("posessive_pronoun[n1n*] -> My[r]");
+		
+		parser.addRule("father[p1p2p3n1] -> father[r]");
+		parser.addRule("noun[PN] -> father[PN]");
+		
+		parser.addRule("NP[PN] -> posessive_pronoun[N] noun[PN]");		
+			
+		parser.addRule("verb[PNT] -> buy[PNT]");
+		parser.addRule("buy[p1p2p3n1n*tp] -> bought[r]");
+		
+		parser.addRule("noun[p1p2p3n*] 0.9 -> several[r]"); // rarely used
+		
+		parser.addRule("num_adj[p1p2p3n*] -> several[r]");
+		
+		parser.addRule("NP[PN] -> num_adj[PN] NP[PN]");
+		parser.addRule("DNP -> preposition_place DNP");
+		
+		parser.addRule("candy[p1p2p3n*] -> candies[r]");
+		parser.addRule("noun[PN] -> candy[PN]");
+		
+		parser.addRule("preposition_place -> at[t]");
+		
+		parser.addRule("shop[p1p2p3n1] -> shop[r]");
+		parser.addRule("noun[PN] -> shop[PN]");
 		
 		parser.addRule("END -> <.>");	
 	}
