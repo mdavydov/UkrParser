@@ -72,6 +72,10 @@ class RequiredToken
 {
 	// token that should be present
 	Token m_token;
+	// semantic token that can be used in semantic parsing.
+	Token m_semantic_token;
+	// m_is_head = true if this token denoted semantics of the production
+	boolean m_is_head;
 	// attributes that are required to satisfy the rule
 	WordTags m_required_attributes;
 	// attributes that are inherited by rule production
@@ -81,10 +85,12 @@ class RequiredToken
 	// the assumption level about presence of this token. 1.0 means should always be present 
 	TokenSpecials m_token_specials;
 	
-	RequiredToken(Token token, WordTags required_attributes,
+	RequiredToken(Token token, Token semantic_token, WordTags required_attributes,
 			WordTags inherited_attributes, WordTags uniform_attributes, TokenSpecials ta)
 	{
 		m_token = token;
+		m_is_head = semantic_token!=null && semantic_token.m_name.equals("*");
+		m_semantic_token = m_is_head?null : semantic_token;
 		m_required_attributes = required_attributes;
 		m_inherited_attributes = inherited_attributes;
 		m_uniform_attributes = uniform_attributes;
@@ -98,16 +104,18 @@ class RequiredToken
 class ProductionRule
 {
 	Token m_result;			// result token like "Participle phrase"
+	Token m_semantic_result;// semantic result (null means that it is taken from the "head" marked as "*")
 	WordTags m_defined_attributes;	 // attributes that are defined by the rule
 	WordTags m_inherited_unified_attributes;
 	float m_probability;
 	// required sub-tokens
 	java.util.Vector<RequiredToken> m_subtokens;
 	
-	ProductionRule(Token result, WordTags def_attr, WordTags inherited_unified_attributes, float probability,
+	ProductionRule(Token result, Token semantic_result,  WordTags def_attr, WordTags inherited_unified_attributes, float probability,
 			java.util.Vector<RequiredToken> subtokens, boolean gen_all_permutations)
 	{
 		m_result = result;
+		m_semantic_result = semantic_result;
 		m_defined_attributes = def_attr;
 		m_inherited_unified_attributes = inherited_unified_attributes;
 		m_probability = probability;
@@ -134,7 +142,7 @@ class ProductionRule
 			RequiredToken t1 = new_subtokens.get(i);
 			new_subtokens.set(i, new_subtokens.get(index_to_start) );
 			new_subtokens.set(index_to_start, t1);
-			ProductionRule new_pr_rule = new ProductionRule(m_result, m_defined_attributes,
+			ProductionRule new_pr_rule = new ProductionRule(m_result, m_semantic_result, m_defined_attributes,
 					m_inherited_unified_attributes, m_probability, new_subtokens, false);
 			new_pr_rule.createAllPermutations(index_to_start+1); 
 		}
@@ -143,10 +151,14 @@ class ProductionRule
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
-		sb.append(m_result.m_name + " " + m_probability + " -> ");
+		sb.append(m_result.m_name);
+		sb.append(m_semantic_result==null?"":"("+m_semantic_result.m_name+")");
+		sb.append(" " + m_probability + " -> ");
 		for(RequiredToken rt : m_subtokens)
 		{
-			sb.append(rt.m_token.m_name + " ");
+			sb.append(rt.m_token.m_name);
+			sb.append(rt.m_semantic_token==null?"":"("+rt.m_semantic_token.m_name+")");
+			sb.append(" ");
 		}
 		return sb.toString();
 	}
@@ -200,6 +212,8 @@ class ParsedToken
 {
 	// linked language Token
 	Token m_token;
+	// linked semantic token
+	Token m_semantic_token;
 	// attributes obtained from the rule and extracted from sub-tokens
 	WordTags m_attributes = new WordTags();
 	// (attributes that should be uniform among specific children
@@ -217,10 +231,11 @@ class ParsedToken
 	private java.util.Vector<ParsedToken> m_subtokens = new java.util.Vector<ParsedToken>();
 	
 	ParsedToken() {}
-	ParsedToken(Token token, WordTags attributes, float probabilty, String token_text)
+	ParsedToken(Token token, Token semantic_token, WordTags attributes, float probabilty, String token_text)
 	{
 		if (token==null) throw new java.lang.NullPointerException();
 		m_token = token;
+		m_semantic_token = semantic_token;
 		m_attributes.m_tags = attributes.m_tags;
 		m_probabilty=probabilty;
 		m_token_text = token_text;
@@ -229,6 +244,7 @@ class ParsedToken
 	ParsedToken(ParsedToken pc)
 	{
 		m_token = pc.m_token;
+		m_semantic_token = pc.m_semantic_token;
 		m_attributes.m_tags = pc.m_attributes.m_tags;
 		m_uniform_attributes.m_tags = pc.m_uniform_attributes.m_tags;
 		m_probabilty=pc.m_probabilty;
@@ -240,6 +256,7 @@ class ParsedToken
 	ParsedToken copyFrom(ParsedToken pc)
 	{
 		m_token = pc.m_token;
+		m_semantic_token = pc.m_semantic_token;
 		m_attributes.m_tags = pc.m_attributes.m_tags;
 		m_uniform_attributes.m_tags = pc.m_uniform_attributes.m_tags;
 		m_probabilty=pc.m_probabilty;
@@ -260,6 +277,7 @@ class ParsedToken
 		
 		m_probabilty = production_rule.m_probability;
 		m_token = production_rule.m_result;
+		m_semantic_token = production_rule.m_semantic_result;
 		m_attributes.copy(production_rule.m_defined_attributes);
 		m_uniform_attributes.m_tags = ~(long)0;
 	}
@@ -267,7 +285,17 @@ class ParsedToken
 	void setSubtoken(int index, ParsedToken subtoken)
 	{
 		++m_num_subtokens;
+		
+		boolean is_single=m_production_rule.m_subtokens.size()==1;
 		RequiredToken rt = m_production_rule.m_subtokens.get(index);
+		
+		if ( (rt.m_is_head || is_single) && m_production_rule.m_semantic_result==null)
+		{
+			// NO DOUBLE TOKEN SET_UP YET!!!
+			assert(m_semantic_token==null);
+			// use this token semantic attribute in the parser
+			m_semantic_token = subtoken.m_semantic_token;
+		}
 		
 		WordTags subtoken_tags = new WordTags( subtoken.m_attributes );
 		subtoken_tags.limitInCategories(rt.m_required_attributes);
@@ -286,6 +314,15 @@ class ParsedToken
 			float restore_probability )
 	{
 		--m_num_subtokens;
+		
+		boolean is_single=m_production_rule.m_subtokens.size()==1;
+		RequiredToken rt = m_production_rule.m_subtokens.get(index);
+		
+		if ( (rt.m_is_head || is_single) && m_production_rule.m_semantic_result==null)
+		{
+			m_semantic_token = null;
+		}
+		
 		m_subtokens.set( index, null );
 		m_attributes.m_tags = restore_tags;
 		m_uniform_attributes.m_tags = restore_uniform_tags;
@@ -322,6 +359,12 @@ class ParsedToken
 		{
 			res.append(m_token.m_name);
 		}
+		
+		if (m_semantic_token!=null && m_semantic_token!=m_token)
+		{
+			res.append("(" + m_semantic_token.m_name + ")");
+		}
+		
 		res.append(" (");
 		//res.append(m_attributes.toString());
 		res.append(wt.toString());
@@ -417,6 +460,10 @@ class ParsedToken
 		{
 			res.append("[.{\\pbox[b]{1cm}");
 			if (m_token_text==null || !m_token.m_name.equals(m_token_text)) res.append(toTeXString(m_token.m_name));
+			if (m_semantic_token!=null && m_token!=m_semantic_token)
+			{
+				res.append("(" + toTeXString(m_semantic_token.m_name) + ")");
+			}
 			if (show_attr)
 			{
 				res.append(" (");
@@ -481,6 +528,7 @@ public class APCFGParser
 	
 	Token getTokenByName(String s)
 	{
+		if (s==null) return null;
 		Token t = m_tokens.get(s);
 		if (t==null)
 		{
@@ -539,7 +587,31 @@ public class APCFGParser
 			result.append(buf.charAt(0));
 			buf.deleteCharAt(0);
 		}
-		return result.toString();
+		return result.toString(); 
+	}
+	
+	String readTokenSemanticAttribute(StringBuffer buf)
+	{
+		while(buf.length()>0 && Character.isWhitespace(buf.charAt(0)))
+		{
+			buf.deleteCharAt(0);
+		}
+		if (buf.length()==0) return null;
+		
+		if (buf.charAt(0)=='(')
+		{
+			buf.deleteCharAt(0);
+			// read until '>'
+			StringBuffer result = new StringBuffer(16);			
+			while(buf.length()>0 && buf.charAt(0)!=')')
+			{
+				result.append(buf.charAt(0));
+				buf.deleteCharAt(0);
+			}
+			if (buf.length()>0) buf.deleteCharAt(0);
+			return result.toString();
+		}
+		return null; // no semantic attribute was found
 	}
 
 	TokenSpecials readTokenSpecials(StringBuffer buf)
@@ -615,6 +687,7 @@ public class APCFGParser
 		StringBuffer rightPart = new StringBuffer( rule.substring(rule_symbol+2) );
 		
 		String leftTokenS = readTokenString(leftPart);
+		String leftTokenSemAttr = readTokenSemanticAttribute(leftPart);
 		//System.out.println("Left part: " + leftTokenS);
 		WordTags left_sp = new WordTags();
 		WordTags left_un = new WordTags();
@@ -625,6 +698,7 @@ public class APCFGParser
 		
 		
 		Token result = getTokenByName(leftTokenS);
+		Token semantic_result = getTokenByName(leftTokenSemAttr);
 		WordTags defined_attributes = left_sp; // no tags yet
 		
 		for(;;)
@@ -634,6 +708,7 @@ public class APCFGParser
 			for(;;)
 			{
 				String rightTokenS = readTokenString(rightPart);
+				String rightTokenSemAttr = readTokenSemanticAttribute(rightPart);
 				if (rightTokenS==null) break;
 				
 				WordTags token_sp = new WordTags();
@@ -645,7 +720,7 @@ public class APCFGParser
 				//System.out.println("Right part: " + rightTokenS);
 				Token req_token =  getTokenByName(rightTokenS);
 				
-				subtokens.add( new RequiredToken(req_token, token_sp,
+				subtokens.add( new RequiredToken(req_token, getTokenByName(rightTokenSemAttr), token_sp,
 						new WordTags(token_un.m_tags), token_un, ts) );
 			}
 			
@@ -656,7 +731,7 @@ public class APCFGParser
 //					System.out.println("Pr2 = " + sp_attr.m_probability);
 //				}
 				// the rule is added to index in each token that can be produced by this rule
-				new ProductionRule(result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
+				new ProductionRule(result, semantic_result, defined_attributes, left_un, sp_attr.m_probability, subtokens, sp_attr.m_generate_all_permutations);
 				
 			}
 				
@@ -673,7 +748,9 @@ public class APCFGParser
 		
 		for(ParsedToken p : tokens)
 		{
-			if (p.m_token == partially_parsed_token.m_token && p.m_attributes.equals(partially_parsed_token.m_attributes))
+			if (p.m_token == partially_parsed_token.m_token &&
+				p.m_semantic_token == partially_parsed_token.m_semantic_token &&
+				p.m_attributes.equals(partially_parsed_token.m_attributes))
 			{
 				if (p.m_probabilty < partially_parsed_token.m_probabilty)
 				{
@@ -743,6 +820,7 @@ public class APCFGParser
 		// go through all possible starts
 		RequiredToken req_token = rule.m_subtokens.get(rule_token_after_right);
 		Token search_token = req_token.m_token;
+		Token search_semantic_token = req_token.m_semantic_token;
 		// save the parsing state
 		long saved_tags = partially_parsed_token.m_attributes.m_tags;
 		long saved_uniform_tags = partially_parsed_token.m_uniform_attributes.m_tags;
@@ -782,6 +860,7 @@ public class APCFGParser
 			{
 				// reference should be unique!!!
 				if (t.m_token==search_token &&
+					(search_semantic_token==null || t.m_semantic_token==search_semantic_token) &&
 					t.m_attributes.hasCommonTagsInAllCategories(required_tags, required_categories) &&
 					t.m_attributes.hasCommonTagsInAllCategories(
 							saved_uniform_tags&(~required_categories | required_tags), required_to_be_uniform) )
@@ -838,6 +917,7 @@ public class APCFGParser
 		// go through all possible matches
 		RequiredToken req_token = rule.m_subtokens.get(rule_token_left-1);
 		Token search_token = req_token.m_token;
+		Token search_semantic_token=req_token.m_semantic_token;
 		// save the parsing state
 		long saved_tags = partially_parsed_token.m_attributes.m_tags;
 		long saved_uniform_tags = partially_parsed_token.m_uniform_attributes.m_tags;
@@ -879,6 +959,7 @@ public class APCFGParser
 			{
 				// reference should be unique!!!
 				if (t.m_token==search_token &&
+					(search_semantic_token==null || t.m_semantic_token==search_semantic_token) &&
 					t.m_attributes.hasCommonTagsInAllCategories(required_tags, required_categories) &&
 					t.m_attributes.hasCommonTagsInAllCategories(
 							saved_uniform_tags&(~required_categories | required_tags), required_to_be_uniform) )
@@ -917,12 +998,13 @@ public class APCFGParser
 				// for all possible rules
 				for( AssociatedRule ar : token.m_token.m_associated_one_term_rules )
 				{
-					if (token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes))
+					Token req_sem_token = ar.m_required_token.m_semantic_token;
+					if (token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes) &&
+						(req_sem_token==null || req_sem_token==token.m_semantic_token))
 					{
 						 reusable_token.resetWithRule(ar.m_rule);
 						 reusable_token.m_probabilty = ar.m_rule.m_probability;
 						 reusable_token.m_token = ar.m_rule.m_result;
-						 
 						 reusable_token.m_attributes.copy( ar.m_rule.m_defined_attributes );
 						 reusable_token.m_attributes.limitInCategories(ar.m_required_token.m_required_attributes);
 						 
@@ -958,6 +1040,7 @@ public class APCFGParser
 			// for all possible rules
 			for( AssociatedRule ar : token.m_token.m_associated_multi_term_rules )
 			{
+				Token req_sem_token = ar.m_required_token.m_semantic_token;
 				if (token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes))
 				{
 					 reusable_token.resetWithRule(ar.m_rule);
@@ -1030,7 +1113,8 @@ public class APCFGParser
 			//System.out.println("Parse string part: " + tokenS);
 			Token req_token = getTokenByName(tokenS);
 			java.util.List<ParsedToken> ptl = new java.util.ArrayList<ParsedToken>();
-			ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, "<" + req_token.m_name + ">");
+			ParsedToken pt = new ParsedToken(req_token, null, token_sp, 1.0f, "<" + req_token.m_name + ">");
+			assert(false); //DON'T KNOW WHAT semantic attribute to add there
 			ptl.add(pt);
 			tokens.add( ptl );
 			System.out.println(pt.toString());

@@ -34,19 +34,19 @@ public class APCFGEnglish implements Grammar {
 		parser = new APCFGParser();
 		// attributed noun "Лис Микита"
 		
-//		parser.addRule("IVP -> <не>? verb[i]");
-//		return;
+		//parser.addRule("IVP(do) -> <не>? verb(*)[i]");
+		//if (true) return;
 		
 		parser.addRule("teach[p3n1] -> <teaches>[r]");
 		parser.addRule("VP[PN] -> teach[PN]");
 		parser.addRule("noun[PN] -> professor[PN] | math[PN] | student[PN] | car[PN] | book[PN] | sonata[PN]");
 		parser.addRule("NP[PN] -> noun[PN]");
-		parser.addRule("NP[PN] -> art noun[PN]");
+		parser.addRule("NP[PN] -> art noun(*)[PN]");
 		
 		parser.addRule("DS -> NP[PN] VP[PN]");
 		parser.addRule("S -> START DS END");
-		parser.addRule("VP[PNT] -> VP[PNT] DNP");
-		parser.addRule("VP[PNT] -> VP[PNT] NP");
+		parser.addRule("VP[PNT] -> VP(*)[PNT] DNP");
+		parser.addRule("VP[PNT] -> VP(*)[PNT] NP");
 		parser.addRule("VP[PNT] -> verb[PNT]");
 		parser.addRule("OBJECT[PN] -> NP[PN]");
 		parser.addRule("DNP[PN] -> prep? NP[PN]");
@@ -99,27 +99,32 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("father[p1p2p3n1] -> father[r]");
 		parser.addRule("noun[PN] -> father[PN]");
 		
-		parser.addRule("NP[PN] -> posessive_pronoun[N] noun[PN]");		
+		parser.addRule("NP[PN] -> posessive_pronoun[N] noun(*)[PN]");		
 			
 		parser.addRule("verb[PNT] -> buy[PNT]");
-		parser.addRule("buy[p1p2p3n1n*tp] -> bought[r]");
+		parser.addRule("buy(buy)[p1p2p3n1n*tp] -> bought[r]");
 		
 		parser.addRule("noun[p1p2p3n*] 0.9 -> several[r]"); // rarely used
 		
 		parser.addRule("num_adj[p1p2p3n*] -> several[r]");
 		
-		parser.addRule("NP[PN] -> num_adj[PN] NP[PN]");
-		parser.addRule("DNP -> preposition_place DNP");
+		parser.addRule("NP[PN] -> num_adj[PN] NP(*)[PN]");
+		parser.addRule("DNP -> preposition_place DNP(*)");
 		
-		parser.addRule("candy[p1p2p3n*] -> candies[r]");
+		parser.addRule("candy(candy)[p1p2p3n*] -> candies(*)[r]");
 		parser.addRule("noun[PN] -> candy[PN]");
 		
-		parser.addRule("preposition_place -> at[t]");
+		parser.addRule("prep_place -> at[t]");
 		
 		parser.addRule("shop[p1p2p3n1] -> shop[r]");
 		parser.addRule("noun[PN] -> shop[PN]");
 		
-		parser.addRule("END -> <.>");	
+		parser.addRule("NP(retail_store)[PN] -> NP(shop)[PN]");
+		parser.addRule("NP(entity)[PN] -> NP(candy)[PN]");
+		
+		parser.addRule("VP[PNT] 1.1 -> buy(*)[PNT] NP(entity) prep_place NP(retail_store)");
+		
+		parser.addRule("END -> <.>");
 	}
 
 	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)
@@ -127,7 +132,7 @@ public class APCFGEnglish implements Grammar {
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 
 		java.util.List<ParsedToken> ptl_start = new java.util.ArrayList<ParsedToken>();
-		ParsedToken pt_start = new ParsedToken(parser.getTokenByName("START"), new WordTags(), 1.0f, "");
+		ParsedToken pt_start = new ParsedToken(parser.getTokenByName("START"), null, new WordTags(), 1.0f, "");
 		if (LangProcSettings.DEBUG_OUTPUT)
 		{
 			System.out.println("Add token " + pt_start);
@@ -158,10 +163,12 @@ public class APCFGEnglish implements Grammar {
 					token_sp.setTags(WT.NON_MODAL);
 				}
 				
+				Token byname_token = parser.getTokenByName(tw.m_word);
+				
 				Token req_token = getTokenByGrammar(parser, tw);
 				if (req_token != null)
 				{
-					ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word_as_was_written);
+					ParsedToken pt = new ParsedToken(req_token, byname_token, token_sp, 1.0f, tw.m_word_as_was_written);
 					if (LangProcSettings.DEBUG_OUTPUT)
 					{
 						System.out.println("Add token " + pt);
@@ -169,10 +176,10 @@ public class APCFGEnglish implements Grammar {
 					ptl.add(pt);
 				}
 
-				Token byname_token = parser.getTokenByName(tw.m_word);
+				
 				WordTags token_raw = new WordTags(token_sp);
 				token_raw.setTags(WT.RAW);
-				ParsedToken pt1 = new ParsedToken(byname_token, token_raw, 1.0f, tw.m_word_as_was_written);
+				ParsedToken pt1 = new ParsedToken(byname_token, byname_token, token_raw, 1.0f, tw.m_word_as_was_written);
 				if (LangProcSettings.DEBUG_OUTPUT)
 				{
 					System.out.println("Add token " + pt1);
@@ -182,7 +189,7 @@ public class APCFGEnglish implements Grammar {
 				if (!tw.m_base_word.equals(tw.m_word))
 				{
 					Token bybaseform_token = parser.getTokenByName(tw.m_base_word);
-					ParsedToken pt2 = new ParsedToken(bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);
+					ParsedToken pt2 = new ParsedToken(bybaseform_token, bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);
 					if (LangProcSettings.DEBUG_OUTPUT)
 					{
 						System.out.println("Add token " + pt2);

@@ -224,7 +224,7 @@ public class APCFGUkrSL implements Grammar
 		java.util.Vector<java.util.List<ParsedToken>> tokens = new java.util.Vector<java.util.List<ParsedToken>>();
 
 		java.util.List<ParsedToken> ptl_start = new java.util.ArrayList<ParsedToken>();
-		ParsedToken pt_start = new ParsedToken(parser.getTokenByName("START"), new WordTags(), 1.0f, "");
+		ParsedToken pt_start = new ParsedToken(parser.getTokenByName("START"), null, new WordTags(), 1.0f, "");
 		if (LangProcSettings.DEBUG_OUTPUT)
 		{
 			System.out.println("Add token " + pt_start);
@@ -255,10 +255,14 @@ public class APCFGUkrSL implements Grammar
 					token_sp.setTags(WT.NON_MODAL);
 				}
 				
-				Token req_token = getTokenByGrammar(parser, tw);
-				if (req_token != null)
+				Token grammar_token = getTokenByGrammar(parser, tw);
+				Token byname_token = parser.getTokenByName(tw.m_word);
+				Token bybaseform_token = parser.getTokenByName(tw.m_base_word);
+				if (bybaseform_token==null) bybaseform_token = byname_token;
+
+				if (grammar_token != null)
 				{
-					ParsedToken pt = new ParsedToken(req_token, token_sp, 1.0f, tw.m_word_as_was_written);
+					ParsedToken pt = new ParsedToken(grammar_token, bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);
 					if (LangProcSettings.DEBUG_OUTPUT)
 					{
 						System.out.println("Add token " + pt);
@@ -266,10 +270,10 @@ public class APCFGUkrSL implements Grammar
 					ptl.add(pt);
 				}
 
-				Token byname_token = parser.getTokenByName(tw.m_word);
+
 				WordTags token_raw = new WordTags(token_sp);
 				token_raw.setTags(WT.RAW);
-				ParsedToken pt1 = new ParsedToken(byname_token, token_raw, 1.0f, tw.m_word_as_was_written);
+				ParsedToken pt1 = new ParsedToken(byname_token, bybaseform_token, token_raw, 1.0f, tw.m_word_as_was_written);
 				if (LangProcSettings.DEBUG_OUTPUT)
 				{
 					System.out.println("Add token " + pt1);
@@ -281,8 +285,7 @@ public class APCFGUkrSL implements Grammar
 				}
 				if (!tw.m_base_word.equals(tw.m_word)) 
 				{
-					Token bybaseform_token = parser.getTokenByName(tw.m_base_word);
-					ParsedToken pt2 = new ParsedToken(bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);
+					ParsedToken pt2 = new ParsedToken(bybaseform_token, bybaseform_token, token_sp, 1.0f, tw.m_word_as_was_written);
 					if (LangProcSettings.DEBUG_OUTPUT)
 					{
 						System.out.println("Add token " + pt2);
