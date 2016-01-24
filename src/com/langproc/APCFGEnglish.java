@@ -43,13 +43,14 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("NP[PN] -> noun[PN]");
 		parser.addRule("NP[PN] -> art noun(*)[PN]");
 		
-		parser.addRule("DS -> NP[PN] VP[PN]");
+		parser.addRule("DS(fact) -> NP[PN] VP[PN]");
 		parser.addRule("S -> START DS END");
 		parser.addRule("VP[PNT] -> VP(*)[PNT] DNP");
 		parser.addRule("VP[PNT] -> VP(*)[PNT] NP");
 		parser.addRule("VP[PNT] -> verb[PNT]");
+		parser.addRule("VP[PNT] -> VP[PNT] adverb");
 		parser.addRule("OBJECT[PN] -> NP[PN]");
-		parser.addRule("DNP[PN] -> prep? NP[PN]");
+		parser.addRule("adverb(place) -> prep(at) NP");
 		
 		parser.addRule("professor[p3n1] -> <Professor>[r]");
 		parser.addRule("math[p3 n1 n*] -> <math>[r]");	
@@ -60,9 +61,9 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("prep_to -> <to>[r]");
 		parser.addRule("prep_on -> <on>[r]");
 		parser.addRule("student[p3n*] -> <students>[r]");
-		parser.addRule("art -> def_art | undef_art");
-		parser.addRule("def_art -> <the>[r]");
-		parser.addRule("undef_art -> <a>[r]");
+		parser.addRule("art -> defart | undefart");
+		parser.addRule("art -> <the>[r]");
+		parser.addRule("undefart -> <a>[r]");
 		parser.addRule("car[p3n1] -> <car>[r]");
 		
 		parser.addRule("play[p3n1] -> plays[r]");
@@ -94,35 +95,37 @@ public class APCFGEnglish implements Grammar {
 		parser.addRule("<person_individual>[PN] -> enrollee[PN]");
 		parser.addRule("enrollee[PN] -> student[PN]");
 		
-		parser.addRule("posessive_pronoun[n1n*] -> My[r]");
+		parser.addRule("pronoun(my)[n1n*] -> My[r]");
 		
-		parser.addRule("father[p1p2p3n1] -> father[r]");
-		parser.addRule("noun[PN] -> father[PN]");
+		//parser.addRule("father[p1p2p3n1] -> father[r]");
+		parser.addRule("noun[p1p2p3n1] -> father[r]");
 		
-		parser.addRule("NP[PN] -> posessive_pronoun[N] noun(*)[PN]");		
+		parser.addRule("NP[PN] -> pronoun[N] noun(*)[PN]");		
 			
-		parser.addRule("verb[PNT] -> buy[PNT]");
-		parser.addRule("buy(buy)[p1p2p3n1n*tp] -> bought[r]");
+		//parser.addRule("verb[PNT] -> buy[PNT]");
 		
-		parser.addRule("noun[p1p2p3n*] 0.9 -> several[r]"); // rarely used
+		parser.addRule("verb(buy-acquire)[p1p2p3n1n*tp] -> bought[r]");
 		
-		parser.addRule("num_adj[p1p2p3n*] -> several[r]");
+		parser.addRule("adj[p1p2p3n*] 0.9 -> several[r]"); // rarely used
 		
-		parser.addRule("NP[PN] -> num_adj[PN] NP(*)[PN]");
-		parser.addRule("DNP -> preposition_place DNP(*)");
+		parser.addRule("pronoun[p1p2p3n*] -> several[r]");
 		
-		parser.addRule("candy(candy)[p1p2p3n*] -> candies(*)[r]");
-		parser.addRule("noun[PN] -> candy[PN]");
+		parser.addRule("NP[PN] -> nadj[PN] NP(*)[PN]");
+		//parser.addRule("NP(place) -> prep NP");
 		
-		parser.addRule("prep_place -> at[t]");
+		parser.addRule("noun(candy)[p1p2p3n*] -> candies[r]");
 		
-		parser.addRule("shop[p1p2p3n1] -> shop[r]");
-		parser.addRule("noun[PN] -> shop[PN]");
+		//parser.addRule("noun[PN] -> candy[PN]");
+		
+		parser.addRule("prep -> at[r]");
+		
+		parser.addRule("noun[p1p2p3n1] -> shop[r]");
+		parser.addRule("noun[p1p2p3n1] -> table[r]");
 		
 		parser.addRule("NP(retail_store)[PN] -> NP(shop)[PN]");
 		parser.addRule("NP(entity)[PN] -> NP(candy)[PN]");
 		
-		parser.addRule("VP[PNT] 1.1 -> buy(*)[PNT] NP(entity) prep_place NP(retail_store)");
+		parser.addRule("VP(buy-acquire)[PNT] 1.1 -> VP(buy-acquire)[PNT] NP(entity) prep(at) NP(retail_store)");
 		
 		parser.addRule("END -> <.>");
 	}

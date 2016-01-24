@@ -575,9 +575,14 @@ class LangProc
 			}
 			else
 			{
-				lp.checkGrammarAPCFGEnglish(
+				
+				lp.checkGrammarAPCFGEnglish( "My father bought several candies at the shop.", false);
+				lp.checkGrammarAPCFGEnglish( "My father bought several candies at the table.", false);						
+					
+				if (false) lp.checkGrammarAPCFGEnglish(
 				//lp.checkGrammarAPCFGUkrainian(
-						"My father bought several candies at the shop."
+						//"My father bought several candies at the shop."
+						"My father bought several candies at the table."
 						//"Сьогодні студенти прийшли на пару."
 						//"Моє серце б'ється швидко."
 						//"Ти хочеш мати коня?"

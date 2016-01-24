@@ -289,6 +289,11 @@ class ParsedToken
 		boolean is_single=m_production_rule.m_subtokens.size()==1;
 		RequiredToken rt = m_production_rule.m_subtokens.get(index);
 		
+		if (rt.m_semantic_token!=null && rt.m_semantic_token!=subtoken.m_semantic_token)
+		{
+			assert(false);
+		}
+		
 		if ( (rt.m_is_head || is_single) && m_production_rule.m_semantic_result==null)
 		{
 			// NO DOUBLE TOKEN SET_UP YET!!!
@@ -478,7 +483,7 @@ class ParsedToken
 			int rule_ind = 0;
 			for( ParsedToken pt : m_subtokens )
 			{
-				if (pt!=null)
+				if (pt!=null && !pt.m_token.m_name.equals("START") && !pt.m_token.m_name.equals("END"))
 				{
 					res.append(" \\edge node[auto=left]{");
 					res.append(pt.m_probabilty);
@@ -1041,7 +1046,8 @@ public class APCFGParser
 			for( AssociatedRule ar : token.m_token.m_associated_multi_term_rules )
 			{
 				Token req_sem_token = ar.m_required_token.m_semantic_token;
-				if (token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes))
+				if (  (req_sem_token==null || req_sem_token==token.m_semantic_token) &&
+						token.m_attributes.hasRequiredTags(ar.m_required_token.m_required_attributes))
 				{
 					 reusable_token.resetWithRule(ar.m_rule);
 					 reusable_token.setSubtoken(ar.m_token_index, token);
