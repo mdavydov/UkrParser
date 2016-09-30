@@ -406,7 +406,7 @@ class ParsedToken
 	
 	String toTikzTree(boolean show_attr)
 	{
-		int level_d = show_attr ? 100 : 30;
+		int level_d = show_attr ? 100 : 50;
 		int depth = getDepth();
 		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=15pt,level distance="+level_d+"pt]\n" +
 		"\\tikzset{frontier/.style={distance from root="+(depth*level_d-level_d/2)+"pt}}\n" +
