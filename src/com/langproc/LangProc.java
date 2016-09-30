@@ -352,7 +352,7 @@ class LangProc
 		}
 	}
 
-	public static void main4(String[] args)
+	public static void main(String[] args)
 	{
 		// ChoiceGraph.test();
 
@@ -455,7 +455,7 @@ class LangProc
 				// lp.checkSentencePersistence("На хвилину залягла тиша і натяглася, наче струна.");
 				// lp.checkSentencePersistence("Далекі дзвони гуділи в ясному повітрі тихо й мелодійно, і здавалося, що то дзвенить золото сонця.");
 
-				lp.checkGrammar(
+				lp.checkGrammarAPCFGUkrainian(
 				// "Жив колись змой."
 						"У четвертому розділі досліджено мовні моделі з використанням графів."
 						// "Жив собі в однім лісі Лис Микита, хитрий-прехитрий."
@@ -543,7 +543,7 @@ class LangProc
 		return;
 	}
 
-	public static void main(String[] args)
+	public static void mainEnglish(String[] args)
 	{
 		try
 		{

@@ -463,12 +463,16 @@ class ParsedToken
 		boolean add_attributes = show_attr || m_token_text==null || !m_token.m_name.equals(m_token_text);
 		if (add_attributes)
 		{
-			res.append("[.{\\pbox[b]{1cm}");
-			if (m_token_text==null || !m_token.m_name.equals(m_token_text)) res.append(toTeXString(m_token.m_name));
+			res.append("[.{\\pbox[b]{1cm}{ "); // \\centering
+			if (m_token_text==null || !m_token.m_name.equals(m_token_text))
+			{
+				res.append(toTeXString(m_token.m_name));
+			}
 			if (m_semantic_token!=null && m_token!=m_semantic_token)
 			{
-				res.append("(" + toTeXString(m_semantic_token.m_name) + ")");
+				res.append(" \\\\ (" + toTeXString(m_semantic_token.m_name) + ")");
 			}
+			res.append("}");
 			if (show_attr)
 			{
 				res.append(" (");
