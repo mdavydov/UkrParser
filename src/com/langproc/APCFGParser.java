@@ -12,6 +12,8 @@
 
 package com.langproc;
 
+import java.util.Map;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 // P -> abc (0,75) | Abc
@@ -404,19 +406,23 @@ class ParsedToken
 		return res.toString();
 	}
 	
-	String toTikzTree(boolean show_attr)
+	String toTikzTree(boolean show_attr, Map<String, String> nodeTranslation)
 	{
-		int level_d = show_attr ? 100 : 30;
+		int level_d = show_attr ? 100 : 60;
 		int depth = getDepth();
-		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=15pt,level distance="+level_d+"pt]\n" +
+		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=5pt,level distance="+level_d+"pt]\n" +
 		"\\tikzset{frontier/.style={distance from root="+(depth*level_d-level_d/2)+"pt}}\n" +
 		"\\Tree\n" + 
-		toTikzTree(null,null,null, show_attr, 1) + "\n" + 
+		toTikzTree(null,null,null, show_attr, 1, nodeTranslation) + "\n" + 
 		"\\end{tikzpicture}\n}\n";
 	}
 	
-	String toTeXString(String s)
+	String toTeXString(Map<String, String> nodeTranslation, String str)
 	{
+		String s=null;
+		if (nodeTranslation!=null) s = nodeTranslation.get(str);
+		if (s==null) s = str;
+		
 		StringBuffer sb = new StringBuffer();
 		for(int i=0;i<s.length();++i)
 		{
@@ -427,7 +433,8 @@ class ParsedToken
 		return sb.toString();
 	}
 	
-	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr, int num_parent_children)
+	String toTikzTree(WordTags req_tokens, WordTags to_unify, WordTags unif_res, boolean show_attr, int num_parent_children,
+			Map<String, String> nodeTranslation)
 	{
 		StringBuffer res = new StringBuffer();
 
@@ -463,14 +470,14 @@ class ParsedToken
 		boolean add_attributes = show_attr || m_token_text==null || !m_token.m_name.equals(m_token_text);
 		if (add_attributes)
 		{
-			res.append("[.{\\pbox[b]{1cm}{ "); // \\centering
+			res.append("[.{\\pbox[b]{2cm}{ "); // \\centering
 			if (m_token_text==null || !m_token.m_name.equals(m_token_text))
 			{
-				res.append(toTeXString(m_token.m_name));
+				res.append(toTeXString(nodeTranslation, m_token.m_name));
 			}
 			if (m_semantic_token!=null && m_token!=m_semantic_token)
 			{
-				res.append(" \\\\ (" + toTeXString(m_semantic_token.m_name) + ")");
+				res.append(" \\\\ (" + toTeXString(null, m_semantic_token.m_name) + ")");
 			}
 			res.append("}");
 			if (show_attr)
@@ -493,7 +500,8 @@ class ParsedToken
 					res.append(pt.m_probabilty);
 					res.append("}; ");
 					RequiredToken rt = m_production_rule.m_subtokens.get(rule_ind);
-					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes, rt.m_uniform_attributes, m_uniform_attributes, show_attr, child_num));
+					res.append(pt==null?"<>":pt.toTikzTree(rt.m_required_attributes,
+							rt.m_uniform_attributes, m_uniform_attributes, show_attr, child_num, nodeTranslation));
 				}
 				++rule_ind;
 			}
@@ -508,7 +516,7 @@ class ParsedToken
 			if (m_token_text!=null)
 			{
 				//res.append("<" + m_token_text + ">");
-				res.append(toTeXString(m_token_text));
+				res.append(toTeXString(nodeTranslation, m_token_text));
 			}
 			res.append("} ");
 		}

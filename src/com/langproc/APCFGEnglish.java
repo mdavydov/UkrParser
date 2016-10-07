@@ -217,7 +217,7 @@ public class APCFGEnglish implements Grammar {
 			for (ParsedToken root : res)
 			{
 				LangProcOutput.println();
-				LangProcOutput.println(root.toTikzTree(false));
+				LangProcOutput.println(root.toTikzTree(false, null));
 				LangProcOutput.flush();
 			}
 		}

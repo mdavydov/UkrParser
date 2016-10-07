@@ -313,7 +313,7 @@ public class APCFGUkrSL implements Grammar
 			for (ParsedToken root : res)
 			{
 				LangProcOutput.println();
-				LangProcOutput.println(root.toTikzTree(false));
+				LangProcOutput.println(root.toTikzTree(false, null));
 				LangProcOutput.flush();
 			}
 		}

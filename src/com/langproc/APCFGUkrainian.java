@@ -12,6 +12,9 @@
 
 package com.langproc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class APCFGUkrainian  implements Grammar
 {
 	APCFGParser parser = null;
@@ -301,10 +304,28 @@ public class APCFGUkrainian  implements Grammar
 		}
 		else
 		{
+			HashMap<String, String> nodeTranslation = new HashMap<String, String>();
+			nodeTranslation.put("NP", "ГРУПА ПІДМЕТА");
+			nodeTranslation.put("VP", "ГРУПА ПРИСУДКА");
+			nodeTranslation.put("NG", "ГРУПА ІМЕННИКА");
+			nodeTranslation.put("AN", "ГРУПА ІМЕННИКА");
+			nodeTranslation.put("TARGET", "ОБСТАВИНА МІСЦЯ");
+			nodeTranslation.put("ADDITIONAL", "ОБСТАВИНА СПОСОБУ");
+			nodeTranslation.put("DS", "ОСНОВА РЕЧЕННЯ");
+			nodeTranslation.put("DNP", "ДОДАТОК");
+			nodeTranslation.put("OBJECT", "ПРЯМИЙ ДОДАТОК");
+			nodeTranslation.put("Z", "З");
+			nodeTranslation.put("V", "У");
+			nodeTranslation.put("noun", "іменник");
+			nodeTranslation.put("verb", "дієслово");
+			nodeTranslation.put("adj", "прикметник");
+			nodeTranslation.put("adv", "прислівник");
+			nodeTranslation.put("pronoun", "займенник");
+			
 			for (ParsedToken root : res)
 			{
 				LangProcOutput.println();
-				LangProcOutput.println(root.toTikzTree(false));
+				LangProcOutput.println(root.toTikzTree(false, nodeTranslation));
 				LangProcOutput.flush();
 			}
 		}
