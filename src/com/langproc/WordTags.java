@@ -287,8 +287,8 @@ public class WordTags
 
 		if (hasSomeTags(WT.INFINITIVE)) b.append("INF ");
 		if (hasSomeTags(WT.SENTENCE_END)) b.append("S-END ");
-		if (hasSomeTags(WT.MODAL)) b.append("MOD+ ");
-		if (hasSomeTags(WT.NON_MODAL)) b.append("MOD- ");
+		if (hasSomeTags(WT.MODAL)) b.append("m+ ");
+		if (hasSomeTags(WT.NON_MODAL)) b.append("m- ");
 		if (hasSomeTags(WT.INDICATIVE)) b.append("IND ");
 		if (hasSomeTags(WT.QUESTION)) b.append("QUE(q) ");
 		if (hasSomeTags(WT.STATE)) b.append("STATE ");
@@ -315,7 +315,7 @@ public class WordTags
 		return b.toString();
 	}
 	
-	static void readAttributeString(StringBuffer inbuf, WordTags specified, WordTags unified)
+	static void readAttributeString(StringBuffer inbuf, WordTags specified, WordTags unified, WordTags default_unified)
 	{
 		specified.m_tags = 0;
 		unified.m_tags = 0;
@@ -347,6 +347,7 @@ public class WordTags
 				case 'T': unified.m_tags |= WT.TIME_MASK; break;
 				case 'F': unified.m_tags |= WT.PERFECTION_MASK; break; // finished of not
 				case 'M': unified.m_tags |= WT.MODAL_MASK; break; // finished of not
+				case '=': unified.m_tags |= default_unified.m_tags; break;
 
 				case 'q': specified.m_tags |= WT.QUESTION; break;
 				case 'u': specified.m_tags |= WT.PROPERNAME; break;

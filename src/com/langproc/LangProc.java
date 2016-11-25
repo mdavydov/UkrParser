@@ -372,7 +372,7 @@ class LangProc
 			// "Texts/zakon_stats1.txt");
 			// wsc.buildStatisticalTextModelForFile("Texts/Zakon/ryd_rights_pelipenko.txt",
 			// "Texts/zakon_stats2.txt");
-			wsc.buildStatisticalTextModelForFile("Texts/Proza/Fata_morgana_1375700832.txt", "Texts/proza_stats.txt");
+			//wsc.buildStatisticalTextModelForFile("Texts/Proza/Fata_morgana_1375700832.txt", "Texts/proza_stats.txt");
 			// wsc.buildStatisticalTextModelForFile("Texts/Nauka/inf_syst_i_tekhn_v_stat.txt",
 			// "Texts/nauka_stats.txt");
 			// wsc.buildStatisticalTextModelForFile("Texts/Proza/Z_Rosii_z_liuboviu.txt",
@@ -505,6 +505,21 @@ class LangProc
 						// "Прийменником називається службова частина мови, яка разом з відмінковими закінченнями іменників (або займенників) служить для вираження підрядних зв’язків між словами в реченні."+
 						// ""
 						, false);
+				
+				lp.checkGrammarAPCFGUkrainian("Моя дочка ходить у дитячий садок.", false);
+				lp.checkGrammarAPCFGUkrainian("Я прокидаюся рано.", false);
+				lp.checkGrammarAPCFGUkrainian("Літак готовий до посадки.", false);
+				lp.checkGrammarAPCFGUkrainian("Цей хлопець сповнений енергії.", false);
+				lp.checkGrammarAPCFGUkrainian("Він був голодний сьогодні.", false);
+				lp.checkGrammarAPCFGUkrainian("Гарні студенти прийшли сьогодні на пари.", false);
+				lp.checkGrammarAPCFGUkrainian("Студенти гарні сьогодні на пари прийшли.", false);
+				lp.checkGrammarAPCFGUkrainian("Студенти сьогодні гарні на пари прийшли.", false);
+				lp.checkGrammarAPCFGUkrainian("Мені не хочеться їсти.", false);
+				lp.checkGrammarAPCFGUkrainian("Мама заплітає мені коси.", false);
+				lp.checkGrammarAPCFGUkrainian("Тобі було цікаво?", false);
+				lp.checkGrammarAPCFGUkrainian("Ти вмієш співати?", false);
+				lp.checkGrammarAPCFGUkrainian("Які книги ви любите читати?", false);
+				lp.checkGrammarAPCFGUkrainian("Де ти живеш?", false);
 
 				LangProcOutput.writer.flush();
 			}

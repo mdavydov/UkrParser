@@ -208,7 +208,11 @@ public class APCFGEnglish implements Grammar {
 
 		if (res == null || res.size() == 0)
 		{
-			LangProcOutput.println("No results");
+			for (WordHypotheses sw : s)
+			{
+				LangProcOutput.print(sw.getWordAsWritten() +  "(" + (sw.getSentencePos()+1) + ") ");
+			}
+			LangProcOutput.println("\nNo results");
 			//System.exit(0);
 			return null;
 		}

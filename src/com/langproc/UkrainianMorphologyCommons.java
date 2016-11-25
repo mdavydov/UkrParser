@@ -284,7 +284,7 @@ public abstract class UkrainianMorphologyCommons implements Morphology
 			// int s = w.toString().length();
 			// for(int i= 20; i>s; --i) LangProcOutput.print(" ");
 			int word_index = ss.numWords();
-			WordHypotheses wh = new WordHypotheses(word_index);
+			WordHypotheses wh = new WordHypotheses(word_index, w.toString());
 			addWordForms(wh, w.toString(), false);
 			ss.addWord(wh);
 

@@ -12,6 +12,7 @@
 
 package com.langproc;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -410,7 +411,7 @@ class ParsedToken
 	{
 		int level_d = show_attr ? 100 : 60;
 		int depth = getDepth();
-		return "\\hspace{1em}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tikzpicture}[sibling distance=5pt,level distance="+level_d+"pt]\n" +
+		return "\\hspace{1em}\n\\adjustbox{max width=\\columnwidth}{\n\\begin{tikzpicture}[sibling distance=5pt,level distance="+level_d+"pt]\n" +
 		"\\tikzset{frontier/.style={distance from root="+(depth*level_d-level_d/2)+"pt}}\n" +
 		"\\Tree\n" + 
 		toTikzTree(null,null,null, show_attr, 1, nodeTranslation) + "\n" + 
@@ -689,7 +690,22 @@ public class APCFGParser
 		catch(NumberFormatException e) {}
 	}
 	
-
+	HashMap<String, WordTags> m_default_unified_tags = new HashMap<String, WordTags>();
+	
+	void setDefaultUnifiedTags(String token, String tags)
+	{
+		WordTags left_sp = new WordTags();
+		WordTags def_un = new WordTags();
+		
+		WordTags.readAttributeString(new StringBuffer("[" + tags + "]"), left_sp, def_un, def_un);
+		m_default_unified_tags.put(token, def_un);
+	}
+	
+	WordTags getDefaultUnifiedTags(String token)
+	{
+		WordTags wt = (WordTags)m_default_unified_tags.get(token);
+		return wt;
+	}
 
 	void addRule(String rule)
 	{
@@ -708,7 +724,9 @@ public class APCFGParser
 		//System.out.println("Left part: " + leftTokenS);
 		WordTags left_sp = new WordTags();
 		WordTags left_un = new WordTags();
-		WordTags.readAttributeString(leftPart, left_sp, left_un);
+		WordTags def_un = getDefaultUnifiedTags(leftTokenS);
+		
+		WordTags.readAttributeString(leftPart, left_sp, left_un, def_un);
 		
 		AttributeSpecials sp_attr = new AttributeSpecials();
 		readAttributeSpecials(leftPart, sp_attr);
@@ -730,7 +748,8 @@ public class APCFGParser
 				
 				WordTags token_sp = new WordTags();
 				WordTags token_un = new WordTags();
-				WordTags.readAttributeString(rightPart, token_sp, token_un);
+				WordTags token_def_un = getDefaultUnifiedTags(rightTokenS);
+				WordTags.readAttributeString(rightPart, token_sp, token_un, token_def_un);
 
 				TokenSpecials ts = readTokenSpecials(rightPart);
 				
@@ -1126,7 +1145,8 @@ public class APCFGParser
 			
 			WordTags token_sp = new WordTags();
 			WordTags token_un = new WordTags();
-			WordTags.readAttributeString(readS, token_sp, token_un);
+			WordTags def_un = getDefaultUnifiedTags(tokenS);
+			WordTags.readAttributeString(readS, token_sp, token_un, def_un);
 			
 			//System.out.println("Parse string part: " + tokenS);
 			Token req_token = getTokenByName(tokenS);

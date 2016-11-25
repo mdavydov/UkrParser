@@ -37,6 +37,7 @@ public class APCFGUkrainian  implements Grammar
 		if (tw.m_tags.hasSomeTags(WT.NUMERAL)) return parser.getTokenByName("num");
 		if (tw.m_tags.hasSomeTags(WT.PARTICLE)) return parser.getTokenByName("particle");
 		if (tw.m_tags.hasSomeTags(WT.ADVPART)) return parser.getTokenByName("advp");
+		if (tw.m_tags.hasSomeTags(WT.ADJPART)) return parser.getTokenByName("adjp");
 		if (tw.m_tags.hasSomeTags(WT.PREPOSITION)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.SENTENCE_END)) return parser.getTokenByName(tw.m_word);
 		if (tw.m_tags.hasSomeTags(WT.HELPWORD)) return parser.getTokenByName("help");
@@ -52,33 +53,52 @@ public class APCFGUkrainian  implements Grammar
 //		parser.addRule("IVP -> <не>? verb[i]");
 //		return;
 		
+		// TODO: DEFAULT COMMON ATTRIBUTES FOR GRAMMAR PARTS
+		// TODO: short output form
+		
+		parser.setDefaultUnifiedTags("NP", "PNGC"); // Person, Number, Gender, Casus
+		parser.setDefaultUnifiedTags("noun", "PNGC"); // іменник
+		parser.setDefaultUnifiedTags("pronoun", "PNGC"); // іменник
+		parser.setDefaultUnifiedTags("DNP", "NCG"); // додаток
+		parser.setDefaultUnifiedTags("AN", "PNCG"); // annotated noun
+		parser.setDefaultUnifiedTags("NG", "PNCG"); // група іменника
+		
+		parser.setDefaultUnifiedTags("adj", "CNG");
+		parser.setDefaultUnifiedTags("ADJG", "CNG");
+		parser.setDefaultUnifiedTags("ADJQ", "CNG");
+		parser.setDefaultUnifiedTags("COMMEDADJG", "CNG");
+		
+		parser.setDefaultUnifiedTags("VP", "PNGM"); // + Modality
+		parser.setDefaultUnifiedTags("verb", "PNGM"); // + Modality
+		parser.setDefaultUnifiedTags("ADJP", "NGM"); // дієприкметник
+		parser.setDefaultUnifiedTags("DS", "PNMG"); // основа речення
+		
 		parser.addRule("QS *-> <скільки>(*) PLACE? DNP[c2]");
 
 		parser.addRule("V -> у | в");
 		parser.addRule("Z -> з | із | зі");
-		parser.addRule("TARGETPRP -> на");
 		
 		parser.addRule("GENCOMMA -> <,> | <.> | <:> | <?> | <!> | START");
 
-		parser.addRule("AN[NCG] -> noun(*)[NCG] noun[NCGu]?");
+		parser.addRule("AN[= p3] -> noun(*)[NCG] noun[NCGu]?"); // дядько Іван
 		// noun group (adjectives, etc)
-		parser.addRule("COMMEDADJG[NCG] -> <,> adj(*)[NCG] GENCOMMA!");
-		parser.addRule("COMMEDADJG[NCG] -> COMMEDADJG(*)[NCG] <,> adj[NCG] GENCOMMA!");
-		parser.addRule("ADJG[NCG] -> adj[NCG]");
-		parser.addRule("ADJQ[NCG] -> adj[NCGq]"); // якою? котрою? ... question with adjective attributes
-		parser.addRule("ADJG[NCG] -> COMMEDADJG[NCG]");
+		parser.addRule("COMMEDADJG[=] -> <,> adj(*)[=] GENCOMMA!");
+		parser.addRule("COMMEDADJG[=] -> COMMEDADJG(*)[=] <,> adj[=] GENCOMMA!");
+		parser.addRule("ADJG[=] -> adj[=]");
+		parser.addRule("ADJQ[=] -> adj[=]"); // якою? котрою? ... question with adjective attributes
+		parser.addRule("ADJG[=] -> COMMEDADJG[=]");
 
-		parser.addRule("NG[NCG] -> adj[NCG]? AN[NCG] NG(*)[c2]? ADJG[NCG]?");
-		parser.addRule("NG[NCG] -> adj[NCG]? pronoun(*)[NCG] ADJG[NCG]?");
-		parser.addRule("NG[C n*] -> NG(*)[C] conj NG[C]");
+		parser.addRule("NG[=] -> adj[=]? AN(*)[=] NG[c2]? ADJG[=]?");
+		parser.addRule("NG[=] -> adj[=]? pronoun(*)[=] ADJG[=]?");
+		parser.addRule("NG[C n* p3 gm gn gf] -> NG(*)[C] conj NG[C]"); // Іван і Марічка, Я і Іван
 
-		parser.addRule("NG[NCG] -> adj[NCG] NG(*)[NCG]");
-		parser.addRule("DNP[NCG] -> NG[NCG c2c3c4c5c6c7]");
-		parser.addRule("NP[NCG p3] -> NG[NCG c1]");
-		parser.addRule("NP[NCGP] -> pronoun[NCGP c1]");
-		parser.addRule("NP[NCGP] -> NP(*) <чи> NP[NCGP]");
+		parser.addRule("NG[=] -> adj[=] NG(*)[=]");
+		parser.addRule("DNP[=] -> NG[= c2c3c4c5c6c7]");
+		parser.addRule("NP[= p3] -> NG[= c1]");
+		parser.addRule("NP[=] -> pronoun[= c1]");
+		parser.addRule("NP[=] -> NP(*) <чи> NP[=]"); // Він чи вона?
 
-		parser.addRule("TARGET -> TARGETPRP(*) DNP[c6] | V(*) DNP[c4] | <до>(*) DNP[c2] | <додому> | <туди> | <сюди>");
+		parser.addRule("TARGET -> на DNP[c4 c6] | V(*) DNP[c4] | <до>(*) DNP[c2] | <додому> | <туди> | <сюди>");
 		parser.addRule("NAME -> noun[NCGu]");
 		parser.addRule("ADDRESS -> DNP(*)[c3]");
 		parser.addRule("PLACE -> V DNP(*)[c6] | <тут> | <там>");
@@ -87,38 +107,62 @@ public class APCFGUkrainian  implements Grammar
 		parser.addRule("FROM -> Z DNP(*)[c2]");
 		parser.addRule("OBJECT -> DNP[c4]");
 		
+		parser.addRule("ADV -> TARGET | ADDRESS | PLACE | ADDITIONAL | TIME | FROM");
+		
+		parser.addRule("NG[=] * 0.5 -> NG(*)[=] ADV"); // LOST ADVERB
+		parser.addRule("NG[=] *-> NG(*)[=] ADJG"); // LOST ADVERB
+
+		
 		parser.addRule("ADV -> adv");
+		parser.addRule("ADVP -> advp");
+		parser.addRule("ADJP -> adjp");
+		
 
 		// parser.addRule("VP[PN] *-> verb[PN] ADDRESS? PLACE? ADDITIONAL? OBJECT? FROM? TARGET? TIME?");
-		parser.addRule("VP[PNM] -> verb(*)[PNM]");
-		parser.addRule("VP[PN m-] 1.1-> verb(*)[PNm+] IVP");
-		parser.addRule("VP[p1p2p3p-N] -> ADJG(*)[N]");
-		parser.addRule("VP[PNM] -> <не> VP(*)[PNM]");
-		parser.addRule("VP[PNM] *-> ADV VP(*)[PNM]");
+		parser.addRule("VP[=] -> verb(*)[=]");
+		parser.addRule("VP[=] 1.1-> verb(*)[=] IVP");
+		parser.addRule("VP[p1p2p3p-NGm-m+] -> ADJG(*)[NG]"); // we do not know modality
+		parser.addRule("VP[=] -> <не> VP(*)[=]");
+		parser.addRule("VP[=] *-> ADV VP(*)[=]");
 		
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] ADDRESS");
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] PLACE");
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] ADDITIONAL");
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] OBJECT");
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] FROM");
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] TARGET");
-		parser.addRule("VP[PNM] *-> VP(*)[PNM] TIME");
+		parser.addRule("VP[=] *-> VP(*)[=] ADDRESS");
+		parser.addRule("VP[=] *-> VP(*)[=] PLACE");
+		parser.addRule("VP[=] *-> VP(*)[=] ADDITIONAL");
+		parser.addRule("VP[=] *-> VP(*)[=] OBJECT");
+		parser.addRule("VP[=] *-> VP(*)[=] FROM");
+		parser.addRule("VP[=] *-> VP(*)[=] TARGET");
+		parser.addRule("VP[=] *-> VP(*)[=] TIME");
+		parser.addRule("VP[=] 0.9 -> VP(*)[=] ADJ[G]"); // state as adverb
+		
+		parser.addRule("ADJP[=] -> <не> ADJP(*)[=]");
+		parser.addRule("ADJP[=] *-> ADV ADJP(*)[=]");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] ADDRESS");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] PLACE");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] ADDITIONAL");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] OBJECT");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] FROM");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] TARGET");
+		parser.addRule("ADJP[=] *-> ADJP(*)[=] TIME");
 		
 		parser.addRule("noun[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c3 n*] -> <дітям>[r]");
 		parser.addRule("<дитина>[c1 n1] -> <дитина>[r]");
 		parser.addRule("noun[c2 c4 gm n1] -> <коня>[r]");
 		
-		parser.addRule("noun[NCG] -> <серце>[NCG]");
-		parser.addRule("<серце>[c1c4 n1 gn] -> <серце>[r]");
+		parser.addRule("noun[NCG p3] -> <серце>[NCG]");
+		parser.addRule("<серце>[c1c4 n1 gn p3] -> <серце>[r]");
 		
 		parser.addRule("<б'ється >[p3 n1] -> <б'ється>[r]");
 		
 		parser.addRule("adj[c1c4 n1 gn] -> <моє>[r]");
+		parser.addRule("adv[] -> <рано>[r]");
+		parser.addRule("adjp[n1 gm] -> <сповнений>[r]");
 		
 		parser.addRule("verb[p2 n1 m+] -> <хочеш>[r]");
+		parser.addRule("verb[p- m+] -> <хочеться>[r]");
+		parser.addRule("verb[PNG m+] -> <вміти>[PNG]"); //fix mod-
 		
-		parser.addRule("verb[p1 p2 p3 n* m+ m-] -> <прийшли>[r]");
+		parser.addRule("verb[p3 n* gm gf gn m+ m-] -> <прийшли>[r]");
 		
 		parser.addRule("<серце_б’ється>[p- NC] 1.1-> <серце>[NC] <б'ється >[p3 N]");
 		
@@ -172,22 +216,22 @@ public class APCFGUkrainian  implements Grammar
 		// parser.addRule("VP[PN] -> PLACE verb[PN] OBJECT ADDITIONAL"); //
 		// TARGET?
 		// parser.addRule("VP[PN] -> verb[PN] ADDRESS PLACE"); // TARGET?
-		// parser.addRule("DS *-> NP[NP] VP[NP]");
-		parser.addRule("DS *-> VP(*)[NP] NP[NP]"); // Я зробив завдання
-		parser.addRule("DS -> VP(*)[p-]"); // Зроблено завдання
+		parser.addRule("DS[=] *-> NP[=] VP(*)[=]");
+		//parser.addRule("DS[NPG] *-> VP(*)[NPG] NP[NPG]"); // Я зробив завдання
+		parser.addRule("DS[=] -> VP(*)[= p-]"); // Зроблено завдання
 		parser.addRule("DS -> IVP(*)"); // Робити завдання
-		parser.addRule("DS -> verb(*)[NPm+] NP[NP] IVP");
+		//parser.addRule("DS -> verb(*)[NPm+] NP[NP] IVP");
 
-		parser.addRule("DS *-> DS(*) ADDRESS");
-		parser.addRule("DS *-> DS(*) PLACE");
-		parser.addRule("DS *-> DS(*) ADDITIONAL");
-		parser.addRule("DS *-> DS(*) OBJECT");
-		parser.addRule("DS *-> DS(*) FROM");
-		parser.addRule("DS *-> DS(*) TARGET");
-		parser.addRule("DS *-> DS(*) TIME");
-		parser.addRule("DS *-> DS(*) NAME");
-		parser.addRule("DS *-> DS(*) adv");
-		
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] ADDRESS");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] PLACE");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] ADDITIONAL");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] OBJECT");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] FROM");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] TARGET");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] TIME");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] NAME");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] ADV");
+		parser.addRule("DS[=] * 0.9 -> DS(*)[=] ADJG[=]");
 		// parser.addRule("EEEE -> <є> adj");
 
 		parser.addRule("AKSTOSAY[p2 n1] -> <розкажи> | <скажи> | <повідом> | <повтори> | <розкажіть>");
@@ -211,13 +255,14 @@ public class APCFGUkrainian  implements Grammar
 		
 		parser.addRule("END -> <.>");
 		parser.addRule("QEND -> <?>");
-		parser.addRule("S -> START DS END");
-		parser.addRule("S -> START NP <.>");
-		parser.addRule("S -> START NP QEND");
-		parser.addRule("S -> START VP QEND");
-		parser.addRule("S -> START QS QEND");
-		parser.addRule("S -> START AKSTOSAY QS QEND");
-		parser.addRule("S -> START AKSTOSAY DNP[c3]? <,>? QS QEND");
+		parser.addRule("S -> START DS(*) END");
+		parser.addRule("S -> START NP(*) <.>");
+		parser.addRule("S -> START NP(*) QEND");
+		parser.addRule("S -> START VP(*) QEND");
+		parser.addRule("S -> START QS(*) QEND");
+		parser.addRule("S 0.9 -> START QS(*) END"); // question sentence used as declarative
+		parser.addRule("S -> START AKSTOSAY QS(*) QEND");
+		parser.addRule("S -> START AKSTOSAY DNP[c3]? <,>? QS(*) QEND");
 	}
 
 	public String processSentence(Morphology morphology, Sentence s, boolean use_word_weighting)
@@ -298,8 +343,13 @@ public class APCFGUkrainian  implements Grammar
 
 		if (res == null || res.size() == 0)
 		{
-			LangProcOutput.println("No results");
-			//System.exit(0);
+			for (WordHypotheses sw : s)
+			{
+				LangProcOutput.print(sw.getWordAsWritten() +  "(" + (sw.getSentencePos()+1) + ") ");
+			}
+			LangProcOutput.println("\nNo results");
+			LangProcOutput.flush();
+			System.exit(0);
 			return null;
 		}
 		else

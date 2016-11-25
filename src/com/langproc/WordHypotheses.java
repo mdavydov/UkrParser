@@ -21,15 +21,17 @@ import java.util.Vector;
 public class WordHypotheses
 {
 	private int m_sentence_position;
+	private String m_word_as_was_written;
 	public Vector<TaggedWord> m_hypotheses = new Vector<TaggedWord>();
 
 	// public java.util.TreeMap<String, SentenceWord> m_dependencies = new
 	// java.util.TreeMap<String, SentenceWord>();
 	// public TaggedWord m_word=null;
 
-	public WordHypotheses(int sentence_pos)
+	public WordHypotheses(int sentence_pos, String word_as_written)
 	{
 		m_sentence_position = sentence_pos; /* m_word = null; */
+		m_word_as_was_written = word_as_written;
 	}
 
 	public void addHypothesis(TaggedWord w)
@@ -55,6 +57,7 @@ public class WordHypotheses
 	}
 
 	public int getSentencePos() { return m_sentence_position; }
+	public String getWordAsWritten() { return m_word_as_was_written; }
 	public int numHypotheses()
 	{
 		return m_hypotheses.size();
@@ -110,4 +113,5 @@ public class WordHypotheses
 		}
 		// }
 	}
+	
 }
